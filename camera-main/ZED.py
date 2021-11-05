@@ -4,10 +4,11 @@ import numpy as np
 from time import sleep, time
 
 class ZEDCamera:
-   
-    def __init__(self, output=False, resolution='720', depth_mode='ultra', depth=True, color=True):
+
+    def __init__(self, output=False, resolution='720', depth_mode='perf', fps=10, depth=True, color=True):
         self.depth = depth
         self.color = color
+        self.fps = fps
         self.init = sl.InitParameters()
         self.output_path = output
         resolutions = {'720': sl.RESOLUTION.HD720,
@@ -20,6 +21,7 @@ class ZEDCamera:
 
         self.init.camera_resolution = resolutions[resolution]
         self.init.depth_mode = depthModes[depth_mode]
+        self.init.camera_fps = self.fps
         self.cam = sl.Camera()
         return
 
@@ -53,23 +55,23 @@ class ZEDCamera:
                 if self.color == True:
                     self.mat_color = sl.Mat()
                     varNames.append('color')
-                varNames.append('timestamp')   
+                varNames.append('timestamp')
                 self.Album = namedtuple('Album', varNames)
                 return self
             else:
                 sleep(5)
         raise IOError('Camera could not be opened, please try power cycling the ZED')
-    
+
     def __exit__(self, exc_type, exc_value, traceback):
         print('Closing ZED...')
         self.cam.disable_recording()
-    
+
     def startStream(self):
         self.__enter__()
-    
+
     def closeStream(self):
         self.__exit__(None, None, None)
-        
+
     def takePicture(self, emptyBuffer=False):
         """
         Returns an Album namedtuple.
@@ -89,5 +91,3 @@ class ZEDCamera:
                 return self.Album(depth_image, color_image, time())
             elif (time() - start) > 1:
                 raise TimeoutError('The ZED is taking longer than 1 sec')
-                
-

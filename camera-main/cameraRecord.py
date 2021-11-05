@@ -16,12 +16,13 @@ if __name__ == '__main__':
         print('\nPress Enter to Capture and q to quit.')
         KEYBOARD_CAPTURE=True
         recordType = "captures"
+
     try:
         from ZED import ZEDCamera
         zed_cam = ZEDCamera(resolution='1080')
         zed_cam.startStream()
         zed_album = zed_cam.takePicture()
-        zed_width = zed_album.color.shape()[1]
+        zed_width = zed_album.color.shape[1]
         records['ZED_L'], records['ZED_R'] = [], []
     except:
         print("\nZED Camera Not Connected!")
@@ -49,8 +50,9 @@ if __name__ == '__main__':
 
             if 'ZED_L' in records.keys():
                 zed_album = zed_cam.takePicture()
-                records['ZED_L'].append(zed_album.color[:,:zed_width,:3])
-                records['ZED_R'].append(zed_album.color[:,zed_width:,:3])
+                zed_color = zed_album.color
+                records['ZED_L'].append(zed_color[:,:round(zed_width/2),:3])
+                records['ZED_R'].append(zed_color[:,round(zed_width/2):,:3])
 
             frames_saved += 1
             print("\n{} Frames Captured".format(frames_saved))
