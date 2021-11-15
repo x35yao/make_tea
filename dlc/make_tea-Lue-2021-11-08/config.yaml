@@ -6,25 +6,25 @@ multianimalproject: false
 identity:
 
     # Project path (change when moving around)
-project_path: /Users/luke/Desktop/project/make_tea/dlc/make_tea-Lue-2021-11-08
+project_path: /home/luke/Desktop/project/make_tea/dlc/make_tea-Lue-2021-11-08
 
     # Annotation data set configuration (and individual video cropping parameters)
 video_sets:
-  /Users/luke/Desktop/project/make_tea/camera-main/videos/1636314812_saved_stream.pkl_left.mp4:
+  /home/luke/Desktop/project/make_tea/camera-main/videos/1636314812_saved_stream.pkl_left.mp4:
     crop: 0, 1920, 0, 1088
-  /Users/luke/Desktop/project/make_tea/camera-main/videos/1636314812_saved_stream.pkl_right.mp4:
+  /home/luke/Desktop/project/make_tea/camera-main/videos/1636314812_saved_stream.pkl_right.mp4:
     crop: 0, 1920, 0, 1088
-  /Users/luke/Desktop/project/make_tea/camera-main/videos/1636318271_saved_stream.pkl_left.mp4:
+  /home/luke/Desktop/project/make_tea/camera-main/videos/1636318271_saved_stream.pkl_left.mp4:
     crop: 0, 1920, 0, 1088
-  /Users/luke/Desktop/project/make_tea/camera-main/videos/1636318271_saved_stream.pkl_right.mp4:
+  /home/luke/Desktop/project/make_tea/camera-main/videos/1636318271_saved_stream.pkl_right.mp4:
     crop: 0, 1920, 0, 1088
-  /Users/luke/Desktop/project/make_tea/camera-main/videos/1636318384_saved_stream.pkl_left.mp4:
+  /home/luke/Desktop/project/make_tea/camera-main/videos/1636318384_saved_stream.pkl_left.mp4:
     crop: 0, 1920, 0, 1088
-  /Users/luke/Desktop/project/make_tea/camera-main/videos/1636318384_saved_stream.pkl_right.mp4:
+  /home/luke/Desktop/project/make_tea/camera-main/videos/1636318384_saved_stream.pkl_right.mp4:
     crop: 0, 1920, 0, 1088
-  /Users/luke/Desktop/project/make_tea/camera-main/videos/1636318488_saved_stream.pkl_left.mp4:
+  /home/luke/Desktop/project/make_tea/camera-main/videos/1636318488_saved_stream.pkl_left.mp4:
     crop: 0, 1920, 0, 1088
-  /Users/luke/Desktop/project/make_tea/camera-main/videos/1636318488_saved_stream.pkl_right.mp4:
+  /home/luke/Desktop/project/make_tea/camera-main/videos/1636318488_saved_stream.pkl_right.mp4:
     crop: 0, 1920, 0, 1088
 bodyparts:
 - cup_head

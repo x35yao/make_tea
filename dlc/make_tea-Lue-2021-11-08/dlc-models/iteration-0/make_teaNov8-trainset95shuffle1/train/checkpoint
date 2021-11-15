@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/luke/Desktop/project/make_tea/dlc/make_tea-Lue-2021-11-08/dlc-models/iteration-0/make_teaNov8-trainset95shuffle1/train/snapshot-50000"
+all_model_checkpoint_paths: "/home/luke/Desktop/project/make_tea/dlc/make_tea-Lue-2021-11-08/dlc-models/iteration-0/make_teaNov8-trainset95shuffle1/train/snapshot-50000"
