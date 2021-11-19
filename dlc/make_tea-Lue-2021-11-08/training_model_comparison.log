@@ -1,2 +1,0 @@
-2021-11-11 13:00:43,462 INFO Shuffle index:0, net_type:resnet_50, augmenter_type:imgaug, trainsetindex:0
-2021-11-11 13:00:47,528 INFO Shuffle index:1, net_type:efficientnet-b0, augmenter_type:imgaug, trainsetindex:0
