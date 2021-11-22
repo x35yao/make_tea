@@ -18,7 +18,7 @@ for filename in filenames:
     for i in range(zed_r.shape[0]):
         zed_r[i] = zed_r[i][...,::-1].copy()
         zed_l[i] = zed_l[i][...,::-1].copy()
-    video_name_left = output_dir + filename.strip(input_dir) + '_left.mp4'
-    video_name_right = output_dir + filename.strip(input_dir) + '_right.mp4'
+    video_name_left = output_dir + 'left_' + filename.strip(input_dir) + '.mp4'
+    video_name_right = output_dir + 'right_' + filename.strip(input_dir) + '.mp4'
     imageio.mimwrite(video_name_left, zed_l , fps = 20)
     imageio.mimwrite(video_name_right, zed_r , fps = 20)
