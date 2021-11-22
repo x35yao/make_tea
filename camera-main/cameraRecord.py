@@ -4,7 +4,7 @@ import pickle as pkl
 from time import sleep, time
 
 
-OUTPUT_FILE = './saved_frames/{}_saved_{}.pkl'
+OUTPUT_FILE = './saved_frames/{}_{}.pkl'
 KEYBOARD_CAPTURE = False
 
 
@@ -39,6 +39,7 @@ if __name__ == '__main__':
     # Tracking record duration
     starting = time()
     while True:
+        cv2.namedWindow("output", cv2.WINDOW_NORMAL)
         try:
             if KEYBOARD_CAPTURE:
                 key = input()
@@ -53,6 +54,11 @@ if __name__ == '__main__':
                 zed_color = zed_album.color
                 records['ZED_L'].append(zed_color[:,:round(zed_width/2),:3])
                 records['ZED_R'].append(zed_color[:,round(zed_width/2):,:3])
+                im = zed_color[:,:round(zed_width/2),:3]
+                ims = cv2.resize(im, (960, 540))
+                cv2.imshow("output", ims)
+                cv2.waitKey(20)
+
 
             frames_saved += 1
             print("\n{} Frames Captured".format(frames_saved))
@@ -63,7 +69,7 @@ if __name__ == '__main__':
             else:
                 print("\nStream Terminated with Duration: {}s".format(round(time() - starting, 1)))
             break
-
+    cv2.destroyAllWindows()
     if 'ZED_L' in records.keys(): zed_cam.closeStream()
     if 'RS' in records.keys(): rs_cam.closeStream()
 
