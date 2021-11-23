@@ -1,0 +1,34 @@
+# Project definitions (do not edit)
+Task: make_tea_3d
+scorer: Luke
+date: Nov22
+
+# Project path (change when moving around)
+project_path: /home/luke/Desktop/project/make_tea/dlc/make_tea_3d-Luke-2021-11-22-3d
+
+# Plotting configuration
+skeleton:
+- - head
+  - middle
+- - middle
+  - tail
+skeleton_color: black
+pcutoff: 0.4
+colormap: jet
+dotsize: 15
+alphaValue: 0.8
+markerType: '*'
+markerColor: r
+
+# Number of cameras, camera names, path of the config files, shuffle index and trainingsetindex used to analyze videos:
+num_cameras: 2
+camera_names:
+- left
+- right
+scorername_3d: make_tea_3D # Enter the scorer name for the 3D output
+config_file_left: /home/luke/Desktop/project/make_tea/dlc/make_tea_multi-luke-2021-11-15/config.yaml
+config_file_right: /home/luke/Desktop/project/make_tea/dlc/make_tea_multi-luke-2021-11-15/config.yaml
+shuffle_left: 1
+trainingsetindex_left: 0
+shuffle_right: 1
+trainingsetindex_right: 0
