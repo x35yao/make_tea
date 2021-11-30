@@ -2,7 +2,6 @@ CUDA_VISIBLE_DEVICES=0 python predictDepth.py \
                 --kitti2015=1    --maxdisp=192 \
                 --crop_height=576  --crop_width=960  \
                 --data_path='./dataset/testing/' \
-                --test_list='None' \
                 --save_path='./results/' \
                 --fea_num_layer 6 --mat_num_layers 12\
                 --fea_filter_multiplier 8 --fea_block_multiplier 4 --fea_step 3  \

@@ -81,8 +81,9 @@ def test_transform(temp_data, crop_height, crop_width):
 def load_data(leftname, rightname):
     left = np.array(Image.open(leftname))
     right = np.array(Image.open(rightname))
-    left = skimage.transform.rescale(left, (.5, .5, 1))
-    right = skimage.transform.rescale(right, (.5, .5, 1))
+    im_height, im_width, _ = left.shape 
+    left = skimage.transform.rescale(left, (opt.crop_height/im_height, opt.crop_width/im_width, 1))
+    right = skimage.transform.rescale(right, (opt.crop_height/im_height, opt.crop_width/im_width, 1))
     size = np.shape(left)
     height = size[0]
     width = size[1]
@@ -105,7 +106,28 @@ def load_data(leftname, rightname):
     return temp_data
 
 
-def test(leftname, rightname, savename):  
+def test_kitti(leftname, rightname, savename):
+    input1, input2, height, width = test_transform(load_data(leftname, rightname), opt.crop_height, opt.crop_width)
+ 
+    input1 = Variable(input1, requires_grad = False)
+    input2 = Variable(input2, requires_grad = False)
+
+    model.eval()
+    if cuda:
+        input1 = input1.cuda()
+        input2 = input2.cuda()
+    with torch.no_grad():        
+        prediction = model(input1, input2)
+        
+    temp = prediction.cpu()
+    temp = temp.detach().numpy()
+    if height <= opt.crop_height and width <= opt.crop_width:
+        temp = temp[0, opt.crop_height - height: opt.crop_height, opt.crop_width - width: opt.crop_width]
+    else:
+        temp = temp[0, :, :]
+    skimage.io.imsave(savename, (temp * 256).astype('uint16'))
+
+def getDisparityMap(leftname, rightname):  
     input1, input2, height, width = test_transform(load_data(leftname, rightname), opt.crop_height, opt.crop_width)
 
     input1 = Variable(input1, requires_grad = False)
@@ -128,22 +150,31 @@ def test(leftname, rightname, savename):
         temp = temp[0, opt.crop_height - height: opt.crop_height, opt.crop_width - width: opt.crop_width]
     else:
         temp = temp[0, :, :]
-    np.save(savename, temp)
 #     plot_disparity(savename, temp, 192)
-    savename_pfm = savename.replace('png','pfm') 
-    temp = np.flipud(temp)
+#     savename_pfm = savename.replace('png','pfm') 
+#     temp = np.flipud(temp)
+    return temp
 
 def plot_disparity(savename, data, max_disp):
     plt.imsave(savename, data, vmin=0, vmax=max_disp, cmap='turbo')
 
-   
+
 if __name__ == "__main__":
     file_path = opt.data_path
-    filelist = os.listdir(file_path + 'left_camera/')
-
-    for index in range(len(filelist)):
-        current_file = filelist[index]
-        leftname = file_path + 'left_camera/' + current_file
-        rightname = file_path + 'right_camera/' + current_file
-        savename = "{}_disp.npy".format(opt.save_path + current_file.split('.')[0])
-        test(leftname, rightname, savename)
+    left_filelist = os.listdir(file_path + 'left_camera/')
+    right_filelist = os.listdir(file_path + 'right_camera/')
+    for index in range(len(left_filelist)):
+        current_file = left_filelist[index]
+        if current_file in right_filelist:
+            if False:
+                leftname = file_path + 'left_camera/' + current_file
+                rightname = file_path + 'right_camera/' + current_file
+                savename = "{}_disp.npy".format(opt.save_path + current_file.split('.')[0])
+                disp_map = getDisparityMap(leftname, rightname)
+                np.save(savename, disp_map)
+            if opt.kitti2015:
+                leftname = file_path + 'left_camera/' + current_file
+                rightname = file_path + 'right_camera/' + current_file
+                savename = "{}_disp_kitti.npy".format(opt.save_path + current_file.split('.')[0])
+                disp_map = getDisparityMap(leftname, rightname)
+                np.save(savename, disp_map)
