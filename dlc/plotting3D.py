@@ -108,11 +108,6 @@ def create_labeled_video_3d(
     skeleton_color = cfg_3d["skeleton_color"]
     scorer_3d = cfg_3d["scorername_3d"]
 
-    # Flatten the list of bodyparts to connect
-    bodyparts2plot = list(
-        np.unique([val for sublist in bodyparts2connect for val in sublist])
-    ) + uniquebodyparts
-    color = plt.cm.get_cmap(cmap, len(bodyparts2plot))
     file_list = auxiliaryfunctions_3d.Get_list_of_triangulated_and_videoFiles(
         path, videotype, scorer_3d, cam_names, videofolder
     )
@@ -171,6 +166,7 @@ def create_labeled_video_3d(
                         )
                     )[0]
                 )
+
                 df_cam2 = pd.read_hdf(
                     glob.glob(
                         os.path.join(
@@ -181,6 +177,7 @@ def create_labeled_video_3d(
                         )
                     )[0]
                 )
+
                 # print("Found filtered predictions, will be use these for triangulation.")
                 print(
                     "Found the following filtered data: ",
@@ -193,6 +190,14 @@ def create_labeled_video_3d(
                         str("*" + base_filename_cam2 + cam2_scorer + "*filtered.h5"),
                     ),
                 )
+
+                individuals = [x for x in df_cam1.columns.get_level_values('individuals').unique() if x != 'single']
+                n_individuals = len(individuals)
+                # Flatten the list of bodyparts to connect
+                bodyparts2plot = list(
+                    np.unique([val for sublist in bodyparts2connect for val in sublist])
+                ) * n_individuals + uniquebodyparts
+                color = plt.cm.get_cmap(cmap, len(bodyparts2plot))
             except FileNotFoundError:
                 print(
                     "No filtered predictions found, the unfiltered predictions will be used instead."
@@ -204,6 +209,7 @@ def create_labeled_video_3d(
                         )
                     )[0]
                 )
+
                 df_cam2 = pd.read_hdf(
                     glob.glob(
                         os.path.join(
@@ -341,17 +347,19 @@ def plot2D(
     scorer_cam1 = df_cam1_view.columns.get_level_values(0)[0]
     scorer_cam2 = df_cam2_view.columns.get_level_values(0)[0]
     scorer_3d = xyz_pts.columns.get_level_values(0)[0]
-
+    individuals = xyz_pts.columns.get_level_values("individuals").unique()
     # Set the x,y, and z limits for the 3d view
 
     numberFrames = min(len(vid_cam1), len(vid_cam2))
-    df_x = np.empty((len(bodyparts2plot), numberFrames))
-    df_y = np.empty((len(bodyparts2plot), numberFrames))
-    df_z = np.empty((len(bodyparts2plot), numberFrames))
-    for bpindex, bp in enumerate(bodyparts2plot):
-        df_x[bpindex, :] = xyz_pts[scorer_3d][bp]["x"].values
-        df_y[bpindex, :] = xyz_pts[scorer_3d][bp]["y"].values
-        df_z[bpindex, :] = xyz_pts[scorer_3d][bp]["z"].values
+    # df_x = np.empty((len(bodyparts2plot), numberFrames))
+    # df_y = np.empty((len(bodyparts2plot), numberFrames))
+    # df_z = np.empty((len(bodyparts2plot), numberFrames))
+
+    df_x = xyz_pts.xs('x', axis = 1, level = 'coords').values.T
+    df_y = xyz_pts.xs('y', axis = 1, level = 'coords').values.T
+    df_z = xyz_pts.xs('z', axis = 1, level = 'coords').values.T
+
+
     if xlim == [None, None]:
         axes3.set_xlim3d([np.nanmin(df_x), np.nanmax(df_x)])
     else:
@@ -382,145 +390,160 @@ def plot2D(
     if frame_cam1 is None or frame_cam2 is None:
         raise IOError("A video frame is empty.")
 
-    df_cam1_view = df_cam1_view.droplevel(level = 'individuals', axis = 1)
-    df_cam2_view = df_cam2_view.droplevel(level = 'individuals', axis = 1)
+
+
     # Plot the labels for each body part
-    for bpindex, bp in enumerate(bodyparts2plot):
-        axes1.imshow(frame_cam1)
-        axes2.imshow(frame_cam2)
+    for individual in individuals:
+        bodyparts = xyz_pts[scorer_3d][individual].columns.get_level_values("bodyparts").unique()
 
-        if (df_cam1_view[scorer_cam1][bp]["likelihood"].values[k]) > pcutoff and (
-            df_cam2_view[scorer_cam2][bp]["likelihood"].values[k]
-        ) > pcutoff:
-            if trailpoints > 0:
-                xdata_cam1.append(
-                    df_cam1_view.iloc[max(0, k - trailpoints) : k][scorer_cam1][bp]["x"]
-                )
-                ydata_cam1.append(
-                    df_cam1_view.iloc[max(0, k - trailpoints) : k][scorer_cam1][bp]["y"]
-                )
-                xdata_cam2.append(
-                    df_cam2_view.iloc[max(0, k - trailpoints) : k][scorer_cam2][bp]["x"]
-                )
-                ydata_cam2.append(
-                    df_cam2_view.iloc[max(0, k - trailpoints) : k][scorer_cam2][bp]["y"]
-                )
-                xdata_3d.append(
-                    xyz_pts.iloc[max(0, k - trailpoints) : k][scorer_3d][bp]["x"]
-                )
-                ydata_3d.append(
-                    xyz_pts.iloc[max(0, k - trailpoints) : k][scorer_3d][bp]["y"]
-                )
-                zdata_3d.append(
-                    xyz_pts.iloc[max(0, k - trailpoints) : k][scorer_3d][bp]["z"]
-                )
+        xdata_3d = []
+        ydata_3d = []
+        zdata_3d = []
+
+        # Initialize arrays for appending the 2d data from cam1 for actual plotting the points
+        xdata_cam1 = []
+        ydata_cam1 = []
+
+        # Initialize arrays for appending the 2d data from cam2 for actual plotting the points
+        xdata_cam2 = []
+        ydata_cam2 = []
+
+        for bpindex, bp in enumerate(bodyparts):
+            axes1.imshow(frame_cam1)
+            axes2.imshow(frame_cam2)
+            if (df_cam1_view[scorer_cam1][individual][bp]["likelihood"].values[k]) > pcutoff and (
+                df_cam2_view[scorer_cam2][individual][bp]["likelihood"].values[k]
+            ) > pcutoff:
+                if trailpoints > 0:
+                    xdata_cam1.append(
+                        df_cam1_view.iloc[max(0, k - trailpoints) : k][scorer_cam1][individual][bp]["x"]
+                    )
+                    ydata_cam1.append(
+                        df_cam1_view.iloc[max(0, k - trailpoints) : k][scorer_cam1][individual][bp]["y"]
+                    )
+                    xdata_cam2.append(
+                        df_cam2_view.iloc[max(0, k - trailpoints) : k][scorer_cam2][individual][bp]["x"]
+                    )
+                    ydata_cam2.append(
+                        df_cam2_view.iloc[max(0, k - trailpoints) : k][scorer_cam2][individual][bp]["y"]
+                    )
+                    xdata_3d.append(
+                        xyz_pts.iloc[max(0, k - trailpoints) : k][scorer_3d][individual][bp]["x"]
+                    )
+                    ydata_3d.append(
+                        xyz_pts.iloc[max(0, k - trailpoints) : k][scorer_3d][individual][bp]["y"]
+                    )
+                    zdata_3d.append(
+                        xyz_pts.iloc[max(0, k - trailpoints) : k][scorer_3d][individual][bp]["z"]
+                    )
+                else:
+                    xdata_cam1.append(df_cam1_view.iloc[k][scorer_cam1][individual][bp]["x"])
+                    ydata_cam1.append(df_cam1_view.iloc[k][scorer_cam1][individual][bp]["y"])
+                    xdata_cam2.append(df_cam2_view.iloc[k][scorer_cam2][individual][bp]["x"])
+                    ydata_cam2.append(df_cam2_view.iloc[k][scorer_cam2][individual][bp]["y"])
+                    xdata_3d.append(xyz_pts.iloc[k][scorer_3d][individual][bp]["x"])
+                    ydata_3d.append(xyz_pts.iloc[k][scorer_3d][individual][bp]["y"])
+                    zdata_3d.append(xyz_pts.iloc[k][scorer_3d][individual][bp]["z"])
             else:
-                xdata_cam1.append(df_cam1_view.iloc[k][scorer_cam1][bp]["x"])
-                ydata_cam1.append(df_cam1_view.iloc[k][scorer_cam1][bp]["y"])
-                xdata_cam2.append(df_cam2_view.iloc[k][scorer_cam2][bp]["x"])
-                ydata_cam2.append(df_cam2_view.iloc[k][scorer_cam2][bp]["y"])
-                xdata_3d.append(xyz_pts.iloc[k][scorer_3d][bp]["x"])
-                ydata_3d.append(xyz_pts.iloc[k][scorer_3d][bp]["y"])
-                zdata_3d.append(xyz_pts.iloc[k][scorer_3d][bp]["z"])
-        else:
-            xdata_cam1.append(np.nan)
-            ydata_cam1.append(np.nan)
-            xdata_cam2.append(np.nan)
-            ydata_cam2.append(np.nan)
-            xdata_3d.append(np.nan)
-            ydata_3d.append(np.nan)
-            zdata_3d.append(np.nan)
+                xdata_cam1.append(np.nan)
+                ydata_cam1.append(np.nan)
+                xdata_cam2.append(np.nan)
+                ydata_cam2.append(np.nan)
+                xdata_3d.append(np.nan)
+                ydata_3d.append(np.nan)
+                zdata_3d.append(np.nan)
+            p = axes1.scatter(
+                xdata_cam1[bpindex],
+                ydata_cam1[bpindex],
+                s=markerSize,
+                c=color(bodyparts2plot.index(bp)),
+            )
+            p = axes2.scatter(
+                xdata_cam2[bpindex],
+                ydata_cam2[bpindex],
+                s=markerSize,
+                c=color(bodyparts2plot.index(bp)),
+            )
 
-        p = axes1.scatter(
-            xdata_cam1[bpindex],
-            ydata_cam1[bpindex],
-            s=markerSize,
-            c=color(bodyparts2plot.index(bp)),
-        )
-        p = axes2.scatter(
-            xdata_cam2[bpindex],
-            ydata_cam2[bpindex],
-            s=markerSize,
-            c=color(bodyparts2plot.index(bp)),
-        )
-
-        p = axes3.scatter(
-            xdata_3d[bpindex],
-            ydata_3d[bpindex],
-            zdata_3d[bpindex],
-            c=color(bodyparts2plot.index(bp)),
-        )
+            p = axes3.scatter(
+                xdata_3d[bpindex],
+                ydata_3d[bpindex],
+                zdata_3d[bpindex],
+                c=color(bodyparts2plot.index(bp)),
+            )
 
     # Connecting the bodyparts specified in the config file.3d file is created based on the likelihoods of cam1 and cam2. Using 3d file and check if the body part is nan then dont plot skeleton
     if draw_skeleton:
-        for i in range(len(bodyparts2connect)):
-            bool_above_pcutoff = [
-                np.isnan(xyz_pts.iloc[k][scorer_3d][bodyparts2connect[i][0]]["x"])
-                or (np.isnan(xyz_pts.iloc[k][scorer_3d][bodyparts2connect[i][1]]["x"]))
-            ]
-            if not bool_above_pcutoff[0]:
-                xcam1.append(
-                    df_cam1_view.iloc[k][scorer_cam1][bodyparts2connect[i][0]]["x"]
-                )
-                ycam1.append(
-                    df_cam1_view.iloc[k][scorer_cam1][bodyparts2connect[i][0]]["y"]
-                )
-                xcam1.append(
-                    df_cam1_view.iloc[k][scorer_cam1][bodyparts2connect[i][1]]["x"]
-                )
-                ycam1.append(
-                    df_cam1_view.iloc[k][scorer_cam1][bodyparts2connect[i][1]]["y"]
-                )
+        for individual in individuals:
+            if individual != 'single':
+                for i in range(len(bodyparts2connect)):
+                    bool_above_pcutoff = [
+                        np.isnan(xyz_pts.iloc[k][scorer_3d][individual][bodyparts2connect[i][0]]["x"])
+                        or (np.isnan(xyz_pts.iloc[k][scorer_3d][individual][bodyparts2connect[i][1]]["x"]))
+                    ]
+                    if not bool_above_pcutoff[0]:
+                        xcam1.append(
+                            df_cam1_view.iloc[k][scorer_cam1][individual][bodyparts2connect[i][0]]["x"]
+                        )
+                        ycam1.append(
+                            df_cam1_view.iloc[k][scorer_cam1][individual][bodyparts2connect[i][0]]["y"]
+                        )
+                        xcam1.append(
+                            df_cam1_view.iloc[k][scorer_cam1][individual][bodyparts2connect[i][1]]["x"]
+                        )
+                        ycam1.append(
+                            df_cam1_view.iloc[k][scorer_cam1][individual][bodyparts2connect[i][1]]["y"]
+                        )
 
-                xcam2.append(
-                    df_cam2_view.iloc[k][scorer_cam2][bodyparts2connect[i][0]]["x"]
-                )
-                ycam2.append(
-                    df_cam2_view.iloc[k][scorer_cam2][bodyparts2connect[i][0]]["y"]
-                )
-                xcam2.append(
-                    df_cam2_view.iloc[k][scorer_cam2][bodyparts2connect[i][1]]["x"]
-                )
-                ycam2.append(
-                    df_cam2_view.iloc[k][scorer_cam2][bodyparts2connect[i][1]]["y"]
-                )
+                        xcam2.append(
+                            df_cam2_view.iloc[k][scorer_cam2][individual][bodyparts2connect[i][0]]["x"]
+                        )
+                        ycam2.append(
+                            df_cam2_view.iloc[k][scorer_cam2][individual][bodyparts2connect[i][0]]["y"]
+                        )
+                        xcam2.append(
+                            df_cam2_view.iloc[k][scorer_cam2][individual][bodyparts2connect[i][1]]["x"]
+                        )
+                        ycam2.append(
+                            df_cam2_view.iloc[k][scorer_cam2][individual][bodyparts2connect[i][1]]["y"]
+                        )
 
-                xlines_3d.append(
-                    xyz_pts.iloc[k][scorer_3d][bodyparts2connect[i][0]]["x"]
-                )
-                ylines_3d.append(
-                    xyz_pts.iloc[k][scorer_3d][bodyparts2connect[i][0]]["y"]
-                )
-                zlines_3d.append(
-                    xyz_pts.iloc[k][scorer_3d][bodyparts2connect[i][0]]["z"]
-                )
-                xlines_3d.append(
-                    xyz_pts.iloc[k][scorer_3d][bodyparts2connect[i][1]]["x"]
-                )
-                ylines_3d.append(
-                    xyz_pts.iloc[k][scorer_3d][bodyparts2connect[i][1]]["y"]
-                )
-                zlines_3d.append(
-                    xyz_pts.iloc[k][scorer_3d][bodyparts2connect[i][1]]["z"]
-                )
+                        xlines_3d.append(
+                            xyz_pts.iloc[k][scorer_3d][individual][bodyparts2connect[i][0]]["x"]
+                        )
+                        ylines_3d.append(
+                            xyz_pts.iloc[k][scorer_3d][individual][bodyparts2connect[i][0]]["y"]
+                        )
+                        zlines_3d.append(
+                            xyz_pts.iloc[k][scorer_3d][individual][bodyparts2connect[i][0]]["z"]
+                        )
+                        xlines_3d.append(
+                            xyz_pts.iloc[k][scorer_3d][individual][bodyparts2connect[i][1]]["x"]
+                        )
+                        ylines_3d.append(
+                            xyz_pts.iloc[k][scorer_3d][individual][bodyparts2connect[i][1]]["y"]
+                        )
+                        zlines_3d.append(
+                            xyz_pts.iloc[k][scorer_3d][individual][bodyparts2connect[i][1]]["z"]
+                        )
 
-                axes1.plot(xcam1, ycam1, color=skeleton_color, alpha=alphaValue)
-                axes2.plot(xcam2, ycam2, color=skeleton_color, alpha=alphaValue)
-                axes3.plot(
-                    xlines_3d,
-                    ylines_3d,
-                    zlines_3d,
-                    color=skeleton_color,
-                    alpha=alphaValue,
-                )
+                        axes1.plot(xcam1, ycam1, color=skeleton_color, alpha=alphaValue)
+                        axes2.plot(xcam2, ycam2, color=skeleton_color, alpha=alphaValue)
+                        axes3.plot(
+                            xlines_3d,
+                            ylines_3d,
+                            zlines_3d,
+                            color=skeleton_color,
+                            alpha=alphaValue,
+                        )
 
-                xcam1 = []
-                ycam1 = []
-                xcam2 = []
-                ycam2 = []
-                xlines_3d = []
-                ylines_3d = []
-                zlines_3d = []
+                        xcam1 = []
+                        ycam1 = []
+                        xcam2 = []
+                        ycam2 = []
+                        xlines_3d = []
+                        ylines_3d = []
+                        zlines_3d = []
     # Saving the frames
     output_folder = Path(os.path.join(path_h5_file, "temp_" + file_name))
     output_folder.mkdir(parents=True, exist_ok=True)
