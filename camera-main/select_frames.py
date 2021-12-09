@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-file_ind = '1637605842'
+file_ind = '1637622512'
 
 with open('./saved_frames/' + file_ind + '_stream.pkl', 'rb') as file:
     album = pkl.load(file)

@@ -18,7 +18,8 @@ for filename in filenames:
     for i in range(zed_r.shape[0]):
         zed_r[i] = zed_r[i][...,::-1].copy()
         zed_l[i] = zed_l[i][...,::-1].copy()
-    video_ind = ''.join(list(filter(str.isdigit, filename)))
+    # video_ind = ''.join(list(filter(str.isdigit, filename)))
+    video_ind = filename.split('/')[-1].split('.')[0]
     try:
         Path(output_dir + video_ind).mkdir(exist_ok = False)
     except FileExistsError:

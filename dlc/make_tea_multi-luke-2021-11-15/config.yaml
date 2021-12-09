@@ -6,7 +6,7 @@ multianimalproject: true
 identity: false
 
     # Project path (change when moving around)
-project_path: /home/luke/Desktop/project/make_tea/dlc/make_tea_multi-luke-2021-11-15
+project_path: /home/luke/Desktop/make_tea/dlc/make_tea_multi-luke-2021-11-15
 
     # Annotation data set configuration (and individual video cropping parameters)
 video_sets:
