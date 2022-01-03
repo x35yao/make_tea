@@ -50,7 +50,7 @@ emboss:
 global_scale: 0.8
 histeq: true
 histeqratio: 0.1
-init_weights: /home/luke/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt
+init_weights: /home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt
 intermediate_supervision: false
 intermediate_supervision_layer: 12
 location_refinement: true
@@ -63,7 +63,7 @@ max_shift: 0.4
 metadataset: training-datasets/iteration-0/UnaugmentedDataSet_make_tea_multiNov11/Documentation_data-make_tea_multi_95shuffle1.pickle
 min_input_size: 64
 mirror: false
-multi_stage: false
+multi_stage: true
 multi_step:
 - - 0.0001
   - 7500
@@ -90,7 +90,7 @@ partaffinityfield_graph:
 partaffinityfield_predict: true
 pos_dist_thresh: 17
 pre_resize: []
-project_path: /home/luke/Desktop/project/make_tea/dlc/make_tea_multi-luke-2021-11-15
+project_path: /home/ychen/Desktop/make_tea/dlc/make_tea_multi-luke-2021-11-15
 rotation: 25
 rotratio: 0.4
 save_iters: 10000

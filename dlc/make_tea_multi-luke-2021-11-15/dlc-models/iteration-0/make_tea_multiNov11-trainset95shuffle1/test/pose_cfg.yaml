@@ -27,12 +27,12 @@ all_joints_names:
 dataset: training-datasets/iteration-0/UnaugmentedDataSet_make_tea_multiNov11/make_tea_multi_Luke95shuffle1.pickle
 dataset_type: multi-animal-imgaug
 global_scale: 0.8
-init_weights: /home/luke/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt
+init_weights: /home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt
 location_refinement: true
 locref_smooth: false
 locref_stdev: 7.2801
 minconfidence: 0.01
-multi_stage: false
+multi_stage: true
 net_type: resnet_50
 nmsradius: 5.0
 num_idchannel: 0
@@ -49,6 +49,3 @@ partaffinityfield_graph:
 partaffinityfield_predict: true
 scoremap_dir: test
 sigma: 1
-paf_best:
-- 2
-- 0
