@@ -30,6 +30,8 @@ video_sets:
     crop: 0, 1920, 0, 1088
   /home/ychen/Desktop/make_tea/camera-main/videos/cup_all_testset/1639767445-left.mp4:
     crop: 0, 1920, 0, 1088
+  /home/ychen/Desktop/make_tea/camera-main/videos/tap_all_testset/1639767563-left.mp4:
+    crop: 0, 1920, 0, 1088
 individuals:
 - individual1
 - individual2
