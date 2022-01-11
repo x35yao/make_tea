@@ -12,9 +12,9 @@ def obtain_predict_args():
     parser.add_argument('--kitti2012', type=int, default=0, help='kitti 2012? Default=False')
     parser.add_argument('--kitti2015', type=int, default=0, help='kitti 2015? Default=False')
     parser.add_argument('--middlebury', type=int, default=0, help='Middlebury? Default=False')
-    parser.add_argument('--data_path', type=str, default='./dataset/testing/', help="data root")
+    parser.add_argument('--data_path', type=str, default='./dataset/', help="data root")
     parser.add_argument('--test_list', type=str, help="training list")
-    parser.add_argument('--save_path', type=str, default='./results/', help="location to save result")
+    parser.add_argument('--save_path', type=str, default='./dataset/', help="location to save result")
     ######### LEStereo params####################
     parser.add_argument('--fea_num_layers', type=int, default=6)
     parser.add_argument('--mat_num_layers', type=int, default=12)

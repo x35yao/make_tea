@@ -161,20 +161,20 @@ def plot_disparity(savename, data, max_disp):
 
 if __name__ == "__main__":
     file_path = opt.data_path
-    left_filelist = os.listdir(file_path + 'left_camera/')
-    right_filelist = os.listdir(file_path + 'right_camera/')
-    for index in range(len(left_filelist)):
-        current_file = left_filelist[index]
-        if current_file in right_filelist:
-            if False:
-                leftname = file_path + 'left_camera/' + current_file
-                rightname = file_path + 'right_camera/' + current_file
-                savename = "{}_disp.npy".format(opt.save_path + current_file.split('.')[0])
-                disp_map = getDisparityMap(leftname, rightname)
-                np.save(savename, disp_map)
+    main_folder = os.listdir(file_path)
+    for folder in main_folder:
+        frame_files = os.listdir(os.path.join(file_path, folder, 'left'))
+        for frame in frame_files:
+            left_file = os.path.join(file_path, folder, 'left', frame)
+            right_file = os.path.join(file_path, folder, 'right', frame)
+            save_dir =  os.path.join(opt.save_path, folder, 'disparity')
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
+            if opt.sceneflow:
+                save_file = os.path.join(save_dir, "{}_disp.npy".format(frame.split('.')[0]))
+                disp_map = getDisparityMap(left_file, right_file)
+                np.save(save_file, disp_map)
             if opt.kitti2015:
-                leftname = file_path + 'left_camera/' + current_file
-                rightname = file_path + 'right_camera/' + current_file
-                savename = "{}_disp_kitti.npy".format(opt.save_path + current_file.split('.')[0])
-                disp_map = getDisparityMap(leftname, rightname)
-                np.save(savename, disp_map)
+                save_file = os.path.join(save_dir,"{}_disp_kitti.npy".format(frame.split('.')[0]))
+                disp_map = getDisparityMap(left_file, right_file)
+                np.save(save_file, disp_map)
