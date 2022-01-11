@@ -1,3 +1,4 @@
 */videos/*.mp4
 archive_project/*
 .ipynb_checkpoints/
+*/labeled-data/*
