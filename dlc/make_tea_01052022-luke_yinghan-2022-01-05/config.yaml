@@ -28,6 +28,8 @@ start: 0
 stop: 1
 numframes2pick: 100
 
+default_track_method: 'box'
+
     # Plotting configuration
 skeleton_color: black
 pcutoff: 0.6
