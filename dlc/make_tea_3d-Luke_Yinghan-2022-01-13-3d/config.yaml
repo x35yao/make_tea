@@ -1,10 +1,10 @@
 # Project definitions (do not edit)
 Task: make_tea_3d
 scorer: Luke_Yinghan
-date: Jan12
+date: Jan13
 
 # Project path (change when moving around)
-project_path: /home/luke/Desktop/project/make_tea/dlc/make_tea_01052022-luke_yinghan-2022-01-05
+project_path: /Users/luke/make_tea/dlc/make_tea_3d-Luke_Yinghan-2022-01-13-3d
 
 uniquebodyparts: [cup_h, cup_m, cup_t, pitcher_h, pitcher_m, pitcher_t, tap_h, tap_m,
   tap_t]
