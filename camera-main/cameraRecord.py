@@ -74,4 +74,5 @@ if __name__ == '__main__':
     if 'RS' in records.keys(): rs_cam.closeStream()
 
     with open(OUTPUT_FILE.format(str(int(starting)), recordType), 'wb') as file:
+        print(f'Saving to {int(starting)}')
         pkl.dump(records, file)

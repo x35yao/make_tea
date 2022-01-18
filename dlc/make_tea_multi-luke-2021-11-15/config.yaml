@@ -6,7 +6,9 @@ multianimalproject: true
 identity: false
 
     # Project path (change when moving around)
+
 project_path: /home/ychen/Desktop/make_tea/dlc/make_tea_multi-luke-2021-11-15
+
 
     # Annotation data set configuration (and individual video cropping parameters)
 video_sets:
@@ -64,6 +66,7 @@ TrainingFraction:
 iteration: 0
 default_net_type: dlcrnet_ms5
 default_augmenter: multi-animal-imgaug
+default_track_method:
 snapshotindex: -1
 batch_size: 8
 

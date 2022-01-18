@@ -513,7 +513,11 @@
  'weigh_only_present_joints': False,
  'weigh_part_predictions': False,
  'weight_decay': 0.0001}
+<<<<<<< HEAD
 2021-12-19 15:55:13 Config:
+=======
+2022-01-14 19:00:39 Config:
+>>>>>>> origin/main
 {'all_joints': [[0], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11]],
  'all_joints_names': ['head',
                       'middle',
@@ -547,7 +551,11 @@
  'global_scale': 0.8,
  'histeq': True,
  'histeqratio': 0.1,
+<<<<<<< HEAD
  'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+=======
+ 'init_weights': '/home/luke/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+>>>>>>> origin/main
  'intermediate_supervision': False,
  'intermediate_supervision_layer': 12,
  'location_refinement': True,
@@ -562,6 +570,7 @@
  'metadataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_multiNov11/Documentation_data-make_tea_multi_95shuffle1.pickle',
  'min_input_size': 64,
  'mirror': False,
+<<<<<<< HEAD
  'multi_stage': True,
  'multi_step': [[0.0001, 7500], [5e-05, 12000], [1e-05, 200000]],
  'net_type': 'resnet_50',
@@ -807,6 +816,9 @@
  'min_input_size': 64,
  'mirror': False,
  'multi_stage': True,
+=======
+ 'multi_stage': False,
+>>>>>>> origin/main
  'multi_step': [[0.0001, 7500], [5e-05, 12000], [1e-05, 200000]],
  'net_type': 'resnet_50',
  'num_idchannel': 0,
@@ -821,7 +833,11 @@
  'partaffinityfield_predict': True,
  'pos_dist_thresh': 17,
  'pre_resize': [],
+<<<<<<< HEAD
  'project_path': '/home/ychen/Desktop/make_tea/dlc/make_tea_multi-luke-2021-11-15',
+=======
+ 'project_path': '/home/luke/Desktop/project/make_tea/dlc/make_tea_multi-luke-2021-11-15',
+>>>>>>> origin/main
  'regularize': False,
  'rotation': 25,
  'rotratio': 0.4,
@@ -832,13 +848,21 @@
  'sharpen': False,
  'sharpenratio': 0.3,
  'shuffle': True,
+<<<<<<< HEAD
  'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_multi-luke-2021-11-15/dlc-models/iteration-0/make_tea_multiNov11-trainset95shuffle1/train/snapshot',
+=======
+ 'snapshot_prefix': '/home/luke/Desktop/project/make_tea/dlc/make_tea_multi-luke-2021-11-15/dlc-models/iteration-0/make_tea_multiNov11-trainset95shuffle1/train/snapshot',
+>>>>>>> origin/main
  'stride': 8.0,
  'weigh_negatives': False,
  'weigh_only_present_joints': False,
  'weigh_part_predictions': False,
  'weight_decay': 0.0001}
+<<<<<<< HEAD
 2021-12-30 19:07:17 Config:
+=======
+2022-01-14 20:32:30 Config:
+>>>>>>> origin/main
 {'all_joints': [[0], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11]],
  'all_joints_names': ['head',
                       'middle',
@@ -872,7 +896,11 @@
  'global_scale': 0.8,
  'histeq': True,
  'histeqratio': 0.1,
+<<<<<<< HEAD
  'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+=======
+ 'init_weights': '/home/luke/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+>>>>>>> origin/main
  'intermediate_supervision': False,
  'intermediate_supervision_layer': 12,
  'location_refinement': True,
@@ -887,7 +915,11 @@
  'metadataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_multiNov11/Documentation_data-make_tea_multi_95shuffle1.pickle',
  'min_input_size': 64,
  'mirror': False,
+<<<<<<< HEAD
  'multi_stage': True,
+=======
+ 'multi_stage': False,
+>>>>>>> origin/main
  'multi_step': [[0.0001, 7500], [5e-05, 12000], [1e-05, 200000]],
  'net_type': 'resnet_50',
  'num_idchannel': 0,
@@ -902,7 +934,11 @@
  'partaffinityfield_predict': True,
  'pos_dist_thresh': 17,
  'pre_resize': [],
+<<<<<<< HEAD
  'project_path': '/home/ychen/Desktop/make_tea/dlc/make_tea_multi-luke-2021-11-15',
+=======
+ 'project_path': '/home/luke/Desktop/project/make_tea/dlc/make_tea_multi-luke-2021-11-15',
+>>>>>>> origin/main
  'regularize': False,
  'rotation': 25,
  'rotratio': 0.4,
@@ -913,6 +949,7 @@
  'sharpen': False,
  'sharpenratio': 0.3,
  'shuffle': True,
+<<<<<<< HEAD
  'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_multi-luke-2021-11-15/dlc-models/iteration-0/make_tea_multiNov11-trainset95shuffle1/train/snapshot',
  'stride': 8.0,
  'weigh_negatives': False,
@@ -4973,6 +5010,9 @@
  'shuffle': True,
  'sigma': 1,
  'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_multi-luke-2021-11-15/dlc-models/iteration-0/make_tea_multiNov11-trainset95shuffle1/test/snapshot',
+=======
+ 'snapshot_prefix': '/home/luke/Desktop/project/make_tea/dlc/make_tea_multi-luke-2021-11-15/dlc-models/iteration-0/make_tea_multiNov11-trainset95shuffle1/train/snapshot',
+>>>>>>> origin/main
  'stride': 8.0,
  'weigh_negatives': False,
  'weigh_only_present_joints': False,
