@@ -6,13 +6,15 @@ multianimalproject: true
 identity: false
 
     # Project path (change when moving around)
-project_path: /home/luke/Desktop/project/make_tea/dlc/make_tea_01052022-luke_yinghan-2022-01-05
+project_path: /Users/luke/Desktop/project/make_tea/dlc/make_tea_01052022-luke_yinghan-2022-01-05
 
     # Annotation data set configuration (and individual video cropping parameters)
 video_sets:
-  /home/luke/Desktop/project/make_tea/camera-main/videos/1641420386/1641420386-left.mp4:
+  # /home/luke/Desktop/project/make_tea/camera-main/videos/1641420386/1641420386-left.mp4:
+  /Users/luke/Desktop/project/make_tea/camera-main/videos/1641420386/1641420386-left.mp4:
     crop: 0, 1920, 0, 1088
-  /home/luke/Desktop/project/make_tea/camera-main/videos/1641421641/1641421641-right.mp4:
+  # /home/luke/Desktop/project/make_tea/camera-main/videos/1641421641/1641421641-right.mp4:
+  /Users/luke/Desktop/project/make_tea/camera-main/videos/1641421641/1641421641-right.mp4:
     crop: 0, 1920, 0, 1088
 individuals:
 - individual1
@@ -27,8 +29,6 @@ bodyparts: MULTI!
 start: 0
 stop: 1
 numframes2pick: 100
-
-default_track_method: 'box'
 
     # Plotting configuration
 skeleton_color: black
@@ -59,3 +59,4 @@ corner2move2:
 - 50
 - 50
 move2corner: true
+default_track_method: box
