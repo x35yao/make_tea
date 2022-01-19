@@ -10,6 +10,7 @@ output_dir = './videos/'
 
 filenames = glob(input_dir + '*.pkl')
 for filename in filenames:
+    print(f'Processing {filename}')
     with open(filename, 'rb') as file:
         album = pkl.load(file)
     zed_r = np.array(album['ZED_R'])
