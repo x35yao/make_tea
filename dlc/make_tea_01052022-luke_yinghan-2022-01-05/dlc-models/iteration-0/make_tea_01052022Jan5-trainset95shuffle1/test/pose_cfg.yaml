@@ -43,5 +43,3 @@ partaffinityfield_graph:
 partaffinityfield_predict: true
 scoremap_dir: test
 sigma: 1
-paf_best:
-- 0
