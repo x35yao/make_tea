@@ -1,6 +1,12 @@
 import pandas as pd
 import numpy as np
 from glob import glob
+import os
+from matplotlib import pyplot as plt
+from deeplabcut.utils.video_processor import VideoProcessorCV as vp
+from  deeplabcut.utils import auxiliaryfunctions
+from skimage.draw import disk
+
 
 def normalize(x):
     norm = np.linalg.norm(x, axis = 1)
@@ -98,6 +104,44 @@ def remove_nans(df, remove_method = 'interpolation', kernel = 'x_linear', window
         return df_new
     return df
 
+def remove_nans_and_save(h5file, remove_method = 'interpolation', kernel = 'x_linear', window_size = 11):
+    '''
+    This function takes the .h5 file that containes detections of deeplabcut. Fill the nans and then save it.
+
+    h5file: path to the file that containes detections of deeplabcut.
+
+    nan_method: method to deal with the Nans in the dataframe. Options: 'drop', 'fill'
+                'drop': This will just drop all the rows that contain Nans
+                'fill': This will fill the Nans from previous non-Nan value if applicable. If there is no previous
+                        non-Nan value, it will fill the Nans from the following non-Nan value.
+                'ignore': Do nothing.
+                'interpolation': Use interpolation to fill the NaNs.
+    '''
+    df = pd.read_hdf(h5file)
+
+    dirname = os.path.dirname(h5file)
+    camera = os.path.basename(os.path.dirname(h5file))
+    vid_id = os.path.basename(os.path.dirname(dirname))
+    outputname = dirname+ '/' + vid_id + '-' + camera + '_' + remove_method +'.h5'
+
+    df_new = pd.DataFrame().reindex_like(df)
+
+
+    if remove_method == 'fill':
+        df = df.fillna(method = 'ffill').fillna(method = 'bfill') # get rid of NaNs
+    elif remove_method == 'drop':
+        df = df.dropna()
+    elif remove_method == 'ignore':
+        pass
+    elif remove_method =='interpolation':
+        for column in df.columns:
+            data = df[column]
+            df_new[column] = interpolation_for_nan(data, window_size, kernel)
+        return df_new
+    df_new = df
+    df_new.to_hdf(outputname, key ='df_without_nans')
+    return df_new
+
 def get_obj_trajectories(file_path, remove_method = 'interpolation'):
 
     '''
@@ -153,3 +197,46 @@ def get_obj_trajectories(file_path, remove_method = 'interpolation'):
                 df_new = pd.concat([frame, df_new], axis=1)
     df_new['time_stamp'] = df.index
     return df_new
+
+def create_video_with_h5file(config_path, video, h5file, surfix = None):
+    '''
+    This function create a new video with labels. Labels are from the h5file provided.
+
+    config_path: The config file of the dlc project.
+    video: The path to original video.
+    h5file: The .h5 file that contains the detections from dlc.
+    surfix: Usually it is the remove method to remove the nans. ('fill', 'interpolation', 'drop', 'ignore')
+
+    '''
+
+    cfg = auxiliaryfunctions.read_config(config_path)
+    dotsize = cfg["dotsize"]
+
+    file_name = os.path.splitext(video)[0]
+    if not surfix == None:
+        outputname = file_name + '_' + surfix +'.mp4'
+    else:
+        outputname = file_name + '_labeled.mp4'
+    df = pd.read_hdf(h5file)
+    bpts = [i for i in df.columns.get_level_values('bodyparts').unique()]
+    numjoints = len(bpts)
+
+    colorclass = plt.cm.ScalarMappable(cmap=cfg["colormap"])
+
+    C = colorclass.to_rgba(np.linspace(0, 1, numjoints))
+    colors = (C[:, :3] * 255).astype(np.uint8)
+    clip = vp(fname=video, sname=outputname, codec="mp4v")
+    ny, nx = clip.height(), clip.width()
+    for i in range(clip.nframes):
+        frame = clip.load_frame()
+        plt.imshow(frame)
+        fdata = df.loc[i]
+        det_indices= df.columns[::3]
+        for det_ind in det_indices:
+            ind = det_ind[:-1]
+            x = fdata[ind]['x']
+            y = fdata[ind]['y']
+            rr, cc = disk((y, x), dotsize, shape=(ny, nx))
+            frame[rr, cc] = colors[bpts.index(det_ind[2])]
+        clip.save_frame(frame)
+    clip.close()
