@@ -88,6 +88,8 @@ def remove_nans(df, remove_method = 'interpolation', kernel = 'x_linear', window
                 'ignore': Do nothing.
                 'interpolation': Use interpolation to fill the NaNs.
     '''
+    if isinstance(df, str):
+        df = pd.read_hdf(df)
     df_new = pd.DataFrame().reindex_like(df)
 
 
@@ -104,7 +106,7 @@ def remove_nans(df, remove_method = 'interpolation', kernel = 'x_linear', window
         return df_new
     return df
 
-def remove_nans_and_save(h5file, remove_method = 'interpolation', kernel = 'x_linear', window_size = 11):
+def remove_nans_and_save(h5file, remove_method = 'interpolation', kernel = 'x_linear', window_size = 5):
     '''
     This function takes the .h5 file that containes detections of deeplabcut. Fill the nans and then save it.
 
@@ -122,7 +124,10 @@ def remove_nans_and_save(h5file, remove_method = 'interpolation', kernel = 'x_li
     dirname = os.path.dirname(h5file)
     camera = os.path.basename(os.path.dirname(h5file))
     vid_id = os.path.basename(os.path.dirname(dirname))
-    outputname = dirname+ '/' + vid_id + '-' + camera + '_' + remove_method +'.h5'
+    if remove_method != 'interpolation':
+        outputname = dirname+ '/' + vid_id + '-' + camera + '_' + remove_method +'.h5'
+    else:
+        outputname = dirname+ '/' + vid_id + '-' + camera + '_' + kernel +'.h5'
 
     df_new = pd.DataFrame().reindex_like(df)
 
@@ -137,10 +142,11 @@ def remove_nans_and_save(h5file, remove_method = 'interpolation', kernel = 'x_li
         for column in df.columns:
             data = df[column]
             df_new[column] = interpolation_for_nan(data, window_size, kernel)
-        return df_new
-    df_new = df
-    df_new.to_hdf(outputname, key ='df_without_nans')
-    return df_new
+        df_new.to_hdf(outputname, key ='df_without_nans')
+
+        return df_new, outputname
+    df.to_hdf(outputname, key ='df_without_nans')
+    return df_new, outputname
 
 def get_obj_trajectories(file_path, remove_method = 'interpolation'):
 
@@ -240,3 +246,11 @@ def create_video_with_h5file(config_path, video, h5file, surfix = None):
             frame[rr, cc] = colors[bpts.index(det_ind[2])]
         clip.save_frame(frame)
     clip.close()
+
+def create_video_without_nans(config, video, h5file, remove_method, kernel = 'x_linear', window_size = 3):
+    df_new, newh5file = remove_nans_and_save(h5file, remove_method = remove_method, kernel = kernel, window_size = window_size)
+    if remove_method != 'interpolation':
+        surfix = remove_method
+    else:
+        surfix = kernel
+    create_video_with_h5file(config, video, newh5file, surfix = surfix)
