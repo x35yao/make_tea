@@ -10,6 +10,7 @@ output_dir = './videos/'
 
 filenames = glob(input_dir + '*.pkl')
 for filename in filenames:
+    print(f'Processing {filename}')
     with open(filename, 'rb') as file:
         album = pkl.load(file)
     zed_r = np.array(album['ZED_R'])
@@ -24,8 +25,8 @@ for filename in filenames:
         Path(output_dir + video_ind).mkdir(exist_ok = False)
     except FileExistsError:
         print(output_dir + video_ind + 'already exists')
-    video_name_left = output_dir + video_ind + '/'+ video_ind + '-left.mp4'
-    video_name_right = output_dir + video_ind + '/' + video_ind + '-right.mp4'
+    video_name_left = output_dir + video_ind + '/'+ 'left/' + video_ind + '-left.mp4'
+    video_name_right = output_dir + video_ind + '/' + 'right/ + 'video_ind + '-right.mp4'
 
 
     imageio.mimwrite(video_name_left, zed_l , fps = 20)

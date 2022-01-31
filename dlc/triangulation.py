@@ -19,6 +19,7 @@ from tqdm import tqdm
 
 from deeplabcut.utils import auxiliaryfunctions
 from deeplabcut.utils import auxiliaryfunctions_3d
+from deeplabcut.utils import auxfun_multianimal
 
 matplotlib_axes_logger.setLevel("ERROR")
 
@@ -140,6 +141,13 @@ def triangulate(
 
                 config_2d = snapshots[cam_names[j]]
                 cfg = auxiliaryfunctions.read_config(config_2d)
+                track_method = auxfun_multianimal.get_track_method(cfg)
+                if track_method == "ellipse":
+                    method = "el"
+                elif track_method == "box":
+                    method = "bx"
+                else:
+                    method = "sk"
                 shuffle = cfg_3d[str("shuffle_" + cam_names[j])]
 
                 trainingsetindex = cfg_3d[str("trainingsetindex_" + cam_names[j])]
@@ -263,7 +271,7 @@ def triangulate(
                             )
 
                         dataname.append(
-                            os.path.join(destfolder, vname + DLCscorer + ".h5")
+                            os.path.join(destfolder, vname + DLCscorer + "_" + method + ".h5")
                         )
 
                 else:  # need to do the whole jam.
@@ -290,7 +298,7 @@ def triangulate(
                             destfolder=destfolder,
                         )
                         dataname.append(
-                            os.path.join(destfolder, vname + DLCscorer + ".h5")
+                            os.path.join(destfolder, vname + DLCscorer + "_" + method +  ".h5")
                         )
 
         if run_triangulate:
