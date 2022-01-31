@@ -16,9 +16,9 @@ import torch.backends.cudnn as cudnn
 import torch.optim as optim
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
-from retrain.LEAStereo import LEAStereo 
+from retrain.LEAStereo import LEAStereo
 
-from config_utils.predict_args import obtain_predict_args
+from config_utils.predict_args import obtain_predict_args, defaultConfig
 from utils.multadds_count import count_parameters_in_MB, comp_multadds
 from time import time
 from struct import unpack
@@ -29,8 +29,7 @@ import numpy as np
 import pdb
 from path import Path
 
-opt = obtain_predict_args()
-print(opt)
+opt = defaultConfig()
 
 torch.backends.cudnn.benchmark = True
 
@@ -44,7 +43,7 @@ model = LEAStereo(opt)
 print('Total Params = %.2fMB' % count_parameters_in_MB(model))
 print('Feature Net Params = %.2fMB' % count_parameters_in_MB(model.feature))
 print('Matching Net Params = %.2fMB' % count_parameters_in_MB(model.matching))
-   
+
 mult_adds = comp_multadds(model, input_size=(3,opt.crop_height, opt.crop_width)) #(3,192, 192))
 print("compute_average_flops_cost = %.2fMB" % mult_adds)
 
@@ -55,7 +54,7 @@ if opt.resume:
     if os.path.isfile(opt.resume):
         print("=> loading checkpoint '{}'".format(opt.resume))
         checkpoint = torch.load(opt.resume)
-        model.load_state_dict(checkpoint['state_dict'], strict=True)      
+        model.load_state_dict(checkpoint['state_dict'], strict=True)
     else:
         print("=> no checkpoint found at '{}'".format(opt.resume))
 
@@ -63,11 +62,11 @@ if opt.resume:
 def test_transform(temp_data, crop_height, crop_width):
     _, h, w=np.shape(temp_data)
 
-    if h <= crop_height and w <= crop_width: 
-        # padding zero 
+    if h <= crop_height and w <= crop_width:
+        # padding zero
         temp = temp_data
         temp_data = np.zeros([6, crop_height, crop_width], 'float32')
-        temp_data[:, crop_height - h: crop_height, crop_width - w: crop_width] = temp    
+        temp_data[:, crop_height - h: crop_height, crop_width - w: crop_width] = temp
     else:
         start_x = int((w - crop_width) / 2)
         start_y = int((h - crop_height) / 2)
@@ -81,7 +80,7 @@ def test_transform(temp_data, crop_height, crop_width):
 def load_data(leftname, rightname):
     left = np.array(Image.open(leftname))
     right = np.array(Image.open(rightname))
-    im_height, im_width, _ = left.shape 
+    im_height, im_width, _ = left.shape
     left = skimage.transform.rescale(left, (opt.crop_height/im_height, opt.crop_width/im_width, 1))
     right = skimage.transform.rescale(right, (opt.crop_height/im_height, opt.crop_width/im_width, 1))
     size = np.shape(left)
@@ -98,7 +97,7 @@ def load_data(leftname, rightname):
     temp_data[2, :, :] = (b - np.mean(b[:])) / np.std(b[:])
     r = right[:, :, 0]
     g = right[:, :, 1]
-    b = right[:, :, 2]	
+    b = right[:, :, 2]
     #r,g,b,_ = right.split()
     temp_data[3, :, :] = (r - np.mean(r[:])) / np.std(r[:])
     temp_data[4, :, :] = (g - np.mean(g[:])) / np.std(g[:])
@@ -106,28 +105,7 @@ def load_data(leftname, rightname):
     return temp_data
 
 
-def test_kitti(leftname, rightname, savename):
-    input1, input2, height, width = test_transform(load_data(leftname, rightname), opt.crop_height, opt.crop_width)
- 
-    input1 = Variable(input1, requires_grad = False)
-    input2 = Variable(input2, requires_grad = False)
-
-    model.eval()
-    if cuda:
-        input1 = input1.cuda()
-        input2 = input2.cuda()
-    with torch.no_grad():        
-        prediction = model(input1, input2)
-        
-    temp = prediction.cpu()
-    temp = temp.detach().numpy()
-    if height <= opt.crop_height and width <= opt.crop_width:
-        temp = temp[0, opt.crop_height - height: opt.crop_height, opt.crop_width - width: opt.crop_width]
-    else:
-        temp = temp[0, :, :]
-    skimage.io.imsave(savename, (temp * 256).astype('uint16'))
-
-def getDisparityMap(leftname, rightname):  
+def getDisparityMap(leftname, rightname):
     input1, input2, height, width = test_transform(load_data(leftname, rightname), opt.crop_height, opt.crop_width)
 
     input1 = Variable(input1, requires_grad = False)
@@ -142,7 +120,7 @@ def getDisparityMap(leftname, rightname):
     with torch.no_grad():
         prediction = model(input1, input2)
     end_time = time()
-    
+
     print("Processing time: {:.4f}".format(end_time - start_time))
     temp = prediction.cpu()
     temp = temp.detach().numpy()
@@ -150,13 +128,7 @@ def getDisparityMap(leftname, rightname):
         temp = temp[0, opt.crop_height - height: opt.crop_height, opt.crop_width - width: opt.crop_width]
     else:
         temp = temp[0, :, :]
-#     plot_disparity(savename, temp, 192)
-#     savename_pfm = savename.replace('png','pfm') 
-#     temp = np.flipud(temp)
     return temp
-
-def plot_disparity(savename, data, max_disp):
-    plt.imsave(savename, data, vmin=0, vmax=max_disp, cmap='turbo')
 
 
 if __name__ == "__main__":
@@ -172,9 +144,5 @@ if __name__ == "__main__":
                 os.makedirs(save_dir)
             if opt.sceneflow:
                 save_file = os.path.join(save_dir, "{}_disp.npy".format(frame.split('.')[0]))
-                disp_map = getDisparityMap(left_file, right_file)
-                np.save(save_file, disp_map)
-            if opt.kitti2015:
-                save_file = os.path.join(save_dir,"{}_disp_kitti.npy".format(frame.split('.')[0]))
                 disp_map = getDisparityMap(left_file, right_file)
                 np.save(save_file, disp_map)

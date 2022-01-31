@@ -31,3 +31,28 @@ def obtain_predict_args():
 
     args = parser.parse_args()
     return args
+
+class defaultConfig():
+    def __init__(self):
+        self.crop_height = 576
+        self.crop_width=960
+        self.maxdisp=192
+        self.resume='./run/sceneflow/best/checkpoint/best.pth'
+        self.cuda=True
+        self.sceneflow=1
+
+        self.data_path='./dataset/'
+        self.save_path='./dataset/'
+        ######### LEStereo params####################
+        self.fea_num_layers=6
+        self.mat_num_layers=12
+        self.fea_filter_multiplier=8
+        self.mat_filter_multiplier=8
+        self.fea_block_multiplier=4
+        self.mat_block_multiplier=4
+        self.fea_step=3
+        self.mat_step=3
+        self.net_arch_fea='run/sceneflow/best/architecture/feature_network_path.npy'
+        self.cell_arch_fea='run/sceneflow/best/architecture/feature_genotype.npy'
+        self.net_arch_mat='run/sceneflow/best/architecture/matching_network_path.npy'
+        self.cell_arch_mat='run/sceneflow/best/architecture/matching_genotype.npy'

@@ -68,20 +68,14 @@ def pixelTo3DCameraCoord(left_img, disp_map, coords):
     result_coords = []
     img_dims, disp_dims = left_img.shape, disp_map.shape
     fixed_ratios = [img_dims[dim]/disp_dims[dim] for dim in range(2)]
-   
-    coord, confid = coords['coordinates'][0], coords['confidence']
-    
-    for k, _ in enumerate(coord):
-        confid_k = list(np.reshape(confid[k], (-1)))
-        best_index = confid_k.index(max(confid_k))
-        pix = coord[k][best_index]
+    for _, pix in enumerate(coords):
         # Different ordering of dims between coordinate and images fixed here.
         if len(pix) == 0: continue
         x_l, y_l = (int(i) for dim, i in enumerate(pix))
         d_x, d_y = pix[0]/fixed_ratios[1], pix[1]/fixed_ratios[0]
         d = pixelInterpolation(d_x, d_y, disp_map)*fixed_ratios[1]
         x_r = int(x_l - d)
-        
+      
         # Z is the depth from camera center in cm and X, Y for the other 2 axis.
         Z = BASELINE*FOCAL_LENGTH/(d*PIXEL_LENGTH)
         X, Y = (x_l - img_dims[1]/2)*PIXEL_LENGTH*Z/FOCAL_LENGTH, (y_l - img_dims[0]/2)*PIXEL_LENGTH*Z/FOCAL_LENGTH
@@ -109,8 +103,14 @@ def LEAStereoCoordinate(l_img_path, disp_path, l_data):
             disp_file = "frame{}_disp.npy".format(correspond_id)
             im_disp = np.load(disp_path + disp_file)
             im_l = imageio.imread(l_img_path + img_file)
-            frame_coordinates = l_data[framename]
-            coordinate3D[framename] = pixelTo3DCameraCoord(im_l, im_disp, frame_coordinates)
+            frame_coord = l_data[framename]
+            best_pixels = []
+            coord, confid = frame_coord['coordinates'][0], frame_coord['confidence']
+            for k, _ in enumerate(coord):
+                confid_k = list(np.reshape(confid[k], (-1)))
+                best_index = confid_k.index(max(confid_k))
+                best_pixels.append(coord[k][best_index])
+            coordinate3D[framename] = pixelTo3DCameraCoord(im_l, im_disp, best_pixels)
     return coordinate3D
 
 def getMeasurements(model_pos): 
@@ -145,7 +145,6 @@ def consistencyLoss(vectors):
         for point in frame:
             sum_vectors.append(np.linalg.norm(point))
     norm_val = mean(sum_vectors)
-    print(norm_val)
     for i, cur_vectors in enumerate(vectors):
         before_set, after_set = vectors[:i], vectors[i+1:]
         for j, _ in enumerate(cur_vectors):
@@ -163,7 +162,6 @@ def consistencyLoss(vectors):
                 for obj_vectors in after_set[1:]:
                     actual_vector = [actual_vector[k] + sub_vector/norm_val for k, sub_vector in enumerate(obj_vectors[j])]
                 actual_vectors = actual_vectors + actual_vector
-#     print(scaled_step_set, multi_step_set_flatten)
     return mean_squared_error(actual_vectors, scaled_vectors)
         
     
