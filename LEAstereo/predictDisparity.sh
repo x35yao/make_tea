@@ -1,5 +1,5 @@
 CUDA_VISIBLE_DEVICES=0 python predictDepth.py \
-                --kitti2015=1    --maxdisp=192 \
+                --sceneflow=1    --maxdisp=192 \
                 --crop_height=576  --crop_width=960  \
                 --data_path='./dataset/testing/' \
                 --save_path='./results/' \
