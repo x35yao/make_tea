@@ -2,12 +2,13 @@ import pandas as pd
 import numpy as np
 from glob import glob
 import os
-from matplotlib import pyplot as plt
-from deeplabcut.utils.video_processor import VideoProcessorCV as vp
 from  deeplabcut.utils import auxiliaryfunctions,auxfun_multianimal
-from skimage.draw import disk
 from scipy.interpolate import interp1d
 from pathlib import Path
+import deeplabcut
+from deeplabcut.refine_training_dataset.outlier_frames import FitSARIMAXModel
+from scipy import signal
+
 
 
 def normalize(x):
@@ -252,11 +253,11 @@ def columnwise_interp(data, filtertype, max_gap=0):
     return temp
 
 def interpolate_data(config,
-    video,
-    videotype=".mp4",
+    videos,
+    videotype="mp4",
     shuffle=1,
     trainingsetindex=0,
-    filtertype="median",
+    filtertype="linear",
     windowlength=5,
     p_bound=0.001,
     ARdegree=3,
@@ -276,27 +277,43 @@ def interpolate_data(config,
         trainFraction=cfg["TrainingFraction"][trainingsetindex],
         modelprefix=modelprefix,
     )
-    Videos = auxiliaryfunctions.Getlistofvideos(video, videotype)
 
-    if not len(Videos):
-        print("No video(s) were found. Please check your paths and/or 'video_type'.")
-        return
     outputnames = []
-    for video in Videos:
+    for video in videos:
         if destfolder is None:
-            destfolder = str(Path(video).parents[0])
-
-            print("Filtering with %s model %s" % (filtertype, video))
-            vname = Path(video).stem
+            vid_folder = os.path.dirname(video)
+        print("Filtering with %s model %s" % (filtertype, video))
+        vname = Path(video).stem
         try:
             df, filepath, _, _ = auxiliaryfunctions.load_analyzed_data(
-                destfolder, vname, DLCscorer, track_method=track_method
+                vid_folder, vname, DLCscorer, track_method=track_method
             )
-            if filtertype in ['median','arima']:
-                deeplabcut.filterpredictions(config, video, videotype, filtertype = filtertype,
-                                             windowlength = windowlength, ARdegree = ARdegree, MAdegree = MAdegree)
-                outdataname = filepath.replace(".h5", f"_filtered_{filtertype}.h5")
-                outputnames.append(outdataname)
+            if filtertype == 'arima':
+                temp = df.values.reshape((nrows, -1, 3))
+                placeholder = np.empty_like(temp)
+                for i in range(temp.shape[1]):
+                    x, y, p = temp[:, i].T
+
+                    meanx, _ = FitSARIMAXModel(
+                        x, p, p_bound, alpha, ARdegree, MAdegree, False
+                    )
+                    meany, _ = FitSARIMAXModel(
+                        y, p, p_bound, alpha, ARdegree, MAdegree, False
+                    )
+                    meanx[0] = x[0]
+                    meany[0] = y[0]
+                    placeholder[:, i] = np.c_[meanx, meany, p]
+                data = pd.DataFrame(
+                    placeholder.reshape((nrows, -1)),
+                    columns=df.columns,
+                    index=df.index,
+                )
+            elif filtertype == "median":
+                data = df.copy()
+                mask = data.columns.get_level_values("coords") != "likelihood"
+                data.loc[:, mask] = df.loc[:, mask].apply(
+                    signal.medfilt, args=(windowlength,), axis=0
+                )
             else:
                 nrows = df.shape[0]
                 data = df.copy()
@@ -315,81 +332,29 @@ def interpolate_data(config,
                     prob[inds[:, 0], inds[:, 1]] = 0.01
                     data.loc[:, ~mask_data] = prob
                 data.loc[:, mask_data] = xy
-                outdataname = filepath.replace(".h5", f"_filtered_{filtertype}.h5")
-                data.to_hdf(outdataname, "df_with_missing", format="table", mode="w")
-                print(f'The h5 file is saved at: {outdataname}')
-                if save_as_csv:
-                    print("Saving filtered csv poses!")
-                    data.to_csv(outdataname.split(".h5")[0] + ".csv")
-                outputnames.append(outdataname)
+            outdataname = video.replace('.mp4', f'_{filtertype}.h5')
+            data.to_hdf(outdataname, "df_with_missing", format="table", mode="w")
+            print(f'The h5 file is saved at: {outdataname}')
+            if save_as_csv:
+                print("Saving filtered csv poses!")
+                data.to_csv(outdataname.split(".h5")[0] + ".csv")
+            outputnames.append(outdataname)
         except FileNotFoundError as e:
             print(e)
             continue
     return outputnames
 
-def create_video_with_h5file(config_path, video, h5file, surfix = None):
-    '''
-    This function create a new video with labels. Labels are from the h5file provided.
 
-    config_path: The config file of the dlc project.
-    video: The path to original video.
-    h5file: The .h5 file that contains the detections from dlc.
-    surfix: Usually it is the remove method to remove the nans. ('fill', 'interpolation', 'drop', 'ignore')
-
-    '''
-
-    cfg = auxiliaryfunctions.read_config(config_path)
-    dotsize = cfg["dotsize"]
-
-    file_name = os.path.splitext(video)[0]
-    if not surfix == None:
-        outputname = file_name + '_' + surfix +'.mp4'
-    else:
-        outputname = file_name + '_labeled.mp4'
-    df = pd.read_hdf(h5file)
-    bpts = [i for i in df.columns.get_level_values('bodyparts').unique()]
-    numjoints = len(bpts)
-
-    colorclass = plt.cm.ScalarMappable(cmap=cfg["colormap"])
-
-    C = colorclass.to_rgba(np.linspace(0, 1, numjoints))
-    colors = (C[:, :3] * 255).astype(np.uint8)
-    clip = vp(fname=video, sname=outputname, codec="mp4v")
-    ny, nx = clip.height(), clip.width()
-    for i in range(clip.nframes):
-        frame = clip.load_frame()
-        plt.imshow(frame)
-        fdata = df.loc[i]
-        det_indices= df.columns[::3]
-        for det_ind in det_indices:
-            ind = det_ind[:-1]
-            x = fdata[ind]['x']
-            y = fdata[ind]['y']
-            rr, cc = disk((y, x), dotsize, shape=(ny, nx))
-            frame[rr, cc] = colors[bpts.index(det_ind[2])]
-        clip.save_frame(frame)
-    clip.close()
-    print(f'Video is saved at {outputname}')
-
-def create_interpolated_video(config_path,
-    video,
-    videotype="avi",
-    shuffle=1,
-    trainingsetindex=0,
-    filtertype="median",
-    windowlength=5,
-    p_bound=0.001,
-    ARdegree=3,
-    MAdegree=1,
-    alpha=0.01,
-    save_as_csv=False,
-    destfolder=None,
-    modelprefix="",
-    track_method="",):
-
-    h5files = interpolate_data(config_path, video, filtertype = filtertype, windowlength = windowlength, ARdegree = ARdegree, MAdegree= MAdegree)
-    for h5file in h5files:
-        create_video_with_h5file(config_path, video, h5file, surfix = filtertype)
+def combine_h5files(objs, video, suffix, to_csv = True):
+    df_new = pd.DataFrame
+    video_dir = os.path.dirname(video)
+    for obj in objs:
+        h5file = glob(video_dir + '/' + f'*obj*_{suffix}.h5')
+        df = pd.read_hdf(h5file)
+        pd.concat([df_new, df], axis = 1)
+    df_new.to_hdf('combined.h5', key = 'combined_data')
+    if to_csv:
+        df_new.to_csv('combined.csv')
 
 
 # def create_video_without_nans(config, video, h5file, remove_method, kernel = 'x_linear', window_size = 3):
