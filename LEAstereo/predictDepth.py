@@ -77,12 +77,10 @@ def test_transform(temp_data, crop_height, crop_width):
     right[0, :, :, :] = temp_data[3: 6, :, :]
     return torch.from_numpy(left).float(), torch.from_numpy(right).float(), h, w
 
-def load_data(leftname, rightname):
-    left = np.array(Image.open(leftname))
-    right = np.array(Image.open(rightname))
-    im_height, im_width, _ = left.shape
-    left = skimage.transform.rescale(left, (opt.crop_height/im_height, opt.crop_width/im_width, 1))
-    right = skimage.transform.rescale(right, (opt.crop_height/im_height, opt.crop_width/im_width, 1))
+def normalize(left_im, right_im):
+    im_height, im_width, _ = left_im.shape
+    left = skimage.transform.rescale(left_im, (opt.crop_height/im_height, opt.crop_width/im_width, 1))
+    right = skimage.transform.rescale(right_im, (opt.crop_height/im_height, opt.crop_width/im_width, 1))
     size = np.shape(left)
     height = size[0]
     width = size[1]
@@ -105,8 +103,8 @@ def load_data(leftname, rightname):
     return temp_data
 
 
-def getDisparityMap(leftname, rightname):
-    input1, input2, height, width = test_transform(load_data(leftname, rightname), opt.crop_height, opt.crop_width)
+def getDisparityMap(left_im, right_im):
+    input1, input2, height, width = test_transform(normalize(left_im, right_im), opt.crop_height, opt.crop_width)
 
     input1 = Variable(input1, requires_grad = False)
     input2 = Variable(input2, requires_grad = False)
