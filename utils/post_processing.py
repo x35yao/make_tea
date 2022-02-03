@@ -257,8 +257,8 @@ def interpolate_data(config,
     videotype="mp4",
     shuffle=1,
     trainingsetindex=0,
-    filtertype="linear",
-    windowlength=5,
+    filtertypes="linear",
+    windowlengths=0,
     p_bound=0.001,
     ARdegree=3,
     MAdegree=1,
@@ -282,57 +282,64 @@ def interpolate_data(config,
     for video in videos:
         if destfolder is None:
             vid_folder = os.path.dirname(video)
-        print("Filtering with %s model %s" % (filtertype, video))
+
         vname = Path(video).stem
         try:
             df, filepath, _, _ = auxiliaryfunctions.load_analyzed_data(
                 vid_folder, vname, DLCscorer, track_method=track_method
             )
-            if filtertype == 'arima':
-                temp = df.values.reshape((nrows, -1, 3))
-                placeholder = np.empty_like(temp)
-                for i in range(temp.shape[1]):
-                    x, y, p = temp[:, i].T
-
-                    meanx, _ = FitSARIMAXModel(
-                        x, p, p_bound, alpha, ARdegree, MAdegree, False
-                    )
-                    meany, _ = FitSARIMAXModel(
-                        y, p, p_bound, alpha, ARdegree, MAdegree, False
-                    )
-                    meanx[0] = x[0]
-                    meany[0] = y[0]
-                    placeholder[:, i] = np.c_[meanx, meany, p]
-                data = pd.DataFrame(
-                    placeholder.reshape((nrows, -1)),
-                    columns=df.columns,
-                    index=df.index,
-                )
-            elif filtertype == "median":
-                data = df.copy()
-                mask = data.columns.get_level_values("coords") != "likelihood"
-                data.loc[:, mask] = df.loc[:, mask].apply(
-                    signal.medfilt, args=(windowlength,), axis=0
-                )
+            data = df.copy()
+            if not isinstance(filtertypes, list):
+                outdataname = video.replace('.mp4', f'_{filtertype}.h5')
+                filtertypes = [filtertypes]
             else:
-                nrows = df.shape[0]
-                data = df.copy()
-                mask_data = data.columns.get_level_values("coords").isin(("x", "y"))
-                xy = data.loc[:, mask_data].values
-                prob = data.loc[:, ~mask_data].values
-                missing = np.isnan(xy)
-                xy_filled = columnwise_interp(xy, filtertype, windowlength)
-                filled = ~np.isnan(xy_filled)
-                xy[filled] = xy_filled[filled]
-                inds = np.argwhere(missing & filled)
-                if inds.size:
-                    # Retrieve original individual label indices
-                    inds[:, 1] //= 2
-                    inds = np.unique(inds, axis=0)
-                    prob[inds[:, 0], inds[:, 1]] = 0.01
-                    data.loc[:, ~mask_data] = prob
-                data.loc[:, mask_data] = xy
-            outdataname = video.replace('.mp4', f'_{filtertype}.h5')
+                suffix = '_'.join(filtertypes)
+                outdataname = video.replace('.mp4', f'_{suffix}.h5')
+            for i, filtertype in enumerate(filtertypes):
+                windowlength = windowlengths[i]
+                print("Filtering with %s model %s" % (filtertype, video))
+                if filtertype == 'arima':
+                    temp = df.values.reshape((nrows, -1, 3))
+                    placeholder = np.empty_like(temp)
+                    for i in range(temp.shape[1]):
+                        x, y, p = temp[:, i].T
+
+                        meanx, _ = FitSARIMAXModel(
+                            x, p, p_bound, alpha, ARdegree, MAdegree, False
+                        )
+                        meany, _ = FitSARIMAXModel(
+                            y, p, p_bound, alpha, ARdegree, MAdegree, False
+                        )
+                        meanx[0] = x[0]
+                        meany[0] = y[0]
+                        placeholder[:, i] = np.c_[meanx, meany, p]
+                    data = pd.DataFrame(
+                        placeholder.reshape((nrows, -1)),
+                        columns=df.columns,
+                        index=df.index,
+                    )
+                elif filtertype == "median":
+                    mask = data.columns.get_level_values("coords") != "likelihood"
+                    data.loc[:, mask] = df.loc[:, mask].apply(
+                        signal.medfilt, args=(windowlength,), axis=0
+                    )
+                else:
+                    nrows = df.shape[0]
+                    mask_data = data.columns.get_level_values("coords").isin(("x", "y"))
+                    xy = data.loc[:, mask_data].values
+                    prob = data.loc[:, ~mask_data].values
+                    missing = np.isnan(xy)
+                    xy_filled = columnwise_interp(xy, filtertype, windowlength)
+                    filled = ~np.isnan(xy_filled)
+                    xy[filled] = xy_filled[filled]
+                    inds = np.argwhere(missing & filled)
+                    if inds.size:
+                        # Retrieve original individual label indices
+                        inds[:, 1] //= 2
+                        inds = np.unique(inds, axis=0)
+                        prob[inds[:, 0], inds[:, 1]] = 0.01
+                        data.loc[:, ~mask_data] = prob
+                    data.loc[:, mask_data] = xy
             data.to_hdf(outdataname, "df_with_missing", format="table", mode="w")
             print(f'The h5 file is saved at: {outdataname}')
             if save_as_csv:

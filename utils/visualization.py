@@ -73,10 +73,13 @@ def create_video_with_h5file(config_path, video, h5file, suffix = None):
 
     file_name = os.path.splitext(video)[0]
     if not suffix == None:
+        if isinstance(suffix, list):
+            suffix = '_'.join(suffix)
         outputname = file_name + '_' + suffix +'.mp4'
     else:
         outputname = file_name + '_labeled.mp4'
     df = pd.read_hdf(h5file)
+
     bpts = [i for i in df.columns.get_level_values('bodyparts').unique()]
     numjoints = len(bpts)
 
