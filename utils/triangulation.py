@@ -199,7 +199,8 @@ def triangulate(
         filename =  os.path.basename(h5files[0])
         kernels = filename.split('.')[0].split('_')[1:]
         suffix = '_'.join(kernels)
-        output_filename = destfolder + f'/make_tea3D_{suffix}'
+        vid_id = os.path.basename(destfolder)
+        output_filename = destfolder + f'/{vid_id}_3D_{suffix}_dlc'
         df_3d.to_hdf(
             str(output_filename + ".h5"),
             "df_with_missing",

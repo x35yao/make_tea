@@ -1,41 +1,23 @@
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
-def get_velocity(x):
-    v = np.zeros_like(x)
-    for i, data in enumerate(x):
-        if i == 0:
-            v[i] = np.nan
-        else:
-            v[i] = x[i] - x[i - 1]
-    return v
-
-def get_acceleration(v):
-    a = np.zeros_like(v)
-    for i, data in enumerate(v):
-        if i == 0 or i == 1:
-            a[i] = np.nan
-        else:
-            a[i] = v[i] - v[i - 1]
-    return a
+# def get_velocity(x):
+#     v = np.diff(x)
+#     return np.r_[np.nan, v]
+#
+# def get_acceleration(v):
+#     a = np.diff(v)
+#     return np.r_[np.nan, a]
 
 
-def get_gradient(x, data_type = 'trajectory'):
-    assert data_type in ['trajectory', 'velocity', 'acceleration'], 'Data type has to be trajectory, velocity or acceleration'
-    x_shift = np.roll(x, 1)
-    x_p = x_shift - x
-    if data_type == 'trajectory':
-        x_p[0] = np.nan
-    elif data_type == 'velocity':
-        x_p[0:2] = np.nan
-    elif data_type == 'accleration':
-        x_p[0:3] = np.nan
-    return x_p
+def get_gradient(x):
+    x_p = np.diff(x)
+    return np.r_[np.nan, x_p]
 
 def get_kinematics(x):
     v = get_gradient(x)
-    a = get_gradient(v, data_type = 'velocity')
-    a_p = get_gradient(a, data_type = 'acceleration')
+    a = get_gradient(v)
+    a_p = get_gradient(a)
 
     return v, a, a_p
 
@@ -50,6 +32,7 @@ def get_interpolation(x, t, window_size, kernel, direction = 'forward'):
                      'a_linear': The acceleration is assumed linear.
 
     '''
+    assert kernel in['x_linear', 'v_linear', 'a_linear', 'a_p_linear'], 'Invalid kernel'
     if direction == 'backward':
         x = np.flip(x)
 
@@ -141,9 +124,9 @@ def get_error(x,t,window_size, kernel):
 
 def get_error_total(df, obj, window_size, kernel):
 
-    x = df[obj]['x'].values
-    y = df[obj]['y'].values
-    z = df[obj]['z'].values
+    x = df[obj]['X'].values
+    y = df[obj]['Y'].values
+    z = df[obj]['Z'].values
     t = df['time_stamp'].values
 
     error_x = get_error(x, t, window_size, kernel)

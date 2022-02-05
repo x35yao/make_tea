@@ -19,12 +19,8 @@ def get_pos_mean(df, bodyparts):
     '''
     Given the trajectories of different bodyparts, get the average object postion.
     '''
-    n_data = len(df)
-    n_bodyparts = len(bodyparts)
-    pos_mean = np.zeros((n_data, 3))
-    for bp in bodyparts:
-        pos_mean += df[bp].values
-    return pos_mean/n_bodyparts
+    pos_mean = df.mean(axis = 1, level = 'coords')
+    return pos_mean
 
 
 def get_ori_mean(df, bodyparts):
@@ -36,13 +32,18 @@ def get_ori_mean(df, bodyparts):
     n_pairs = int(n_bodyparts/2)
     ori_mean = np.zeros((n_data, 3))
 
-    for i in range(n_pairs):
-        bp_h = bodyparts[i]
-        bp_t = bodyparts[-(i+1)]
-        if not bp_h == bp_t:
-            ori_mean += normalize((df[bp_h].values - df[bp_t].values))
-
-    return normalize(ori_mean)
+    # for i in range(n_pairs):
+    #     bp_h = bodyparts[i]
+    #     bp_t = bodyparts[-(i+1)]
+    #     if not bp_h == bp_t:
+    #         ori_mean += normalize((df[bp_h].values - df[bp_t].values))
+    #         print(ori_mean[:20])
+    #         raise
+    bp_h = bodyparts[0]
+    bp_t = bodyparts[-1]
+    if not bp_h == bp_t:
+        ori_mean = normalize((df[bp_h].values - df[bp_t].values))
+    return ori_mean
 
 # def interpolation_for_nan(df, window_size, kernel):
 #     '''
@@ -165,9 +166,9 @@ def get_obj_trajectories(file_path, remove_method = 'interpolation'):
                         non-Nan value, it will fill the Nans from the following non-Nan value.
     '''
 
-    df_with_nans = pd.read_hdf(file_path)
+    df= pd.read_hdf(file_path)
 
-    df = remove_nans(df_with_nans, remove_method = remove_method)
+    # df = remove_nans(df_with_nans, remove_method = remove_method)
 
     scorer = df.columns.get_level_values('scorer').unique()[0]
     individuals = df.columns.get_level_values('individuals').unique()
@@ -320,7 +321,7 @@ def interpolate_data(config,
                     )
                 elif filtertype == "median":
                     mask = data.columns.get_level_values("coords") != "likelihood"
-                    data.loc[:, mask] = df.loc[:, mask].apply(
+                    data.loc[:, mask] = data.loc[:, mask].apply(
                         signal.medfilt, args=(windowlength,), axis=0
                     )
                 else:

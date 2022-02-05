@@ -1,4 +1,4 @@
-from .post_processing import interpolate_data
+import post_processing
 import cv2
 from glob import glob
 from matplotlib import pyplot as plt
@@ -13,27 +13,9 @@ import numpy as np
 # import argparse
 
 def browse_video_frame(video_path, index):
-    # Initialize parser
-    # parser = argparse.ArgumentParser()
-    #
-    # # Adding optional argument
-    #
-    # parser.add_argument('video_path',type=str,
-    #                     help='the video to look at')
-    #
-    # parser.add_argument('initial_frame',type=int,
-    #                     help='an integer for initial frame')
-    # # Read arguments from command line
-    # args = parser.parse_args()
-
-    # video_id = '1642994619'
-    #
-    # video_path = glob(f'../camera-main/videos/{video_id}/left/{video_id}*x_linear.mp4')[0]
-
-    # video_path = glob(f'../camera-main/videos/{video_id}/{video_id}-left.mp4')[0]
 
     vidcap = cv2.VideoCapture(video_path)
-    success,image = vidcap. read()
+    success,image = vidcap.read()
     count = 0
     imgs = []
     while success:
@@ -41,7 +23,6 @@ def browse_video_frame(video_path, index):
         success, image = vidcap. read()
         count +=1
 
-    # index = args.initial_frame
     while(True):
         cv2.imshow(f'current image{index}', imgs[index])
         key = cv2.waitKey(0)
@@ -120,6 +101,13 @@ def create_interpolated_video(config_path,
     modelprefix="",
     track_method="",):
 
-    h5files = interpolate_data(config_path, video, filtertype = filtertype, windowlength = windowlength, ARdegree = ARdegree, MAdegree= MAdegree, save_as_csv = True)
+    h5files = post_processing.interpolate_data(config_path, video, filtertype = filtertype, windowlength = windowlength, ARdegree = ARdegree, MAdegree= MAdegree, save_as_csv = True)
     for h5file in h5files:
         create_video_with_h5file(config_path, video, h5file, suffix = filtertype)
+
+
+if __name__== '__main__':
+    vid_id = '1642994619'
+    camera = 'left'
+    video = f'/home/luke/Desktop/project/make_tea/camera-main/videos/{vid_id}/{camera}/{vid_id}-{camera}_nearest_median.mp4'
+    browse_video_frame(video, 1)
