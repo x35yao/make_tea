@@ -7,12 +7,25 @@ date: Jan13
 project_path: /home/luke/Desktop/project/make_tea/dlc/make_tea_3d-Luke_Yinghan-2022-01-13-3d
 
 # Plotting configuration
-skeleton:     # Note that the pairs must be defined, as you want them linked!
-- -
-    head
-  - tail
+multianimalbodyparts:
+- bodypart1
+- bodypart2
+- bodypart3
+- bodypart4
+- bodypart5
+skeleton:
+- - bodypart1
+  - bodypart2
+- - bodypart2
+  - bodypart3
+- - bodypart3
+  - bodypart4
+- - bodypart4
+  - bodypart5
+- - bodypart1
+  - bodypart5
 skeleton_color: black
-pcutoff: 0.4
+pcutoff: 0
 colormap: jet
 dotsize: 15
 alphaValue: 0.8
@@ -25,10 +38,9 @@ camera_names:
 - left
 - right
 scorername_3d: make_tea_3D # Enter the scorer name for the 3D output
-uniquebodyparts: [cup_h, cup_m, cup_t, pitcher_h, pitcher_m, pitcher_t, tap_h, tap_m,
-  tap_t]
-config_file_left: /home/luke/Desktop/project/make_tea/dlc/make_tea_01052022-luke_yinghan-2022-01-05/config.yaml
-config_file_right: /home/luke/Desktop/project/make_tea/dlc/make_tea_01052022-luke_yinghan-2022-01-05/config.yaml
+uniquebodyparts:
+config_file_left: /home/luke/Desktop/project/make_tea/dlc/make_tea_pitcher-luke-2022-01-29/config.yaml
+config_file_right: /home/luke/Desktop/project/make_tea/dlc/make_tea_pitcher-luke-2022-01-29/config.yaml
 shuffle_left: 1
 trainingsetindex_left: 0
 shuffle_right: 1
