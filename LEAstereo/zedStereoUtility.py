@@ -1,5 +1,5 @@
 import os
-import math 
+import math
 import imageio
 import numpy as np
 import pickle as pkl
@@ -30,15 +30,15 @@ def getVectorDisplacement(coord3D, selected_indices=[]):
     """
     prev_coord, result_vectors = False, []
     for ind, object_coord in enumerate(coord3D):
-        if len(selected_indices) > 1 and not ind in selected_indices: 
+        if len(selected_indices) > 1 and not ind in selected_indices:
             continue
         if not prev_coord:
             prev_coord = object_coord
-        else: 
+        else:
             obj_vectors = []
             for m in range(len(object_coord)):
                 X_delta = object_coord[m][0] - prev_coord[m][0]
-                Y_delta = object_coord[m][1] - prev_coord[m][1] 
+                Y_delta = object_coord[m][1] - prev_coord[m][1]
                 Z_delta = object_coord[m][2] - prev_coord[m][2]
                 obj_vectors.append([X_delta, Y_delta, Z_delta])
             result_vectors.append(obj_vectors)
@@ -55,13 +55,13 @@ def pixelInterpolation(x, y, f):
     x, y = min(x + epsilon, dims[1]), min(y + epsilon, dims[0])
     x1, x2 = math.floor(x), math.ceil(x)
     y1, y2 = math.floor(y), math.ceil(y)
-    fxy2 = (x2 - x)*f[y2, x1] + (x - x1)*f[y2, x2] 
-    fxy1 = (x2 - x)*f[y1, x1] + (x - x1)*f[y1, x2] 
+    fxy2 = (x2 - x)*f[y2, x1] + (x - x1)*f[y2, x2]
+    fxy1 = (x2 - x)*f[y1, x1] + (x - x1)*f[y1, x2]
     return (y - y1)*fxy2 + (y2 - y)*fxy1
 
 def pixelTo3DCameraCoord(left_img, disp_map, coords):
     """
-    Returns a list of 3D coordinates and pixel coordinates 
+    Returns a list of 3D coordinates and pixel coordinates
     by triangulation calculation done on the disparity map
     at the pixel locations provided by coords as a list.
     """
@@ -75,7 +75,7 @@ def pixelTo3DCameraCoord(left_img, disp_map, coords):
         d_x, d_y = pix[0]/fixed_ratios[1], pix[1]/fixed_ratios[0]
         d = pixelInterpolation(d_x, d_y, disp_map)*fixed_ratios[1]
         x_r = int(x_l - d)
-      
+
         # Z is the depth from camera center in cm and X, Y for the other 2 axis.
         Z = BASELINE*FOCAL_LENGTH/(d*PIXEL_LENGTH)
         X, Y = (x_l - img_dims[1]/2)*PIXEL_LENGTH*Z/FOCAL_LENGTH, (y_l - img_dims[0]/2)*PIXEL_LENGTH*Z/FOCAL_LENGTH
@@ -85,16 +85,16 @@ def pixelTo3DCameraCoord(left_img, disp_map, coords):
 def LEAStereoCoordinate(l_img_path, disp_path, l_data):
     """
     Returns a dict of all images in l_img_path containing
-    the pixel and 3D coordinates of the interested pixel 
+    the pixel and 3D coordinates of the interested pixel
     location provided by l_datafile.
     """
     left_files_id = [file.split('.')[0][5:] for file in os.listdir(l_img_path)]
     disp_files = os.listdir(disp_path)
     coordinate3D = {}
     for framename in l_data.keys():
-        if framename[:5]=='frame': 
+        if framename[:5]=='frame':
             frame_id = framename[5:]
-            correspond_id = None 
+            correspond_id = None
             for file_id in left_files_id:
                 if int(file_id)==int(framename[5:]):
                     correspond_id = file_id
@@ -113,8 +113,8 @@ def LEAStereoCoordinate(l_img_path, disp_path, l_data):
             coordinate3D[framename] = pixelTo3DCameraCoord(im_l, im_disp, best_pixels)
     return coordinate3D
 
-def getMeasurements(model_pos): 
-    """ 
+def getMeasurements(model_pos):
+    """
     Returns vector displacement and magnitude of displacement
     for each position change provided by model_pos.
     """
@@ -135,7 +135,7 @@ def findLosses(true_values, raw_values, scales):
     return losses
 
 def consistencyLoss(vectors):
-    """ 
+    """
     Compare scaled unit steps to the set of steps actually moved to test consistency.
     Assumes vectors input is consisted of vectors moving in a straight line.
     """
@@ -163,5 +163,3 @@ def consistencyLoss(vectors):
                     actual_vector = [actual_vector[k] + sub_vector/norm_val for k, sub_vector in enumerate(obj_vectors[j])]
                 actual_vectors = actual_vectors + actual_vector
     return mean_squared_error(actual_vectors, scaled_vectors)
-        
-    
