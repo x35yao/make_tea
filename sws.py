@@ -183,12 +183,12 @@ def get_error_pos(x,t,window_size, kernel):
     error = x - x_p
     return error
 
-def get_error_ori(XYZ):
-    forward_interpolation = ori_interpolation(XYZ, window_size =21, direction = 'forward')
-    back_interpolation = ori_interpolation(XYZ, window_size = 21, direction =  'backward')
+def get_error_ori(XYZ, window_size):
+    forward_interpolation = ori_interpolation(XYZ, window_size = window_size, direction = 'forward')
+    back_interpolation = ori_interpolation(XYZ, window_size = window_size, direction =  'backward')
     XYZ_p = (forward_interpolation + back_interpolation) / 2
     XYZ_p = np.nan_to_num(XYZ_p)
-    XYZ_p = np.nan_to_num(forward_interpolation)
+    # XYZ_p = np.nan_to_num(forward_interpolation)
 
     dist = harersine_distance(XYZ, XYZ_p)
     # dist = np.sqrt(np.sum((XYZ - XYZ_p)**2, axis = 1))
@@ -207,20 +207,20 @@ def get_error_total(df, obj, window_size, kernel, with_ori = True, normalized = 
     error_pos = np.sqrt(np.nan_to_num(error_x**2) + np.nan_to_num(error_y**2) + np.nan_to_num(error_z**2))
     error_pos_normalized = error_pos / np.linalg.norm(error_pos)
     if with_ori:
-        # XYZ = df[obj][['X', 'Y', 'Z']].values
-        # error_ori = get_error_ori(XYZ)
-        # error_ori[error_ori> 0.5] = 0
-        # # error_ori[np.where(error_ori>1)[0]] = 0
+        XYZ = df[obj][['X', 'Y', 'Z']].values
+        error_ori = get_error_ori(XYZ, window_size = 11)
+        error_ori[error_ori> 0.5] = 0
+        # error_ori[np.where(error_ori>1)[0]] = 0
+        error_ori_normalized = error_ori / np.linalg.norm(error_ori)
+        # X = df[obj]['X'].values
+        # Y = df[obj]['Y'].values
+        # Z = df[obj]['Z'].values
+        # t = df['time_stamp'].values
+        # error_X = get_error_pos(X, t, window_size, kernel)
+        # error_Y = get_error_pos(Y, t, window_size, kernel)
+        # error_Z = get_error_pos(Z, t, window_size, kernel)
+        # error_ori= np.sqrt(np.nan_to_num(error_X**2) + np.nan_to_num(error_Y**2) + np.nan_to_num(error_Z**2))
         # error_ori_normalized = error_ori / np.linalg.norm(error_ori)
-        X = df[obj]['X'].values
-        Y = df[obj]['Y'].values
-        Z = df[obj]['Z'].values
-        t = df['time_stamp'].values
-        error_X = get_error_pos(X, t, window_size, kernel)
-        error_Y = get_error_pos(Y, t, window_size, kernel)
-        error_Z = get_error_pos(Z, t, window_size, kernel)
-        error_ori= np.sqrt(np.nan_to_num(error_X**2) + np.nan_to_num(error_X**2) + np.nan_to_num(error_Z**2))
-        error_ori_normalized = error_ori / np.linalg.norm(error_ori)        
     else:
         error_ori = error_ori_normalized = None
     if normalized:

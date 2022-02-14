@@ -106,8 +106,8 @@ def get_pose_mean(df, bodyparts, lr_model = 'ransac', residual = 1):
             y = data[:, -1]
             model_robust, inliers = ransac(data, LineModelND, min_samples=3,
                                residual_threshold= residual, max_trials=1000)
-            print(i, inliers)
-            print(data)
+            # print(i, inliers)s
+            # print(data)
             outliers = inliers == False
             data[outliers, :] = np.nan
             inds_in = np.where(inliers == 1)
@@ -121,8 +121,8 @@ def get_pose_mean(df, bodyparts, lr_model = 'ransac', residual = 1):
             x_interp = spl_x(inds_out).flatten()
             y_interp = spl_y(inds_out).flatten()
             z_interp = spl_z(inds_out).flatten()
-            print(np.c_[spl_x(inds_out), spl_y(inds_out), spl_z(inds_out)])
-            print(model_robust.params[1])
+            # print(np.c_[spl_x(inds_out), spl_y(inds_out), spl_z(inds_out)])
+            # print(model_robust.params[1])
             data[inds_out, 0] = x_interp
             data[inds_out, 1] = y_interp
             data[inds_out, 2] = z_interp
@@ -220,6 +220,13 @@ def get_obj_pose(file_path, residual = 1):
                 frame = pd.DataFrame(pose_mean, columns=pdindex)
                 df_new = pd.concat([frame, df_new], axis=1)
     df_new['time_stamp'] = df.index
+    dirname = os.path.dirname(file_path)
+    suffix = os.path.basename(file_path).split('_')[-1]
+    if suffix == 'leastereo.h5':
+        filename = dirname + '/obj_pose.h5'
+    else:
+        filename = dirname + f'/obj_pose_{suffix}'
+    df_new.to_hdf(filename, key = 'obj_pose')
     return df_new
 
 def columnwise_interp(data, filtertype, max_gap=0):
