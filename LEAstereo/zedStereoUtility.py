@@ -59,58 +59,64 @@ def pixelInterpolation(x, y, f):
     fxy1 = (x2 - x)*f[y1, x1] + (x - x1)*f[y1, x2]
     return (y - y1)*fxy2 + (y2 - y)*fxy1
 
-def pixelTo3DCameraCoord(left_img, disp_map, coords):
+def pixelTo3DCameraCoord(img, disp_map, coords, is_left_image=True):
     """
     Returns a list of 3D coordinates and pixel coordinates
     by triangulation calculation done on the disparity map
     at the pixel locations provided by coords as a list.
     """
     result_coords = []
-    img_dims, disp_dims = left_img.shape, disp_map.shape
+    img_dims, disp_dims = img.shape, disp_map.shape
     fixed_ratios = [img_dims[dim]/disp_dims[dim] for dim in range(2)]
     for _, pix in enumerate(coords):
         # Different ordering of dims between coordinate and images fixed here.
         if len(pix) == 0: continue
-        x_l, y_l = (int(i) for dim, i in enumerate(pix))
+        x1, y = (int(i) for dim, i in enumerate(pix))
         d_x, d_y = pix[0]/fixed_ratios[1], pix[1]/fixed_ratios[0]
         d = pixelInterpolation(d_x, d_y, disp_map)*fixed_ratios[1]
-        x_r = int(x_l - d)
-
+        if is_left_image:
+            x2 = int(x1 - d)
+        else:
+            x2 = int(x1 + d)
         # Z is the depth from camera center in cm and X, Y for the other 2 axis.
         Z = BASELINE*FOCAL_LENGTH/(d*PIXEL_LENGTH)
-        X, Y = (x_l - img_dims[1]/2)*PIXEL_LENGTH*Z/FOCAL_LENGTH, (y_l - img_dims[0]/2)*PIXEL_LENGTH*Z/FOCAL_LENGTH
-        result_coords.append({'left_x':x_l, 'left_y':y_l, 'right_x':x_r, 'X':X, 'Y':Y, 'Z':Z})
+        X, Y = (x1 - img_dims[1]/2)*PIXEL_LENGTH*Z/FOCAL_LENGTH, (y - img_dims[0]/2)*PIXEL_LENGTH*Z/FOCAL_LENGTH
+        result_coords.append({'x1':x1, 'y':y, 'x2':x2, 'X':X, 'Y':Y, 'Z':Z})
     return result_coords
 
-def LEAStereoCoordinate(l_img_path, disp_path, l_data):
+def LEAStereoCoordinate(img_path, disp_path, data, is_left_image=True):
     """
-    Returns a dict of all images in l_img_path containing
+    Returns a dict of all images in img_path containing
     the pixel and 3D coordinates of the interested pixel
-    location provided by l_datafile.
+    location provided by datafile.
     """
-    left_files_id = [file.split('.')[0][5:] for file in os.listdir(l_img_path)]
+    files_id = [file.split('.')[0][5:] for file in os.listdir(img_path)]
     disp_files = os.listdir(disp_path)
     coordinate3D = {}
-    for framename in l_data.keys():
+    for framename in data.keys():
         if framename[:5]=='frame':
             frame_id = framename[5:]
+            # fixing some frame number inconsistencies.
             correspond_id = None
-            for file_id in left_files_id:
+            for file_id in files_id:
                 if int(file_id)==int(framename[5:]):
                     correspond_id = file_id
             if correspond_id==None: continue
             img_file = 'frame{}.jpg'.format(correspond_id)
             disp_file = "frame{}_disp.npy".format(correspond_id)
-            im_disp = np.load(disp_path + disp_file)
-            im_l = imageio.imread(l_img_path + img_file)
-            frame_coord = l_data[framename]
+            img_disp = np.load(disp_path + disp_file)
+            img = imageio.imread(img_path + img_file)
+            # convert left view disparity to right
+            if is_left_image:
+                img_disp = Left2RightDisparity(img_disp)
+            frame_coord = data[framename]
             best_pixels = []
             coord, confid = frame_coord['coordinates'][0], frame_coord['confidence']
             for k, _ in enumerate(coord):
                 confid_k = list(np.reshape(confid[k], (-1)))
                 best_index = confid_k.index(max(confid_k))
                 best_pixels.append(coord[k][best_index])
-            coordinate3D[framename] = pixelTo3DCameraCoord(im_l, im_disp, best_pixels)
+            coordinate3D[framename] = pixelTo3DCameraCoord(img, img_disp, best_pixels, is_left_image)
     return coordinate3D
 
 def getMeasurements(model_pos):
@@ -163,3 +169,28 @@ def consistencyLoss(vectors):
                     actual_vector = [actual_vector[k] + sub_vector/norm_val for k, sub_vector in enumerate(obj_vectors[j])]
                 actual_vectors = actual_vectors + actual_vector
     return mean_squared_error(actual_vectors, scaled_vectors)
+
+
+def Left2RightDisparity(disp_map, width=1):
+    """
+    Convert disparity from left view to right view.
+    """
+    dims = disp_map.shape
+    new_disparity = np.zeros(dims, dtype='float32')
+    for x in range(dims[0]):
+        for y in range(dims[1]):
+            dxy = disp_map[x, y]
+            h_shift = round(y-dxy)
+
+            if h_shift > 0 and new_disparity[x, h_shift] < dxy:
+                new_disparity[x, h_shift] = dxy
+    # For any missing or occlusions, apply smoothing.
+    smooth_disparity = new_disparity.copy()
+    for x in range(dims[0]):
+        for y in range(width, dims[1]-width):
+            if new_disparity[x, y]==0:
+                window = new_disparity[x, y-width:y+width+1]
+                lst = window[window!=0.0]
+                if len(lst) > 0:
+                    smooth_disparity[x, y] = np.mean(window[window!=0.0])
+    return smooth_disparity
