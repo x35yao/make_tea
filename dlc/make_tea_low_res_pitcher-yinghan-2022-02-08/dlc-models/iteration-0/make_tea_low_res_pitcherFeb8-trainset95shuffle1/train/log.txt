@@ -1,0 +1,1437 @@
+2022-02-11 23:11:46 Config:
+{'all_joints': [[0], [1], [2], [3], [4]],
+ 'all_joints_names': ['bodypart1',
+                      'bodypart2',
+                      'bodypart3',
+                      'bodypart4',
+                      'bodypart5'],
+ 'alpha_r': 0.02,
+ 'apply_prob': 0.5,
+ 'batch_size': 8,
+ 'clahe': True,
+ 'claheratio': 0.1,
+ 'crop_pad': 0,
+ 'crop_sampling': 'hybrid',
+ 'crop_size': [400, 400],
+ 'cropratio': 0.4,
+ 'dataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/make_tea_low_res_pitcher_yinghan95shuffle1.pickle',
+ 'dataset_type': 'multi-animal-imgaug',
+ 'decay_steps': 30000,
+ 'deterministic': False,
+ 'display_iters': 500,
+ 'edge': False,
+ 'emboss': {'alpha': [0.0, 1.0], 'embossratio': 0.1, 'strength': [0.5, 1.5]},
+ 'fg_fraction': 0.25,
+ 'global_scale': 0.8,
+ 'histeq': True,
+ 'histeqratio': 0.1,
+ 'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+ 'intermediate_supervision': False,
+ 'intermediate_supervision_layer': 12,
+ 'location_refinement': True,
+ 'locref_huber_loss': True,
+ 'locref_loss_weight': 0.05,
+ 'locref_stdev': 7.2801,
+ 'log_dir': 'log',
+ 'lr_init': 0.0005,
+ 'max_input_size': 1500,
+ 'max_shift': 0.4,
+ 'mean_pixel': [123.68, 116.779, 103.939],
+ 'metadataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/Documentation_data-make_tea_low_res_pitcher_95shuffle1.pickle',
+ 'min_input_size': 64,
+ 'mirror': False,
+ 'multi_stage': True,
+ 'multi_step': [[0.0001, 7500], [5e-05, 12000], [1e-05, 200000]],
+ 'net_type': 'resnet_50',
+ 'num_idchannel': 0,
+ 'num_joints': 5,
+ 'num_limbs': 10,
+ 'optimizer': 'adam',
+ 'pafwidth': 20,
+ 'pairwise_huber_loss': False,
+ 'pairwise_loss_weight': 0.1,
+ 'pairwise_predict': False,
+ 'partaffinityfield_graph': [[0, 1],
+                             [0, 2],
+                             [0, 3],
+                             [0, 4],
+                             [1, 2],
+                             [1, 3],
+                             [1, 4],
+                             [2, 3],
+                             [2, 4],
+                             [3, 4]],
+ 'partaffinityfield_predict': True,
+ 'pos_dist_thresh': 17,
+ 'pre_resize': [],
+ 'project_path': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08',
+ 'regularize': False,
+ 'rotation': 25,
+ 'rotratio': 0.4,
+ 'save_iters': 10000,
+ 'scale_jitter_lo': 0.5,
+ 'scale_jitter_up': 1.25,
+ 'scoremap_dir': 'test',
+ 'sharpen': False,
+ 'sharpenratio': 0.3,
+ 'shuffle': True,
+ 'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/train/snapshot',
+ 'stride': 8.0,
+ 'weigh_negatives': False,
+ 'weigh_only_present_joints': False,
+ 'weigh_part_predictions': False,
+ 'weight_decay': 0.0001}
+2022-02-11 23:12:58 Config:
+{'all_joints': [[0], [1], [2], [3], [4]],
+ 'all_joints_names': ['bodypart1',
+                      'bodypart2',
+                      'bodypart3',
+                      'bodypart4',
+                      'bodypart5'],
+ 'alpha_r': 0.02,
+ 'apply_prob': 0.5,
+ 'batch_size': 8,
+ 'clahe': True,
+ 'claheratio': 0.1,
+ 'crop_pad': 0,
+ 'crop_sampling': 'hybrid',
+ 'crop_size': [400, 400],
+ 'cropratio': 0.4,
+ 'dataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/make_tea_low_res_pitcher_yinghan95shuffle1.pickle',
+ 'dataset_type': 'multi-animal-imgaug',
+ 'decay_steps': 30000,
+ 'deterministic': False,
+ 'display_iters': 500,
+ 'edge': False,
+ 'emboss': {'alpha': [0.0, 1.0], 'embossratio': 0.1, 'strength': [0.5, 1.5]},
+ 'fg_fraction': 0.25,
+ 'global_scale': 0.8,
+ 'histeq': True,
+ 'histeqratio': 0.1,
+ 'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+ 'intermediate_supervision': False,
+ 'intermediate_supervision_layer': 12,
+ 'location_refinement': True,
+ 'locref_huber_loss': True,
+ 'locref_loss_weight': 0.05,
+ 'locref_stdev': 7.2801,
+ 'log_dir': 'log',
+ 'lr_init': 0.0005,
+ 'max_input_size': 1500,
+ 'max_shift': 0.4,
+ 'mean_pixel': [123.68, 116.779, 103.939],
+ 'metadataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/Documentation_data-make_tea_low_res_pitcher_95shuffle1.pickle',
+ 'min_input_size': 64,
+ 'mirror': False,
+ 'multi_stage': True,
+ 'multi_step': [[0.0001, 7500], [5e-05, 12000], [1e-05, 200000]],
+ 'net_type': 'resnet_50',
+ 'num_idchannel': 0,
+ 'num_joints': 5,
+ 'num_limbs': 10,
+ 'optimizer': 'adam',
+ 'pafwidth': 20,
+ 'pairwise_huber_loss': False,
+ 'pairwise_loss_weight': 0.1,
+ 'pairwise_predict': False,
+ 'partaffinityfield_graph': [[0, 1],
+                             [0, 2],
+                             [0, 3],
+                             [0, 4],
+                             [1, 2],
+                             [1, 3],
+                             [1, 4],
+                             [2, 3],
+                             [2, 4],
+                             [3, 4]],
+ 'partaffinityfield_predict': True,
+ 'pos_dist_thresh': 17,
+ 'pre_resize': [],
+ 'project_path': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08',
+ 'regularize': False,
+ 'rotation': 25,
+ 'rotratio': 0.4,
+ 'save_iters': 10000,
+ 'scale_jitter_lo': 0.5,
+ 'scale_jitter_up': 1.25,
+ 'scoremap_dir': 'test',
+ 'sharpen': False,
+ 'sharpenratio': 0.3,
+ 'shuffle': True,
+ 'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/train/snapshot',
+ 'stride': 8.0,
+ 'weigh_negatives': False,
+ 'weigh_only_present_joints': False,
+ 'weigh_part_predictions': False,
+ 'weight_decay': 0.0001}
+2022-02-11 23:16:33 Config:
+{'all_joints': [[0], [1], [2], [3], [4]],
+ 'all_joints_names': ['bodypart1',
+                      'bodypart2',
+                      'bodypart3',
+                      'bodypart4',
+                      'bodypart5'],
+ 'alpha_r': 0.02,
+ 'apply_prob': 0.5,
+ 'batch_size': 8,
+ 'clahe': True,
+ 'claheratio': 0.1,
+ 'crop_pad': 0,
+ 'crop_sampling': 'hybrid',
+ 'crop_size': [400, 400],
+ 'cropratio': 0.4,
+ 'dataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/make_tea_low_res_pitcher_yinghan95shuffle1.pickle',
+ 'dataset_type': 'multi-animal-imgaug',
+ 'decay_steps': 30000,
+ 'deterministic': False,
+ 'display_iters': 500,
+ 'edge': False,
+ 'emboss': {'alpha': [0.0, 1.0], 'embossratio': 0.1, 'strength': [0.5, 1.5]},
+ 'fg_fraction': 0.25,
+ 'global_scale': 0.8,
+ 'histeq': True,
+ 'histeqratio': 0.1,
+ 'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+ 'intermediate_supervision': False,
+ 'intermediate_supervision_layer': 12,
+ 'location_refinement': True,
+ 'locref_huber_loss': True,
+ 'locref_loss_weight': 0.05,
+ 'locref_stdev': 7.2801,
+ 'log_dir': 'log',
+ 'lr_init': 0.0005,
+ 'max_input_size': 1500,
+ 'max_shift': 0.4,
+ 'mean_pixel': [123.68, 116.779, 103.939],
+ 'metadataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/Documentation_data-make_tea_low_res_pitcher_95shuffle1.pickle',
+ 'min_input_size': 64,
+ 'mirror': False,
+ 'multi_stage': True,
+ 'multi_step': [[0.0001, 7500], [5e-05, 12000], [1e-05, 200000]],
+ 'net_type': 'resnet_50',
+ 'num_idchannel': 0,
+ 'num_joints': 5,
+ 'num_limbs': 10,
+ 'optimizer': 'adam',
+ 'pafwidth': 20,
+ 'pairwise_huber_loss': False,
+ 'pairwise_loss_weight': 0.1,
+ 'pairwise_predict': False,
+ 'partaffinityfield_graph': [[0, 1],
+                             [0, 2],
+                             [0, 3],
+                             [0, 4],
+                             [1, 2],
+                             [1, 3],
+                             [1, 4],
+                             [2, 3],
+                             [2, 4],
+                             [3, 4]],
+ 'partaffinityfield_predict': True,
+ 'pos_dist_thresh': 17,
+ 'pre_resize': [],
+ 'project_path': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08',
+ 'regularize': False,
+ 'rotation': 25,
+ 'rotratio': 0.4,
+ 'save_iters': 10000,
+ 'scale_jitter_lo': 0.5,
+ 'scale_jitter_up': 1.25,
+ 'scoremap_dir': 'test',
+ 'sharpen': False,
+ 'sharpenratio': 0.3,
+ 'shuffle': True,
+ 'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/train/snapshot',
+ 'stride': 8.0,
+ 'weigh_negatives': False,
+ 'weigh_only_present_joints': False,
+ 'weigh_part_predictions': False,
+ 'weight_decay': 0.0001}
+2022-02-11 23:18:20 Config:
+{'all_joints': [[0], [1], [2], [3], [4]],
+ 'all_joints_names': ['bodypart1',
+                      'bodypart2',
+                      'bodypart3',
+                      'bodypart4',
+                      'bodypart5'],
+ 'alpha_r': 0.02,
+ 'apply_prob': 0.5,
+ 'batch_size': 8,
+ 'clahe': True,
+ 'claheratio': 0.1,
+ 'crop_pad': 0,
+ 'crop_sampling': 'hybrid',
+ 'crop_size': [400, 400],
+ 'cropratio': 0.4,
+ 'dataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/make_tea_low_res_pitcher_yinghan95shuffle1.pickle',
+ 'dataset_type': 'multi-animal-imgaug',
+ 'decay_steps': 30000,
+ 'deterministic': False,
+ 'display_iters': 500,
+ 'edge': False,
+ 'emboss': {'alpha': [0.0, 1.0], 'embossratio': 0.1, 'strength': [0.5, 1.5]},
+ 'fg_fraction': 0.25,
+ 'global_scale': 0.8,
+ 'histeq': True,
+ 'histeqratio': 0.1,
+ 'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+ 'intermediate_supervision': False,
+ 'intermediate_supervision_layer': 12,
+ 'location_refinement': True,
+ 'locref_huber_loss': True,
+ 'locref_loss_weight': 0.05,
+ 'locref_stdev': 7.2801,
+ 'log_dir': 'log',
+ 'lr_init': 0.0005,
+ 'max_input_size': 1500,
+ 'max_shift': 0.4,
+ 'mean_pixel': [123.68, 116.779, 103.939],
+ 'metadataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/Documentation_data-make_tea_low_res_pitcher_95shuffle1.pickle',
+ 'min_input_size': 64,
+ 'mirror': False,
+ 'multi_stage': True,
+ 'multi_step': [[0.0001, 7500], [5e-05, 12000], [1e-05, 200000]],
+ 'net_type': 'resnet_50',
+ 'num_idchannel': 0,
+ 'num_joints': 5,
+ 'num_limbs': 10,
+ 'optimizer': 'adam',
+ 'pafwidth': 20,
+ 'pairwise_huber_loss': False,
+ 'pairwise_loss_weight': 0.1,
+ 'pairwise_predict': False,
+ 'partaffinityfield_graph': [[0, 1],
+                             [0, 2],
+                             [0, 3],
+                             [0, 4],
+                             [1, 2],
+                             [1, 3],
+                             [1, 4],
+                             [2, 3],
+                             [2, 4],
+                             [3, 4]],
+ 'partaffinityfield_predict': True,
+ 'pos_dist_thresh': 17,
+ 'pre_resize': [],
+ 'project_path': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08',
+ 'regularize': False,
+ 'rotation': 25,
+ 'rotratio': 0.4,
+ 'save_iters': 10000,
+ 'scale_jitter_lo': 0.5,
+ 'scale_jitter_up': 1.25,
+ 'scoremap_dir': 'test',
+ 'sharpen': False,
+ 'sharpenratio': 0.3,
+ 'shuffle': True,
+ 'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/train/snapshot',
+ 'stride': 8.0,
+ 'weigh_negatives': False,
+ 'weigh_only_present_joints': False,
+ 'weigh_part_predictions': False,
+ 'weight_decay': 0.0001}
+2022-02-11 23:20:03 Config:
+{'all_joints': [[0], [1], [2], [3], [4]],
+ 'all_joints_names': ['bodypart1',
+                      'bodypart2',
+                      'bodypart3',
+                      'bodypart4',
+                      'bodypart5'],
+ 'alpha_r': 0.02,
+ 'apply_prob': 0.5,
+ 'batch_size': 8,
+ 'clahe': True,
+ 'claheratio': 0.1,
+ 'crop_pad': 0,
+ 'crop_sampling': 'hybrid',
+ 'crop_size': [400, 400],
+ 'cropratio': 0.4,
+ 'dataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/make_tea_low_res_pitcher_yinghan95shuffle1.pickle',
+ 'dataset_type': 'multi-animal-imgaug',
+ 'decay_steps': 30000,
+ 'deterministic': False,
+ 'display_iters': 500,
+ 'edge': False,
+ 'emboss': {'alpha': [0.0, 1.0], 'embossratio': 0.1, 'strength': [0.5, 1.5]},
+ 'fg_fraction': 0.25,
+ 'global_scale': 0.8,
+ 'histeq': True,
+ 'histeqratio': 0.1,
+ 'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+ 'intermediate_supervision': False,
+ 'intermediate_supervision_layer': 12,
+ 'location_refinement': True,
+ 'locref_huber_loss': True,
+ 'locref_loss_weight': 0.05,
+ 'locref_stdev': 7.2801,
+ 'log_dir': 'log',
+ 'lr_init': 0.0005,
+ 'max_input_size': 1500,
+ 'max_shift': 0.4,
+ 'mean_pixel': [123.68, 116.779, 103.939],
+ 'metadataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/Documentation_data-make_tea_low_res_pitcher_95shuffle1.pickle',
+ 'min_input_size': 64,
+ 'mirror': False,
+ 'multi_stage': True,
+ 'multi_step': [[0.0001, 7500], [5e-05, 12000], [1e-05, 200000]],
+ 'net_type': 'resnet_50',
+ 'num_idchannel': 0,
+ 'num_joints': 5,
+ 'num_limbs': 10,
+ 'optimizer': 'adam',
+ 'pafwidth': 20,
+ 'pairwise_huber_loss': False,
+ 'pairwise_loss_weight': 0.1,
+ 'pairwise_predict': False,
+ 'partaffinityfield_graph': [[0, 1],
+                             [0, 2],
+                             [0, 3],
+                             [0, 4],
+                             [1, 2],
+                             [1, 3],
+                             [1, 4],
+                             [2, 3],
+                             [2, 4],
+                             [3, 4]],
+ 'partaffinityfield_predict': True,
+ 'pos_dist_thresh': 17,
+ 'pre_resize': [],
+ 'project_path': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08',
+ 'regularize': False,
+ 'rotation': 25,
+ 'rotratio': 0.4,
+ 'save_iters': 10000,
+ 'scale_jitter_lo': 0.5,
+ 'scale_jitter_up': 1.25,
+ 'scoremap_dir': 'test',
+ 'sharpen': False,
+ 'sharpenratio': 0.3,
+ 'shuffle': True,
+ 'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/train/snapshot',
+ 'stride': 8.0,
+ 'weigh_negatives': False,
+ 'weigh_only_present_joints': False,
+ 'weigh_part_predictions': False,
+ 'weight_decay': 0.0001}
+2022-02-11 23:23:55 Config:
+{'all_joints': [[0], [1], [2], [3], [4]],
+ 'all_joints_names': ['bodypart1',
+                      'bodypart2',
+                      'bodypart3',
+                      'bodypart4',
+                      'bodypart5'],
+ 'alpha_r': 0.02,
+ 'apply_prob': 0.5,
+ 'batch_size': 8,
+ 'clahe': True,
+ 'claheratio': 0.1,
+ 'crop_pad': 0,
+ 'crop_sampling': 'hybrid',
+ 'crop_size': [400, 400],
+ 'cropratio': 0.4,
+ 'dataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/make_tea_low_res_pitcher_yinghan95shuffle1.pickle',
+ 'dataset_type': 'multi-animal-imgaug',
+ 'decay_steps': 30000,
+ 'deterministic': False,
+ 'display_iters': 500,
+ 'edge': False,
+ 'emboss': {'alpha': [0.0, 1.0], 'embossratio': 0.1, 'strength': [0.5, 1.5]},
+ 'fg_fraction': 0.25,
+ 'global_scale': 0.8,
+ 'histeq': True,
+ 'histeqratio': 0.1,
+ 'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+ 'intermediate_supervision': False,
+ 'intermediate_supervision_layer': 12,
+ 'location_refinement': True,
+ 'locref_huber_loss': True,
+ 'locref_loss_weight': 0.05,
+ 'locref_stdev': 7.2801,
+ 'log_dir': 'log',
+ 'lr_init': 0.0005,
+ 'max_input_size': 1500,
+ 'max_shift': 0.4,
+ 'mean_pixel': [123.68, 116.779, 103.939],
+ 'metadataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/Documentation_data-make_tea_low_res_pitcher_95shuffle1.pickle',
+ 'min_input_size': 64,
+ 'mirror': False,
+ 'multi_stage': False,
+ 'multi_step': [[0.0001, 7500], [5e-05, 12000], [1e-05, 200000]],
+ 'net_type': 'resnet_50',
+ 'num_idchannel': 0,
+ 'num_joints': 5,
+ 'num_limbs': 10,
+ 'optimizer': 'adam',
+ 'pafwidth': 20,
+ 'pairwise_huber_loss': False,
+ 'pairwise_loss_weight': 0.1,
+ 'pairwise_predict': False,
+ 'partaffinityfield_graph': [[0, 1],
+                             [0, 2],
+                             [0, 3],
+                             [0, 4],
+                             [1, 2],
+                             [1, 3],
+                             [1, 4],
+                             [2, 3],
+                             [2, 4],
+                             [3, 4]],
+ 'partaffinityfield_predict': True,
+ 'pos_dist_thresh': 17,
+ 'pre_resize': [],
+ 'project_path': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08',
+ 'regularize': False,
+ 'rotation': 25,
+ 'rotratio': 0.4,
+ 'save_iters': 10000,
+ 'scale_jitter_lo': 0.5,
+ 'scale_jitter_up': 1.25,
+ 'scoremap_dir': 'test',
+ 'sharpen': False,
+ 'sharpenratio': 0.3,
+ 'shuffle': True,
+ 'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/train/snapshot',
+ 'stride': 8.0,
+ 'weigh_negatives': False,
+ 'weigh_only_present_joints': False,
+ 'weigh_part_predictions': False,
+ 'weight_decay': 0.0001}
+2022-02-11 23:27:22 Config:
+{'all_joints': [[0], [1], [2], [3], [4]],
+ 'all_joints_names': ['bodypart1',
+                      'bodypart2',
+                      'bodypart3',
+                      'bodypart4',
+                      'bodypart5'],
+ 'alpha_r': 0.02,
+ 'apply_prob': 0.5,
+ 'batch_size': 8,
+ 'clahe': True,
+ 'claheratio': 0.1,
+ 'crop_pad': 0,
+ 'crop_sampling': 'hybrid',
+ 'crop_size': [400, 400],
+ 'cropratio': 0.4,
+ 'dataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/make_tea_low_res_pitcher_yinghan95shuffle1.pickle',
+ 'dataset_type': 'multi-animal-imgaug',
+ 'decay_steps': 30000,
+ 'deterministic': False,
+ 'display_iters': 500,
+ 'edge': False,
+ 'emboss': {'alpha': [0.0, 1.0], 'embossratio': 0.1, 'strength': [0.5, 1.5]},
+ 'fg_fraction': 0.25,
+ 'global_scale': 0.8,
+ 'histeq': True,
+ 'histeqratio': 0.1,
+ 'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+ 'intermediate_supervision': False,
+ 'intermediate_supervision_layer': 12,
+ 'location_refinement': True,
+ 'locref_huber_loss': True,
+ 'locref_loss_weight': 0.05,
+ 'locref_stdev': 7.2801,
+ 'log_dir': 'log',
+ 'lr_init': 0.0005,
+ 'max_input_size': 1500,
+ 'max_shift': 0.4,
+ 'mean_pixel': [123.68, 116.779, 103.939],
+ 'metadataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/Documentation_data-make_tea_low_res_pitcher_95shuffle1.pickle',
+ 'min_input_size': 64,
+ 'mirror': False,
+ 'multi_stage': True,
+ 'multi_step': [[0.0001, 7500], [5e-05, 12000], [1e-05, 200000]],
+ 'net_type': 'resnet_50',
+ 'num_idchannel': 0,
+ 'num_joints': 5,
+ 'num_limbs': 10,
+ 'optimizer': 'adam',
+ 'pafwidth': 20,
+ 'pairwise_huber_loss': False,
+ 'pairwise_loss_weight': 0.1,
+ 'pairwise_predict': False,
+ 'partaffinityfield_graph': [[0, 1],
+                             [0, 2],
+                             [0, 3],
+                             [0, 4],
+                             [1, 2],
+                             [1, 3],
+                             [1, 4],
+                             [2, 3],
+                             [2, 4],
+                             [3, 4]],
+ 'partaffinityfield_predict': True,
+ 'pos_dist_thresh': 17,
+ 'pre_resize': [],
+ 'project_path': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08',
+ 'regularize': False,
+ 'rotation': 25,
+ 'rotratio': 0.4,
+ 'save_iters': 10000,
+ 'scale_jitter_lo': 0.5,
+ 'scale_jitter_up': 1.25,
+ 'scoremap_dir': 'test',
+ 'sharpen': False,
+ 'sharpenratio': 0.3,
+ 'shuffle': True,
+ 'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/train/snapshot',
+ 'stride': 8.0,
+ 'weigh_negatives': False,
+ 'weigh_only_present_joints': False,
+ 'weigh_part_predictions': False,
+ 'weight_decay': 0.0001}
+2022-02-11 23:31:04 iteration: 1000 loss: 0.0126 scmap loss: 0.0102 locref loss: 0.0005 limb loss: 0.0019 lr: 0.0001
+2022-02-11 23:34:28 iteration: 2000 loss: 0.0039 scmap loss: 0.0034 locref loss: 0.0001 limb loss: 0.0004 lr: 0.0001
+2022-02-11 23:37:52 iteration: 3000 loss: 0.0032 scmap loss: 0.0028 locref loss: 0.0001 limb loss: 0.0003 lr: 0.0001
+2022-02-11 23:41:16 iteration: 4000 loss: 0.0027 scmap loss: 0.0024 locref loss: 0.0001 limb loss: 0.0002 lr: 0.0001
+2022-02-11 23:44:40 iteration: 5000 loss: 0.0026 scmap loss: 0.0024 locref loss: 0.0001 limb loss: 0.0002 lr: 0.0001
+2022-02-11 23:48:04 iteration: 6000 loss: 0.0024 scmap loss: 0.0022 locref loss: 0.0001 limb loss: 0.0002 lr: 0.0001
+2022-02-11 23:51:28 iteration: 7000 loss: 0.0023 scmap loss: 0.0021 locref loss: 0.0000 limb loss: 0.0001 lr: 0.0001
+2022-02-11 23:54:51 iteration: 8000 loss: 0.0020 scmap loss: 0.0019 locref loss: 0.0000 limb loss: 0.0001 lr: 5e-05
+2022-02-11 23:58:15 iteration: 9000 loss: 0.0018 scmap loss: 0.0017 locref loss: 0.0000 limb loss: 0.0001 lr: 5e-05
+2022-02-12 00:01:38 iteration: 10000 loss: 0.0017 scmap loss: 0.0016 locref loss: 0.0000 limb loss: 0.0001 lr: 5e-05
+2022-02-12 00:05:01 iteration: 11000 loss: 0.0017 scmap loss: 0.0015 locref loss: 0.0000 limb loss: 0.0001 lr: 5e-05
+2022-02-12 00:08:24 iteration: 12000 loss: 0.0016 scmap loss: 0.0015 locref loss: 0.0000 limb loss: 0.0001 lr: 5e-05
+2022-02-12 00:11:48 iteration: 13000 loss: 0.0013 scmap loss: 0.0012 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 00:15:12 iteration: 14000 loss: 0.0013 scmap loss: 0.0012 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 00:18:35 iteration: 15000 loss: 0.0012 scmap loss: 0.0011 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 00:21:58 iteration: 16000 loss: 0.0012 scmap loss: 0.0011 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 00:25:21 iteration: 17000 loss: 0.0012 scmap loss: 0.0011 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 00:28:45 iteration: 18000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 00:32:08 iteration: 19000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 00:35:31 iteration: 20000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 00:38:55 iteration: 21000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 00:42:19 iteration: 22000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 00:45:42 iteration: 23000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 00:49:06 iteration: 24000 loss: 0.0010 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 00:52:29 iteration: 25000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 00:55:52 iteration: 26000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 00:59:16 iteration: 27000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:02:39 iteration: 28000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:06:03 iteration: 29000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:09:27 iteration: 30000 loss: 0.0009 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:12:49 iteration: 31000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:16:12 iteration: 32000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:19:36 iteration: 33000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:22:59 iteration: 34000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:26:22 iteration: 35000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:29:44 iteration: 36000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:33:07 iteration: 37000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:36:30 iteration: 38000 loss: 0.0008 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:39:53 iteration: 39000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:43:17 iteration: 40000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:46:40 iteration: 41000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:50:04 iteration: 42000 loss: 0.0008 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:53:28 iteration: 43000 loss: 0.0008 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 01:56:51 iteration: 44000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 02:00:15 iteration: 45000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 02:03:38 iteration: 46000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 02:07:02 iteration: 47000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 02:10:25 iteration: 48000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 02:13:48 iteration: 49000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 02:17:11 iteration: 50000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 02:20:36 iteration: 51000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 02:23:59 iteration: 52000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 02:27:23 iteration: 53000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 02:30:46 iteration: 54000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 02:34:10 iteration: 55000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 02:37:33 iteration: 56000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 02:40:56 iteration: 57000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 02:44:19 iteration: 58000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 02:47:43 iteration: 59000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 02:51:07 iteration: 60000 loss: 0.0007 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 02:54:29 iteration: 61000 loss: 0.0008 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-12 02:57:54 iteration: 62000 loss: 0.0007 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:01:17 iteration: 63000 loss: 0.0007 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:04:40 iteration: 64000 loss: 0.0007 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:08:04 iteration: 65000 loss: 0.0007 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:11:28 iteration: 66000 loss: 0.0007 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:14:51 iteration: 67000 loss: 0.0007 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:18:14 iteration: 68000 loss: 0.0007 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:21:38 iteration: 69000 loss: 0.0007 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:25:01 iteration: 70000 loss: 0.0007 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:28:25 iteration: 71000 loss: 0.0007 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:31:48 iteration: 72000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:35:12 iteration: 73000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:38:35 iteration: 74000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:41:58 iteration: 75000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:45:22 iteration: 76000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:48:45 iteration: 77000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:52:08 iteration: 78000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:55:32 iteration: 79000 loss: 0.0007 scmap loss: 0.0007 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 03:58:55 iteration: 80000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:02:19 iteration: 81000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:05:42 iteration: 82000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:09:05 iteration: 83000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:12:29 iteration: 84000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:15:52 iteration: 85000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:19:15 iteration: 86000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:22:38 iteration: 87000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:26:01 iteration: 88000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:29:25 iteration: 89000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:32:49 iteration: 90000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:36:12 iteration: 91000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:39:35 iteration: 92000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:42:59 iteration: 93000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:46:22 iteration: 94000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:49:45 iteration: 95000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:53:09 iteration: 96000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:56:32 iteration: 97000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 04:59:55 iteration: 98000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:03:19 iteration: 99000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:06:42 iteration: 100000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:10:06 iteration: 101000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:13:29 iteration: 102000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:16:52 iteration: 103000 loss: 0.0007 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:20:15 iteration: 104000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:23:39 iteration: 105000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:27:02 iteration: 106000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:30:26 iteration: 107000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:33:49 iteration: 108000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:37:13 iteration: 109000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:40:36 iteration: 110000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:44:00 iteration: 111000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:47:23 iteration: 112000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:50:47 iteration: 113000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:54:10 iteration: 114000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 05:57:34 iteration: 115000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:00:58 iteration: 116000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:04:21 iteration: 117000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:07:45 iteration: 118000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:11:09 iteration: 119000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:14:32 iteration: 120000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:17:56 iteration: 121000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:21:20 iteration: 122000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:24:43 iteration: 123000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:28:07 iteration: 124000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:31:31 iteration: 125000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:34:55 iteration: 126000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:38:19 iteration: 127000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:41:43 iteration: 128000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:45:06 iteration: 129000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:48:30 iteration: 130000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:51:53 iteration: 131000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:55:17 iteration: 132000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 06:58:40 iteration: 133000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:02:04 iteration: 134000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:05:27 iteration: 135000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:08:51 iteration: 136000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:12:15 iteration: 137000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:15:39 iteration: 138000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:19:03 iteration: 139000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:22:25 iteration: 140000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:25:49 iteration: 141000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:29:12 iteration: 142000 loss: 0.0006 scmap loss: 0.0006 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:32:35 iteration: 143000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:35:58 iteration: 144000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:39:22 iteration: 145000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:42:46 iteration: 146000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:46:10 iteration: 147000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:49:33 iteration: 148000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:52:55 iteration: 149000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:56:18 iteration: 150000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 07:59:42 iteration: 151000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:03:05 iteration: 152000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:06:28 iteration: 153000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:09:51 iteration: 154000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:13:14 iteration: 155000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:16:38 iteration: 156000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:20:01 iteration: 157000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:23:25 iteration: 158000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:26:49 iteration: 159000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:30:12 iteration: 160000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:33:35 iteration: 161000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:36:59 iteration: 162000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:40:22 iteration: 163000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:43:46 iteration: 164000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:47:09 iteration: 165000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:50:32 iteration: 166000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:53:56 iteration: 167000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 08:57:19 iteration: 168000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:00:43 iteration: 169000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:04:06 iteration: 170000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:07:29 iteration: 171000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:10:53 iteration: 172000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:14:17 iteration: 173000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:17:41 iteration: 174000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:21:04 iteration: 175000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:24:28 iteration: 176000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:27:51 iteration: 177000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:31:14 iteration: 178000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:34:38 iteration: 179000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:38:02 iteration: 180000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:41:25 iteration: 181000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:44:49 iteration: 182000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:48:12 iteration: 183000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:51:35 iteration: 184000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:54:58 iteration: 185000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 09:58:21 iteration: 186000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 10:01:45 iteration: 187000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 10:05:08 iteration: 188000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 10:08:31 iteration: 189000 loss: 0.0006 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 10:11:55 iteration: 190000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 10:15:19 iteration: 191000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 10:18:43 iteration: 192000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 10:22:07 iteration: 193000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 10:25:31 iteration: 194000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 10:28:55 iteration: 195000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 10:32:19 iteration: 196000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 10:35:42 iteration: 197000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 10:39:05 iteration: 198000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 10:42:29 iteration: 199000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 10:45:51 iteration: 200000 loss: 0.0005 scmap loss: 0.0005 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-12 10:56:47 Config:
+{'all_joints': [[0], [1], [2], [3], [4]],
+ 'all_joints_names': ['bodypart1',
+                      'bodypart2',
+                      'bodypart3',
+                      'bodypart4',
+                      'bodypart5'],
+ 'batch_size': 1,
+ 'crop_pad': 0,
+ 'dataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/make_tea_low_res_pitcher_yinghan95shuffle1.pickle',
+ 'dataset_type': 'multi-animal-imgaug',
+ 'deterministic': False,
+ 'fg_fraction': 0.25,
+ 'global_scale': 0.8,
+ 'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+ 'intermediate_supervision': False,
+ 'intermediate_supervision_layer': 12,
+ 'location_refinement': True,
+ 'locref_huber_loss': True,
+ 'locref_loss_weight': 1.0,
+ 'locref_smooth': False,
+ 'locref_stdev': 7.2801,
+ 'log_dir': 'log',
+ 'mean_pixel': [123.68, 116.779, 103.939],
+ 'minconfidence': 0.01,
+ 'mirror': False,
+ 'multi_stage': True,
+ 'net_type': 'resnet_50',
+ 'nmsradius': 5.0,
+ 'num_idchannel': 0,
+ 'num_joints': 5,
+ 'num_limbs': 10,
+ 'optimizer': 'sgd',
+ 'pairwise_huber_loss': True,
+ 'pairwise_predict': False,
+ 'partaffinityfield_graph': [[0, 1],
+                             [0, 2],
+                             [0, 3],
+                             [0, 4],
+                             [1, 2],
+                             [1, 3],
+                             [1, 4],
+                             [2, 3],
+                             [2, 4],
+                             [3, 4]],
+ 'partaffinityfield_predict': True,
+ 'regularize': False,
+ 'scoremap_dir': 'test',
+ 'shuffle': True,
+ 'sigma': 1,
+ 'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/test/snapshot',
+ 'stride': 8.0,
+ 'weigh_negatives': False,
+ 'weigh_only_present_joints': False,
+ 'weigh_part_predictions': False,
+ 'weight_decay': 0.0001}
+2022-02-12 10:57:08 Config:
+{'all_joints': [[0], [1], [2], [3], [4]],
+ 'all_joints_names': ['bodypart1',
+                      'bodypart2',
+                      'bodypart3',
+                      'bodypart4',
+                      'bodypart5'],
+ 'batch_size': 1,
+ 'crop_pad': 0,
+ 'dataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/make_tea_low_res_pitcher_yinghan95shuffle1.pickle',
+ 'dataset_type': 'multi-animal-imgaug',
+ 'deterministic': False,
+ 'fg_fraction': 0.25,
+ 'global_scale': 0.8,
+ 'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+ 'intermediate_supervision': False,
+ 'intermediate_supervision_layer': 12,
+ 'location_refinement': True,
+ 'locref_huber_loss': True,
+ 'locref_loss_weight': 1.0,
+ 'locref_smooth': False,
+ 'locref_stdev': 7.2801,
+ 'log_dir': 'log',
+ 'mean_pixel': [123.68, 116.779, 103.939],
+ 'minconfidence': 0.01,
+ 'mirror': False,
+ 'multi_stage': True,
+ 'net_type': 'resnet_50',
+ 'nmsradius': 5.0,
+ 'num_idchannel': 0,
+ 'num_joints': 5,
+ 'num_limbs': 10,
+ 'optimizer': 'sgd',
+ 'pairwise_huber_loss': True,
+ 'pairwise_predict': False,
+ 'partaffinityfield_graph': [[0, 1],
+                             [0, 2],
+                             [0, 3],
+                             [0, 4],
+                             [1, 2],
+                             [1, 3],
+                             [1, 4],
+                             [2, 3],
+                             [2, 4],
+                             [3, 4]],
+ 'partaffinityfield_predict': True,
+ 'regularize': False,
+ 'scoremap_dir': 'test',
+ 'shuffle': True,
+ 'sigma': 1,
+ 'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/test/snapshot',
+ 'stride': 8.0,
+ 'weigh_negatives': False,
+ 'weigh_only_present_joints': False,
+ 'weigh_part_predictions': False,
+ 'weight_decay': 0.0001}
+2022-02-12 11:04:09 Config:
+{'all_joints': [[0], [1], [2], [3], [4]],
+ 'all_joints_names': ['bodypart1',
+                      'bodypart2',
+                      'bodypart3',
+                      'bodypart4',
+                      'bodypart5'],
+ 'batch_size': 1,
+ 'crop_pad': 0,
+ 'dataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/make_tea_low_res_pitcher_yinghan95shuffle1.pickle',
+ 'dataset_type': 'multi-animal-imgaug',
+ 'deterministic': False,
+ 'fg_fraction': 0.25,
+ 'global_scale': 0.8,
+ 'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+ 'intermediate_supervision': False,
+ 'intermediate_supervision_layer': 12,
+ 'location_refinement': True,
+ 'locref_huber_loss': True,
+ 'locref_loss_weight': 1.0,
+ 'locref_smooth': False,
+ 'locref_stdev': 7.2801,
+ 'log_dir': 'log',
+ 'mean_pixel': [123.68, 116.779, 103.939],
+ 'minconfidence': 0.01,
+ 'mirror': False,
+ 'multi_stage': True,
+ 'net_type': 'resnet_50',
+ 'nmsradius': 5.0,
+ 'num_idchannel': 0,
+ 'num_joints': 5,
+ 'num_limbs': 10,
+ 'optimizer': 'sgd',
+ 'pairwise_huber_loss': True,
+ 'pairwise_predict': False,
+ 'partaffinityfield_graph': [[0, 1],
+                             [0, 2],
+                             [0, 3],
+                             [0, 4],
+                             [1, 2],
+                             [1, 3],
+                             [1, 4],
+                             [2, 3],
+                             [2, 4],
+                             [3, 4]],
+ 'partaffinityfield_predict': True,
+ 'regularize': False,
+ 'scoremap_dir': 'test',
+ 'shuffle': True,
+ 'sigma': 1,
+ 'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/test/snapshot',
+ 'stride': 8.0,
+ 'weigh_negatives': False,
+ 'weigh_only_present_joints': False,
+ 'weigh_part_predictions': False,
+ 'weight_decay': 0.0001}
+2022-02-12 11:46:04 Config:
+{'all_joints': [[0], [1], [2], [3], [4]],
+ 'all_joints_names': ['bodypart1',
+                      'bodypart2',
+                      'bodypart3',
+                      'bodypart4',
+                      'bodypart5'],
+ 'batch_size': 1,
+ 'crop_pad': 0,
+ 'dataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/make_tea_low_res_pitcher_yinghan95shuffle1.pickle',
+ 'dataset_type': 'multi-animal-imgaug',
+ 'deterministic': False,
+ 'fg_fraction': 0.25,
+ 'global_scale': 0.8,
+ 'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+ 'intermediate_supervision': False,
+ 'intermediate_supervision_layer': 12,
+ 'location_refinement': True,
+ 'locref_huber_loss': True,
+ 'locref_loss_weight': 1.0,
+ 'locref_smooth': False,
+ 'locref_stdev': 7.2801,
+ 'log_dir': 'log',
+ 'mean_pixel': [123.68, 116.779, 103.939],
+ 'minconfidence': 0.01,
+ 'mirror': False,
+ 'multi_stage': True,
+ 'net_type': 'resnet_50',
+ 'nmsradius': 5.0,
+ 'num_idchannel': 0,
+ 'num_joints': 5,
+ 'num_limbs': 10,
+ 'optimizer': 'sgd',
+ 'pairwise_huber_loss': True,
+ 'pairwise_predict': False,
+ 'partaffinityfield_graph': [[0, 1],
+                             [0, 2],
+                             [0, 3],
+                             [0, 4],
+                             [1, 2],
+                             [1, 3],
+                             [1, 4],
+                             [2, 3],
+                             [2, 4],
+                             [3, 4]],
+ 'partaffinityfield_predict': True,
+ 'regularize': False,
+ 'scoremap_dir': 'test',
+ 'shuffle': True,
+ 'sigma': 1,
+ 'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/test/snapshot',
+ 'stride': 8.0,
+ 'weigh_negatives': False,
+ 'weigh_only_present_joints': False,
+ 'weigh_part_predictions': False,
+ 'weight_decay': 0.0001}
+2022-02-13 14:48:38 Config:
+{'all_joints': [[0], [1], [2], [3], [4]],
+ 'all_joints_names': ['bodypart1',
+                      'bodypart2',
+                      'bodypart3',
+                      'bodypart4',
+                      'bodypart5'],
+ 'batch_size': 1,
+ 'crop_pad': 0,
+ 'dataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/make_tea_low_res_pitcher_yinghan95shuffle1.pickle',
+ 'dataset_type': 'multi-animal-imgaug',
+ 'deterministic': False,
+ 'fg_fraction': 0.25,
+ 'global_scale': 0.8,
+ 'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+ 'intermediate_supervision': False,
+ 'intermediate_supervision_layer': 12,
+ 'location_refinement': True,
+ 'locref_huber_loss': True,
+ 'locref_loss_weight': 1.0,
+ 'locref_smooth': False,
+ 'locref_stdev': 7.2801,
+ 'log_dir': 'log',
+ 'mean_pixel': [123.68, 116.779, 103.939],
+ 'minconfidence': 0.01,
+ 'mirror': False,
+ 'multi_stage': True,
+ 'net_type': 'resnet_50',
+ 'nmsradius': 5.0,
+ 'num_idchannel': 0,
+ 'num_joints': 5,
+ 'num_limbs': 10,
+ 'optimizer': 'sgd',
+ 'pairwise_huber_loss': True,
+ 'pairwise_predict': False,
+ 'partaffinityfield_graph': [[0, 1],
+                             [0, 2],
+                             [0, 3],
+                             [0, 4],
+                             [1, 2],
+                             [1, 3],
+                             [1, 4],
+                             [2, 3],
+                             [2, 4],
+                             [3, 4]],
+ 'partaffinityfield_predict': True,
+ 'regularize': False,
+ 'scoremap_dir': 'test',
+ 'shuffle': True,
+ 'sigma': 1,
+ 'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/test/snapshot',
+ 'stride': 8.0,
+ 'weigh_negatives': False,
+ 'weigh_only_present_joints': False,
+ 'weigh_part_predictions': False,
+ 'weight_decay': 0.0001}
+2022-02-13 14:51:27 Config:
+{'all_joints': [[0], [1], [2], [3], [4]],
+ 'all_joints_names': ['bodypart1',
+                      'bodypart2',
+                      'bodypart3',
+                      'bodypart4',
+                      'bodypart5'],
+ 'batch_size': 1,
+ 'crop_pad': 0,
+ 'dataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/make_tea_low_res_pitcher_yinghan95shuffle1.pickle',
+ 'dataset_type': 'multi-animal-imgaug',
+ 'deterministic': False,
+ 'fg_fraction': 0.25,
+ 'global_scale': 0.8,
+ 'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+ 'intermediate_supervision': False,
+ 'intermediate_supervision_layer': 12,
+ 'location_refinement': True,
+ 'locref_huber_loss': True,
+ 'locref_loss_weight': 1.0,
+ 'locref_smooth': False,
+ 'locref_stdev': 7.2801,
+ 'log_dir': 'log',
+ 'mean_pixel': [123.68, 116.779, 103.939],
+ 'minconfidence': 0.01,
+ 'mirror': False,
+ 'multi_stage': True,
+ 'net_type': 'resnet_50',
+ 'nmsradius': 5.0,
+ 'num_idchannel': 0,
+ 'num_joints': 5,
+ 'num_limbs': 10,
+ 'optimizer': 'sgd',
+ 'pairwise_huber_loss': True,
+ 'pairwise_predict': False,
+ 'partaffinityfield_graph': [[0, 1],
+                             [0, 2],
+                             [0, 3],
+                             [0, 4],
+                             [1, 2],
+                             [1, 3],
+                             [1, 4],
+                             [2, 3],
+                             [2, 4],
+                             [3, 4]],
+ 'partaffinityfield_predict': True,
+ 'regularize': False,
+ 'scoremap_dir': 'test',
+ 'shuffle': True,
+ 'sigma': 1,
+ 'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/test/snapshot',
+ 'stride': 8.0,
+ 'weigh_negatives': False,
+ 'weigh_only_present_joints': False,
+ 'weigh_part_predictions': False,
+ 'weight_decay': 0.0001}
+2022-02-13 15:00:43 Config:
+{'all_joints': [[0], [1], [2], [3], [4]],
+ 'all_joints_names': ['bodypart1',
+                      'bodypart2',
+                      'bodypart3',
+                      'bodypart4',
+                      'bodypart5'],
+ 'batch_size': 1,
+ 'crop_pad': 0,
+ 'dataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/make_tea_low_res_pitcher_yinghan95shuffle1.pickle',
+ 'dataset_type': 'multi-animal-imgaug',
+ 'deterministic': False,
+ 'fg_fraction': 0.25,
+ 'global_scale': 0.8,
+ 'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+ 'intermediate_supervision': False,
+ 'intermediate_supervision_layer': 12,
+ 'location_refinement': True,
+ 'locref_huber_loss': True,
+ 'locref_loss_weight': 1.0,
+ 'locref_smooth': False,
+ 'locref_stdev': 7.2801,
+ 'log_dir': 'log',
+ 'mean_pixel': [123.68, 116.779, 103.939],
+ 'minconfidence': 0.01,
+ 'mirror': False,
+ 'multi_stage': True,
+ 'net_type': 'resnet_50',
+ 'nmsradius': 5.0,
+ 'num_idchannel': 0,
+ 'num_joints': 5,
+ 'num_limbs': 10,
+ 'optimizer': 'sgd',
+ 'pairwise_huber_loss': True,
+ 'pairwise_predict': False,
+ 'partaffinityfield_graph': [[0, 1],
+                             [0, 2],
+                             [0, 3],
+                             [0, 4],
+                             [1, 2],
+                             [1, 3],
+                             [1, 4],
+                             [2, 3],
+                             [2, 4],
+                             [3, 4]],
+ 'partaffinityfield_predict': True,
+ 'regularize': False,
+ 'scoremap_dir': 'test',
+ 'shuffle': True,
+ 'sigma': 1,
+ 'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/test/snapshot',
+ 'stride': 8.0,
+ 'weigh_negatives': False,
+ 'weigh_only_present_joints': False,
+ 'weigh_part_predictions': False,
+ 'weight_decay': 0.0001}
+2022-02-13 15:09:07 Config:
+{'all_joints': [[0], [1], [2], [3], [4]],
+ 'all_joints_names': ['bodypart1',
+                      'bodypart2',
+                      'bodypart3',
+                      'bodypart4',
+                      'bodypart5'],
+ 'batch_size': 1,
+ 'crop_pad': 0,
+ 'dataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/make_tea_low_res_pitcher_yinghan95shuffle1.pickle',
+ 'dataset_type': 'multi-animal-imgaug',
+ 'deterministic': False,
+ 'fg_fraction': 0.25,
+ 'global_scale': 0.8,
+ 'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+ 'intermediate_supervision': False,
+ 'intermediate_supervision_layer': 12,
+ 'location_refinement': True,
+ 'locref_huber_loss': True,
+ 'locref_loss_weight': 1.0,
+ 'locref_smooth': False,
+ 'locref_stdev': 7.2801,
+ 'log_dir': 'log',
+ 'mean_pixel': [123.68, 116.779, 103.939],
+ 'minconfidence': 0.01,
+ 'mirror': False,
+ 'multi_stage': True,
+ 'net_type': 'resnet_50',
+ 'nmsradius': 5.0,
+ 'num_idchannel': 0,
+ 'num_joints': 5,
+ 'num_limbs': 10,
+ 'optimizer': 'sgd',
+ 'pairwise_huber_loss': True,
+ 'pairwise_predict': False,
+ 'partaffinityfield_graph': [[0, 1],
+                             [0, 2],
+                             [0, 3],
+                             [0, 4],
+                             [1, 2],
+                             [1, 3],
+                             [1, 4],
+                             [2, 3],
+                             [2, 4],
+                             [3, 4]],
+ 'partaffinityfield_predict': True,
+ 'regularize': False,
+ 'scoremap_dir': 'test',
+ 'shuffle': True,
+ 'sigma': 1,
+ 'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/test/snapshot',
+ 'stride': 8.0,
+ 'weigh_negatives': False,
+ 'weigh_only_present_joints': False,
+ 'weigh_part_predictions': False,
+ 'weight_decay': 0.0001}
+2022-02-13 16:14:09 Config:
+{'all_joints': [[0], [1], [2], [3], [4]],
+ 'all_joints_names': ['bodypart1',
+                      'bodypart2',
+                      'bodypart3',
+                      'bodypart4',
+                      'bodypart5'],
+ 'alpha_r': 0.02,
+ 'apply_prob': 0.5,
+ 'batch_size': 8,
+ 'clahe': True,
+ 'claheratio': 0.1,
+ 'crop_pad': 0,
+ 'crop_sampling': 'hybrid',
+ 'crop_size': [400, 400],
+ 'cropratio': 0.4,
+ 'dataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/make_tea_low_res_pitcher_yinghan95shuffle1.pickle',
+ 'dataset_type': 'multi-animal-imgaug',
+ 'decay_steps': 30000,
+ 'deterministic': False,
+ 'display_iters': 500,
+ 'edge': False,
+ 'emboss': {'alpha': [0.0, 1.0], 'embossratio': 0.1, 'strength': [0.5, 1.5]},
+ 'fg_fraction': 0.25,
+ 'global_scale': 0.8,
+ 'histeq': True,
+ 'histeqratio': 0.1,
+ 'init_weights': '/home/ychen/anaconda3/envs/DEEPLABCUT/lib/python3.8/site-packages/deeplabcut/pose_estimation_tensorflow/models/pretrained/resnet_v1_50.ckpt',
+ 'intermediate_supervision': False,
+ 'intermediate_supervision_layer': 12,
+ 'location_refinement': True,
+ 'locref_huber_loss': True,
+ 'locref_loss_weight': 0.05,
+ 'locref_stdev': 7.2801,
+ 'log_dir': 'log',
+ 'lr_init': 0.0005,
+ 'max_input_size': 1500,
+ 'max_shift': 0.4,
+ 'mean_pixel': [123.68, 116.779, 103.939],
+ 'metadataset': 'training-datasets/iteration-0/UnaugmentedDataSet_make_tea_low_res_pitcherFeb8/Documentation_data-make_tea_low_res_pitcher_95shuffle1.pickle',
+ 'min_input_size': 64,
+ 'mirror': False,
+ 'multi_stage': True,
+ 'multi_step': [[0.0001, 7500], [5e-05, 12000], [1e-05, 200000]],
+ 'net_type': 'resnet_50',
+ 'num_idchannel': 0,
+ 'num_joints': 5,
+ 'num_limbs': 10,
+ 'optimizer': 'adam',
+ 'pafwidth': 20,
+ 'pairwise_huber_loss': False,
+ 'pairwise_loss_weight': 0.1,
+ 'pairwise_predict': False,
+ 'partaffinityfield_graph': [[0, 1],
+                             [0, 2],
+                             [0, 3],
+                             [0, 4],
+                             [1, 2],
+                             [1, 3],
+                             [1, 4],
+                             [2, 3],
+                             [2, 4],
+                             [3, 4]],
+ 'partaffinityfield_predict': True,
+ 'pos_dist_thresh': 17,
+ 'pre_resize': [],
+ 'project_path': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08',
+ 'regularize': False,
+ 'rotation': 25,
+ 'rotratio': 0.4,
+ 'save_iters': 10000,
+ 'scale_jitter_lo': 0.5,
+ 'scale_jitter_up': 1.25,
+ 'scoremap_dir': 'test',
+ 'sharpen': False,
+ 'sharpenratio': 0.3,
+ 'shuffle': True,
+ 'snapshot_prefix': '/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/train/snapshot',
+ 'stride': 8.0,
+ 'weigh_negatives': False,
+ 'weigh_only_present_joints': False,
+ 'weigh_part_predictions': False,
+ 'weight_decay': 0.0001}
+2022-02-13 16:17:49 iteration: 1000 loss: 0.0133 scmap loss: 0.0108 locref loss: 0.0005 limb loss: 0.0020 lr: 0.0001
+2022-02-13 16:21:15 iteration: 2000 loss: 0.0047 scmap loss: 0.0042 locref loss: 0.0001 limb loss: 0.0004 lr: 0.0001
+2022-02-13 16:24:43 iteration: 3000 loss: 0.0040 scmap loss: 0.0036 locref loss: 0.0001 limb loss: 0.0003 lr: 0.0001
+2022-02-13 16:28:11 iteration: 4000 loss: 0.0036 scmap loss: 0.0033 locref loss: 0.0001 limb loss: 0.0002 lr: 0.0001
+2022-02-13 16:31:38 iteration: 5000 loss: 0.0034 scmap loss: 0.0032 locref loss: 0.0001 limb loss: 0.0002 lr: 0.0001
+2022-02-13 16:35:06 iteration: 6000 loss: 0.0032 scmap loss: 0.0030 locref loss: 0.0001 limb loss: 0.0002 lr: 0.0001
+2022-02-13 16:38:33 iteration: 7000 loss: 0.0031 scmap loss: 0.0029 locref loss: 0.0001 limb loss: 0.0001 lr: 0.0001
+2022-02-13 16:41:59 iteration: 8000 loss: 0.0028 scmap loss: 0.0026 locref loss: 0.0000 limb loss: 0.0001 lr: 5e-05
+2022-02-13 16:45:27 iteration: 9000 loss: 0.0025 scmap loss: 0.0024 locref loss: 0.0000 limb loss: 0.0001 lr: 5e-05
+2022-02-13 16:48:53 iteration: 10000 loss: 0.0025 scmap loss: 0.0023 locref loss: 0.0000 limb loss: 0.0001 lr: 5e-05
+2022-02-13 16:52:22 iteration: 11000 loss: 0.0024 scmap loss: 0.0022 locref loss: 0.0000 limb loss: 0.0001 lr: 5e-05
+2022-02-13 16:55:48 iteration: 12000 loss: 0.0023 scmap loss: 0.0022 locref loss: 0.0000 limb loss: 0.0001 lr: 5e-05
+2022-02-13 16:59:15 iteration: 13000 loss: 0.0020 scmap loss: 0.0019 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:02:42 iteration: 14000 loss: 0.0019 scmap loss: 0.0018 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:06:08 iteration: 15000 loss: 0.0019 scmap loss: 0.0017 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:09:34 iteration: 16000 loss: 0.0018 scmap loss: 0.0017 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:13:01 iteration: 17000 loss: 0.0018 scmap loss: 0.0017 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:16:28 iteration: 18000 loss: 0.0018 scmap loss: 0.0017 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:19:55 iteration: 19000 loss: 0.0017 scmap loss: 0.0016 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:23:22 iteration: 20000 loss: 0.0017 scmap loss: 0.0016 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:26:50 iteration: 21000 loss: 0.0017 scmap loss: 0.0016 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:30:16 iteration: 22000 loss: 0.0017 scmap loss: 0.0016 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:33:44 iteration: 23000 loss: 0.0016 scmap loss: 0.0015 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:37:11 iteration: 24000 loss: 0.0016 scmap loss: 0.0015 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:40:38 iteration: 25000 loss: 0.0016 scmap loss: 0.0015 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:44:05 iteration: 26000 loss: 0.0016 scmap loss: 0.0015 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:47:31 iteration: 27000 loss: 0.0016 scmap loss: 0.0015 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:50:58 iteration: 28000 loss: 0.0015 scmap loss: 0.0014 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:54:25 iteration: 29000 loss: 0.0015 scmap loss: 0.0014 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 17:57:52 iteration: 30000 loss: 0.0015 scmap loss: 0.0014 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:01:19 iteration: 31000 loss: 0.0015 scmap loss: 0.0014 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:04:46 iteration: 32000 loss: 0.0015 scmap loss: 0.0014 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:08:13 iteration: 33000 loss: 0.0014 scmap loss: 0.0014 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:11:40 iteration: 34000 loss: 0.0015 scmap loss: 0.0014 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:15:07 iteration: 35000 loss: 0.0014 scmap loss: 0.0013 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:18:35 iteration: 36000 loss: 0.0014 scmap loss: 0.0013 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:22:01 iteration: 37000 loss: 0.0014 scmap loss: 0.0013 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:25:29 iteration: 38000 loss: 0.0014 scmap loss: 0.0013 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:28:56 iteration: 39000 loss: 0.0013 scmap loss: 0.0013 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:32:23 iteration: 40000 loss: 0.0014 scmap loss: 0.0013 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:35:51 iteration: 41000 loss: 0.0013 scmap loss: 0.0013 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:39:18 iteration: 42000 loss: 0.0013 scmap loss: 0.0013 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:42:45 iteration: 43000 loss: 0.0014 scmap loss: 0.0013 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:46:13 iteration: 44000 loss: 0.0013 scmap loss: 0.0012 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:49:40 iteration: 45000 loss: 0.0013 scmap loss: 0.0012 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:53:07 iteration: 46000 loss: 0.0013 scmap loss: 0.0012 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 18:56:34 iteration: 47000 loss: 0.0013 scmap loss: 0.0012 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:00:02 iteration: 48000 loss: 0.0013 scmap loss: 0.0012 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:03:29 iteration: 49000 loss: 0.0013 scmap loss: 0.0012 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:06:57 iteration: 50000 loss: 0.0012 scmap loss: 0.0012 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:10:25 iteration: 51000 loss: 0.0012 scmap loss: 0.0012 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:13:54 iteration: 52000 loss: 0.0012 scmap loss: 0.0012 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:17:26 iteration: 53000 loss: 0.0012 scmap loss: 0.0012 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:20:55 iteration: 54000 loss: 0.0012 scmap loss: 0.0011 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:24:25 iteration: 55000 loss: 0.0012 scmap loss: 0.0011 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:27:57 iteration: 56000 loss: 0.0012 scmap loss: 0.0011 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:31:26 iteration: 57000 loss: 0.0012 scmap loss: 0.0011 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:34:56 iteration: 58000 loss: 0.0012 scmap loss: 0.0011 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:38:27 iteration: 59000 loss: 0.0012 scmap loss: 0.0011 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:41:59 iteration: 60000 loss: 0.0012 scmap loss: 0.0011 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:45:29 iteration: 61000 loss: 0.0012 scmap loss: 0.0011 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:48:59 iteration: 62000 loss: 0.0012 scmap loss: 0.0011 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:52:29 iteration: 63000 loss: 0.0012 scmap loss: 0.0011 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 19:55:59 iteration: 64000 loss: 0.0011 scmap loss: 0.0011 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 19:59:29 iteration: 65000 loss: 0.0012 scmap loss: 0.0011 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 20:02:59 iteration: 66000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 20:06:30 iteration: 67000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 20:10:01 iteration: 68000 loss: 0.0011 scmap loss: 0.0011 locref loss: 0.0000 limb loss: 0.0001 lr: 1e-05
+2022-02-13 20:13:32 iteration: 69000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 20:17:04 iteration: 70000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 20:20:36 iteration: 71000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 20:24:06 iteration: 72000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 20:27:37 iteration: 73000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 20:31:08 iteration: 74000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 20:34:39 iteration: 75000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 20:38:10 iteration: 76000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 20:41:41 iteration: 77000 loss: 0.0010 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 20:45:12 iteration: 78000 loss: 0.0011 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 20:48:40 iteration: 79000 loss: 0.0010 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 20:52:08 iteration: 80000 loss: 0.0010 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 20:55:35 iteration: 81000 loss: 0.0010 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 20:59:03 iteration: 82000 loss: 0.0010 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:02:31 iteration: 83000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:06:01 iteration: 84000 loss: 0.0010 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:09:29 iteration: 85000 loss: 0.0010 scmap loss: 0.0010 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:13:00 iteration: 86000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:16:31 iteration: 87000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:20:00 iteration: 88000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:23:32 iteration: 89000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:27:04 iteration: 90000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:30:35 iteration: 91000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:34:07 iteration: 92000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:37:37 iteration: 93000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:41:08 iteration: 94000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:44:38 iteration: 95000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:48:08 iteration: 96000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:51:38 iteration: 97000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:55:08 iteration: 98000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 21:58:41 iteration: 99000 loss: 0.0010 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:02:12 iteration: 100000 loss: 0.0009 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:05:42 iteration: 101000 loss: 0.0009 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:09:13 iteration: 102000 loss: 0.0009 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:12:44 iteration: 103000 loss: 0.0009 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:16:16 iteration: 104000 loss: 0.0009 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:19:46 iteration: 105000 loss: 0.0009 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:23:17 iteration: 106000 loss: 0.0009 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:26:47 iteration: 107000 loss: 0.0009 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:30:19 iteration: 108000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:33:47 iteration: 109000 loss: 0.0009 scmap loss: 0.0009 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:37:14 iteration: 110000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:40:42 iteration: 111000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:44:10 iteration: 112000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:47:37 iteration: 113000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:51:05 iteration: 114000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:54:31 iteration: 115000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 22:57:58 iteration: 116000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 23:01:25 iteration: 117000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 23:04:53 iteration: 118000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 23:08:20 iteration: 119000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 23:11:47 iteration: 120000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 23:15:14 iteration: 121000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 23:18:41 iteration: 122000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 23:22:09 iteration: 123000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 23:25:36 iteration: 124000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05
+2022-02-13 23:29:03 iteration: 125000 loss: 0.0009 scmap loss: 0.0008 locref loss: 0.0000 limb loss: 0.0000 lr: 1e-05

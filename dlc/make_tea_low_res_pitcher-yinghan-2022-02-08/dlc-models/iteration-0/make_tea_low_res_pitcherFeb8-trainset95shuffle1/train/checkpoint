@@ -1,0 +1,6 @@
+model_checkpoint_path: "/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/train/snapshot-120000"
+all_model_checkpoint_paths: "/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/train/snapshot-80000"
+all_model_checkpoint_paths: "/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/train/snapshot-90000"
+all_model_checkpoint_paths: "/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/train/snapshot-100000"
+all_model_checkpoint_paths: "/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/train/snapshot-110000"
+all_model_checkpoint_paths: "/home/ychen/Desktop/make_tea/dlc/make_tea_low_res_pitcher-yinghan-2022-02-08/dlc-models/iteration-0/make_tea_low_res_pitcherFeb8-trainset95shuffle1/train/snapshot-120000"
