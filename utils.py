@@ -12,7 +12,7 @@ def get_videos(vid_id, obj = None, kernel = None, base_dir = '/home/luke/Desktop
     '''
     if kernel == None:
         if obj == None:
-            videos = [f'{base_dir}/videos/{vid_id}/left/{vid_id}-left.mp4',
+            videos = [f'{base_dir}/camera-main//videos/{vid_id}/left/{vid_id}-left.mp4',
               f'{base_dir}/camera-main/videos/{vid_id}/right/{vid_id}-right.mp4']
         else:
             videos = [f'{base_dir}/camera-main/videos/{vid_id}/left/{obj}/{vid_id}-left.mp4',
