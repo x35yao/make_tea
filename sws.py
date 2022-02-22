@@ -207,8 +207,9 @@ def get_error_total(df, obj, window_size, kernel, with_ori = True, normalized = 
     error_pos = np.sqrt(np.nan_to_num(error_x**2) + np.nan_to_num(error_y**2) + np.nan_to_num(error_z**2))
     error_pos_normalized = error_pos / np.linalg.norm(error_pos)
     if with_ori:
+
         XYZ = df[obj][['X', 'Y', 'Z']].values
-        error_ori = get_error_ori(XYZ, window_size = 11)
+        error_ori = get_error_ori(XYZ, window_size = 3)
         error_ori[error_ori> 0.5] = 0
         # error_ori[np.where(error_ori>1)[0]] = 0
         error_ori_normalized = error_ori / np.linalg.norm(error_ori)

@@ -10,6 +10,9 @@ from deeplabcut.refine_training_dataset.outlier_frames import FitSARIMAXModel
 from scipy import signal, ndimage
 from sklearn.linear_model import LinearRegression,RANSACRegressor
 from skimage.measure import LineModelND, ransac
+import sws
+import scipy.stats as st
+import utils
 
 
 
@@ -140,7 +143,52 @@ def get_pose_mean(df, bodyparts, lr_model = 'ransac', residual = 1):
     pose_mean = np.concatenate((pos_mean, ori_mean), axis = 1)
     return pose_mean
 
-def filter_3D_data(file_path, filtertype = 'median', window_size = 5):
+def get_interval(x, confidence):
+
+    v = np.nan_to_num(sws.get_gradient(x))
+    a = np.nan_to_num(sws.get_gradient(v))
+    mean_a = np.mean(a)
+    std_a = np.std(a)
+    z = st.norm.ppf(confidence)
+    low = mean_a - z * std_a
+    high = mean_a + z * std_a
+
+    return low, high
+
+def get_outlier_inds(x, low, high):
+    v = np.nan_to_num(sws.get_gradient(x))
+    a = np.nan_to_num(sws.get_gradient(v))
+    mean_a = np.mean(a)
+    std_a = np.std(a)
+    mask = np.where(np.logical_and(abs(a) > high, abs(a) > 3))
+    inds = mask[0][mask[0] > 10]
+    return inds
+
+def acc_smooth(x, window_size, confidence):
+    low, high = get_interval(x, confidence)
+    inds = get_outlier_inds(x, low, high)
+    count = 0
+    half_window = int(window_size/2)
+    print(inds)
+    while inds !=[]:
+        inds_previous = inds
+        ind = inds[0]
+        start = ind - 1 - half_window
+        end = ind + half_window
+        np.median(x[start:end])
+        x[ind] = x[ind - 1] = np.median(x[start:end])
+        # x[ind] = x[ind - 1] = x[ind - 2]
+        # x[ind] = x[ind - 1]
+        inds = get_outlier_inds(x, low, high)
+        if not set(inds_previous) == set(inds):
+            print(inds)
+        count += 1
+        if count > 5000:
+            confidence += 0.01
+            low, high = get_interval(x, confidence = confidence)
+    return x
+
+def filter_3D_data(file_path, filtertype = 'median', window_size = 5, confidence = 0.95, thresh = 3):
 
     df= pd.read_hdf(file_path)
     # df = remove_nans(df_with_nans, remove_method = remove_method)
@@ -148,14 +196,32 @@ def filter_3D_data(file_path, filtertype = 'median', window_size = 5):
 
     if filtertype == 'median':
         f = signal.medfilt
+        df_filtered = df.apply(
+                                f, args=(window_size,), axis=0)
     elif filtertype == 'gaussian':
         f = ndimage.gaussian_filter
-    mask = df.columns.get_level_values("coords") != "likelihood"
+        df_filtered = df.apply(
+                                f, args=(window_size,), axis=0)
+    elif filtertype == 'acc_smooth':
+        n_columns = df.shape[1]
+        for j in np.arange(n_columns):
+            df_new = df.copy()
+            x = df_new.values[:, j]
+            low, high = get_interval(x, confidence)
+            temp = ndimage.median_filter(x, size = window_size)
+            inds = get_outlier_inds(temp, low , high)
+            print(inds)
+            while inds != []:
+                window_size += 1
+                temp = ndimage.median_filter(x, size = window_size)
+                print(window_size)
+                inds = get_outlier_inds(temp, low, high)
+                print(inds)
+            df_filtered.values[:,j] = temp
 
-    df_filtered.loc[:, mask] = df.loc[:, mask].apply(
-                            f, args=(window_size,), axis=0)
     outputname = file_path.replace('.h5', f'_filtered_{filtertype}.h5')
     df_filtered.to_hdf(outputname, key = 'filtered_3d')
+    print(f'File is saved at {outputname}.')
     return df_filtered
 
 
@@ -374,18 +440,29 @@ def interpolate_data(config,
     return outputnames
 
 
-def combine_h5files(objs, video, suffix, to_csv = True):
-    df_new = pd.DataFrame
-    video_dir = os.path.dirname(video)
-    for obj in objs:
-        h5file = glob(video_dir + '/' + f'*obj*_{suffix}.h5')
-        df = pd.read_hdf(h5file)
-        pd.concat([df_new, df], axis = 1)
-    df_new.to_hdf('combined.h5', key = 'combined_data')
-    if to_csv:
-        df_new.to_csv('combined.csv')
+def combine_h5files(vid_id, objs = ['teabag', 'pitcher', 'tap', 'cup'] , filtertypes = ['nearest', 'median'], to_csv = True):
+    suffix = '_'.join(filtertypes)
+    combined_files = []
+    for i in range(2):
+        df_new = pd.DataFrame()
+        for obj in objs:
+            videos = utils.get_videos(vid_id, obj)
+            video = videos[i]
+            video_dir = os.path.dirname(video)
+            h5file = glob(video_dir + '/' + f'*_{suffix}.h5')[0]
+            df = pd.read_hdf(h5file)
+            df_new = pd.concat([df_new, df], axis = 1)
+        destdir = os.path.dirname(os.path.dirname(video))
+        outputname = destdir + '/' + 'combined.h5'
+        if os.path.isfile(outputname):
+            print('Removing exsited file.')
+            os.remove(outputname)
+        df_new.to_hdf(outputname, mode = 'w', key = 'combined_data')
+        if to_csv:
+            df_new.to_csv(outputname.replace('.h5', '.csv'))
+        combined_files.append(outputname)
 
-
+    return combined_files
 # def create_video_without_nans(config, video, h5file, remove_method, kernel = 'x_linear', window_size = 3):
 #     df_new, newh5file = remove_nans_and_save(h5file, remove_method = remove_method, kernel = kernel, window_size = window_size)
 #     if remove_method != 'interpolation':
