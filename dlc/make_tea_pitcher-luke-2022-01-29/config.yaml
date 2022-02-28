@@ -10,10 +10,11 @@ project_path: /home/luke/Desktop/project/make_tea/dlc/make_tea_pitcher-luke-2022
 
     # Annotation data set configuration (and individual video cropping parameters)
 video_sets:
-  /home/luke/Desktop/project/make_tea/camera-main/videos/1641420386/1641420386-left.mp4:
-    crop: 0, 1920, 0, 1088
-  /home/luke/Desktop/project/make_tea/camera-main/videos/1641421641/1641421641-right.mp4:
-    crop: 0, 1920, 0, 1088
+  /home/luke/Desktop/project/make_tea/camera-main/videos/1645724115/left/1645724115-left.mp4:
+    crop: 0, 1920, 0, 1080
+  /home/luke/Desktop/project/make_tea/camera-main/videos/1645724115/right/1645724115-right.mp4:
+    crop: 0, 1920, 0, 1080
+
 individuals:
 - pitcher
 uniquebodyparts: []
@@ -35,9 +36,9 @@ skeleton:
 - - bodypart1
   - bodypart5
 bodyparts: MULTI!
-start: 0
+start: 0.5
 stop: 1
-numframes2pick: 20
+numframes2pick: 100
 
     # Plotting configuration
 skeleton_color: black
