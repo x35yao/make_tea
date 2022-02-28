@@ -8,7 +8,7 @@ from  deeplabcut.utils import auxiliaryfunctions
 from deeplabcut.utils.video_processor import VideoProcessorCV as vp
 import os
 import numpy as np
-from tqdm import tqdm
+from tqdm import trange
 
 
 # import argparse
@@ -39,6 +39,9 @@ def browse_video_frame(video_path, index):
 
         cv2.destroyAllWindows()
 
+from memory_profiler import profile
+
+# @profile
 def create_video_with_h5file(config_path, video, h5file, suffix = None):
     '''
     This function create a new video with labels. Labels are from the h5file provided.
@@ -71,12 +74,12 @@ def create_video_with_h5file(config_path, video, h5file, suffix = None):
     C = colorclass.to_rgba(np.linspace(0, 1, numjoints))
     colors = (C[:, :3] * 255).astype(np.uint8)
     clip = vp(fname=video, sname=outputname, codec="mp4v")
+    nframes = clip.nframes
     ny, nx = clip.height(), clip.width()
-    for i in tqdm(range(clip.nframes)):
+    det_indices= df.columns[::3]
+    for i in trange(nframes):
         frame = clip.load_frame()
-        plt.imshow(frame)
         fdata = df.loc[i]
-        det_indices= df.columns[::3]
         for det_ind in det_indices:
             ind = det_ind[:-1]
             x = fdata[ind]['x']
@@ -108,11 +111,19 @@ def create_interpolated_video(config_path,
         create_video_with_h5file(config_path, video, h5file, suffix = filtertype)
 
 
-if __name__== '__main__':
-    vid_id = '1642994619'
-    vid_id = '1644282488'
+# if __name__== '__main__':
+#     vid_id = '1642994619'
+#     vid_id = '1644282488'
+#
+#     camera = 'left'
+#     obj = 'pitcher'
+#     video = f'/home/luke/Desktop/project/make_tea/camera-main/videos/{vid_id}/{camera}/{obj}/{vid_id}-{camera}.mp4'
+#     browse_video_frame(video, 1)
 
-    camera = 'left'
+if __name__== '__main__':
+    vid_id = '1645724115'
     obj = 'pitcher'
-    video = f'/home/luke/Desktop/project/make_tea/camera-main/videos/{vid_id}/{camera}/{obj}/{vid_id}-{camera}.mp4'
-    browse_video_frame(video, 1)
+    config_path = glob(f'/home/luke/Desktop/project/make_tea/dlc/make_tea_{obj}*/config.yaml')[0]
+    video = '/home/luke/Desktop/project/make_tea/camera-main/videos/1645724115/left/pitcher/1645724115-left.mp4'
+    h5file = '/home/luke/Desktop/project/make_tea/camera-main/videos/1645724115/left/pitcher/1645724115-left_nearest_median.h5'
+    create_video_with_h5file(config_path, video, h5file, suffix = None)

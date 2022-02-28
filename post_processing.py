@@ -351,7 +351,7 @@ def interpolate_data(config,
     ARdegree=3,
     MAdegree=1,
     alpha=0.01,
-    save_as_csv=False,
+    save_as_csv=True,
     destfolder=None,
     modelprefix="",
     track_method="",):
