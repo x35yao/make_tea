@@ -84,6 +84,19 @@ def pixelTo3DCameraCoord(img, disp_map, coords, is_left_image=True):
         result_coords.append({'x1':x1, 'y':y, 'x2':x2, 'X':X, 'Y':Y, 'Z':Z})
     return result_coords
 
+def cameraCoord3DToPixel(img, coord3D):
+    """
+    Returns a list of original pixel coordinates provided by coord3D as a list of dict.
+    """
+    pixel_coords = []
+    img_dims, disp_dims = img.shape, disp_map.shape
+    for _, point3d in enumerate(coord3D):
+        Z = point3d['Z']
+        x = point3d['X']*FOCAL_LENGTH/(PIXEL_LENGTH*Z) + img_dims[1]/2
+        y = point3d['Y']*FOCAL_LENGTH/(PIXEL_LENGTH*Z) + img_dims[0]/2
+        pixel_coords.append([x, y])
+    return pixel_coords
+
 def LEAStereoCoordinate(img_path, disp_path, data, is_left_image=True):
     """
     Returns a dict of all images in img_path containing
