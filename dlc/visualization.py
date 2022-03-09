@@ -1,4 +1,4 @@
-import post_processing
+from post_processing import interpolate_data
 import cv2
 from glob import glob
 from matplotlib import pyplot as plt
@@ -13,27 +13,29 @@ from tqdm import trange
 
 # import argparse
 
-def browse_video_frame(video_path, index):
+def browse_video_frame(video_path, ind):
 
     vidcap = cv2.VideoCapture(video_path)
+    ind = 0
+    vidcap.set(1, ind)
     success,image = vidcap.read()
-    count = 0
-    imgs = []
-    while success:
-        imgs.append(image)
-        success, image = vidcap. read()
-        count +=1
-
     while(True):
-        cv2.imshow(f'current image{index}', imgs[index])
+        cv2.imshow(f'current image{ind}', image)
         key = cv2.waitKey(0)
-
         if key == ord('x'):
-            index -= 1
+            ind -= 1
+            vidcap.set(1, ind)
+            success,image = vidcap.read()
         elif key == ord('v'):
-            index +=1
+            ind += 1
+            print(ind)
+            vidcap.set(1, ind)
+            success,image = vidcap.read()
+            print(success)
         elif key == ord('m'):
-            index = int(input('Number of frame you want to jump to: '))
+            ind = int(input('Number of frame you want to jump to: '))
+            vidcap.set(1, ind)
+            success,image = vidcap.read()
         elif key == ord('q'):
             break
 
@@ -107,24 +109,25 @@ def create_interpolated_video(config_path,
     modelprefix="",
     track_method="",):
 
-    h5files = post_processing.interpolate_data(config_path, video, filtertype = filtertype, windowlength = windowlength, ARdegree = ARdegree, MAdegree= MAdegree, save_as_csv = True)
+    h5files = interpolate_data(config_path, video, filtertype = filtertype, windowlength = windowlength, ARdegree = ARdegree, MAdegree= MAdegree, save_as_csv = True)
     for h5file in h5files:
         create_video_with_h5file(config_path, video, h5file, suffix = filtertype)
 
 
-# if __name__== '__main__':
-#     vid_id = '1642994619'
-#     vid_id = '1644282488'
-#
-#     camera = 'left'
-#     obj = 'pitcher'
-#     video = f'/home/luke/Desktop/project/make_tea/camera-main/videos/{vid_id}/{camera}/{obj}/{vid_id}-{camera}.mp4'
-#     browse_video_frame(video, 1)
-
 if __name__== '__main__':
-    vid_id = '1645724115'
+    vid_id = '1642994619'
+    vid_id = '1645721497'
+
+    camera = 'left'
     obj = 'pitcher'
-    config_path = glob(f'/home/luke/Desktop/project/make_tea/dlc/make_tea_{obj}*/config.yaml')[0]
-    video = '/home/luke/Desktop/project/make_tea/camera-main/videos/1645724115/left/pitcher/1645724115-left.mp4'
-    h5file = '/home/luke/Desktop/project/make_tea/camera-main/videos/1645724115/left/pitcher/1645724115-left_nearest_median.h5'
-    create_video_with_h5file(config_path, video, h5file, suffix = None)
+    # video = f'/home/luke/Desktop/project/make_tea/camera-main/videos/{vid_id}/{camera}/{obj}/{vid_id}-{camera}.mp4'
+    video = f'/home/luke/Desktop/project/make_tea/camera-main/videos/{vid_id}/{camera}/combined.mp4'
+    browse_video_frame(video, 1)
+
+# if __name__== '__main__':
+#     vid_id = '1645721497'
+#     obj = 'pitcher'
+#     config_path = glob(f'/home/luke/Desktop/project/make_tea/dlc/make_tea_{obj}*/config.yaml')[0]
+#     video = '/home/luke/Desktop/project/make_tea/camera-main/videos/1645724115/left/pitcher/1645724115-left.mp4'
+#     h5file = '/home/luke/Desktop/project/make_tea/camera-main/videos/1645724115/left/pitcher/1645724115-left_nearest_median.h5'
+#     create_video_with_h5file(config_path, video, h5file, suffix = None)
