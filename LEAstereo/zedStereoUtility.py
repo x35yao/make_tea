@@ -71,17 +71,20 @@ def pixelTo3DCameraCoord(img, disp_map, coords, is_left_image=True):
     for _, pix in enumerate(coords):
         # Different ordering of dims between coordinate and images fixed here.
         if len(pix) == 0: continue
-        x1, y = (int(i) for dim, i in enumerate(pix))
-        d_x, d_y = pix[0]/fixed_ratios[1], pix[1]/fixed_ratios[0]
-        d = pixelInterpolation(d_x, d_y, disp_map)*fixed_ratios[1]
-        if is_left_image:
-            x2 = int(x1 - d)
+        if np.isnan(pix).any():
+            result_coords.append({'x1':np.nan, 'y':np.nan, 'x2':np.nan, 'X':np.nan, 'Y':np.nan, 'Z':np.nan})
         else:
-            x2 = int(x1 + d)
-        # Z is the depth from camera center in cm and X, Y for the other 2 axis.
-        Z = BASELINE*FOCAL_LENGTH/(d*PIXEL_LENGTH)
-        X, Y = (x1 - img_dims[1]/2)*PIXEL_LENGTH*Z/FOCAL_LENGTH, (y - img_dims[0]/2)*PIXEL_LENGTH*Z/FOCAL_LENGTH
-        result_coords.append({'x1':x1, 'y':y, 'x2':x2, 'X':X, 'Y':Y, 'Z':Z})
+            x1, y = (int(i) for dim, i in enumerate(pix))
+            d_x, d_y = pix[0]/fixed_ratios[1], pix[1]/fixed_ratios[0]
+            d = pixelInterpolation(d_x, d_y, disp_map)*fixed_ratios[1]
+            if is_left_image:
+                x2 = int(x1 - d)
+            else:
+                x2 = int(x1 + d)
+            # Z is the depth from camera center in cm and X, Y for the other 2 axis.
+            Z = BASELINE*FOCAL_LENGTH/(d*PIXEL_LENGTH)
+            X, Y = (x1 - img_dims[1]/2)*PIXEL_LENGTH*Z/FOCAL_LENGTH, (y - img_dims[0]/2)*PIXEL_LENGTH*Z/FOCAL_LENGTH
+            result_coords.append({'x1':x1, 'y':y, 'x2':x2, 'X':X, 'Y':Y, 'Z':Z})
     return result_coords
 
 def cameraCoord3DToPixel(img, coord3D):
