@@ -92,7 +92,7 @@ def cameraCoord3DToPixel(img, coord3D):
     Returns a list of original pixel coordinates provided by coord3D as a list of dict.
     """
     pixel_coords = []
-    img_dims, disp_dims = img.shape, disp_map.shape
+    img_dims = img.shape
     for _, point3d in enumerate(coord3D):
         Z = point3d['Z']
         x = point3d['X']*FOCAL_LENGTH/(PIXEL_LENGTH*Z) + img_dims[1]/2
