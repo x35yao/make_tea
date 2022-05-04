@@ -47,7 +47,7 @@ class KeypointSelector:
         result_df['condition'].iloc[0] = 'start'
         for i in range(1, len(vel_mean)):
             prev_key_pt = keypoint_indices[-1]
-#             if self.min_time_sep > abs(object_traj['Time'].iloc[prev_key_pt] - object_traj['Time'].iloc[i]): continue
+            if self.min_time_sep > abs(object_traj['Time'].iloc[prev_key_pt] - object_traj['Time'].iloc[i]): continue
             # find velocity keypoints
             if not vel_mean[i-1:i+1].isnull().values.any():
                 if (vel_mean[i-1] < self.vel_th_fast and self.vel_th_fast < vel_mean[i] and 
