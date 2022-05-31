@@ -1,5 +1,6 @@
 from glob import glob
 import cv2
+import os
 
 def get_videos(vid_id, obj = None, filtertypes = None, cameras = ['left', 'right'], base_dir = '/home/luke/Desktop/project/make_tea'):
     '''
@@ -35,18 +36,8 @@ def get_videos(vid_id, obj = None, filtertypes = None, cameras = ['left', 'right
 
 
 
-def get_h5files(vid_id, objs, filtertype = None, cameras = ['left', 'right'], base_dir = '/home/luke/Desktop/project/make_tea'):
-    h5files = []
-    if not isinstance(cameras, list):
-        cameras = [cameras]
-    for camera in cameras:
-        for obj in objs:
-            if filtertype == None:
-                h5file = glob(f'{base_dir}/camera-main/videos/{vid_id}/{camera}/{obj}/{vid_id}-{camera}DLC*.h5')[0]
-            else:
-                suffix = f'_{filtertype}'
-                h5file = glob(f'{base_dir}/camera-main/videos/{vid_id}/{camera}/{obj}/{vid_id}-{camera}*{suffix}.h5')[0]
-            h5files.append(h5file)
+def get_h5files(dirname, filtertype = None):
+    h5files = glob(os.path.join(dirname, '*.h5'))
     return h5files
 
 def video_to_frames(video_path):

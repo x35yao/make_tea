@@ -14,27 +14,24 @@ def batch_evaluate():
         config_path = glob(f'/home/luke/Desktop/project/make_tea/dlc/make_tea_{obj}*/config.yaml')[0]
         deeplabcut.evaluate_network(config_path, plotting=True)
 
-def batch_analyze_video(vid_id, objs = ['pitcher', 'tap', 'teabag', 'cup'], n_cameras = 1, shuffle = 1, make_video = True):
+def batch_analyze_video(videos, objs = ['pitcher', 'tap', 'teabag', 'cup'], shuffle = 1, make_video = True):
     for obj in objs:
         config_path = glob(f'/home/luke/Desktop/project/make_tea/dlc/make_tea_{obj}*/config.yaml')[0]
-        videos = get_videos(vid_id, obj)
-        # h5file = get_h5files(vid_id, obj)[0]
-        # print(h5file)
-        if n_cameras == 1:
-            videos = [videos[0]]
         for video in videos:
-            obj_dir = os.path.dirname(video)
+            obj_dir = os.path.join(os.path.dirname(video), obj)
+            vid_name = os.path.basename(video)
+            obj_video = os.path.join(obj_dir, vid_name)
             if not os.path.isdir(obj_dir):
                 os.makedirs(obj_dir)
-            if not os.path.isfile(video):
-                filename = os.path.basename(video)
-                folder = os.path.dirname(os.path.dirname(video))
-                src = folder + '/' + filename
-                dest = os.path.dirname(video)
-                shutil.copyfile(src, video)
-            scorername = deeplabcut.analyze_videos(config_path, video, videotype='.mp4', auto_track = True, robust_nframes = True, save_as_csv = True, shuffle = shuffle)
+            if not os.path.isfile(obj_video):
+                shutil.copyfile(video, obj_video)
+            scorername = deeplabcut.analyze_videos(config_path, video, videotype='.mp4', auto_track = True, robust_nframes = True, save_as_csv = True, shuffle = shuffle, destfolder = obj_dir)
             if make_video:
-                deeplabcut.create_video_with_all_detections(config_path, video, videotype = '.mp4', shuffle = shuffle)
+                h5files = get_h5files(obj_dir)
+                h5file = h5files[0]
+                create_video_with_h5file(obj_video, h5file)
+                # deeplabcut.create_video_with_all_detections(config_path, obj_video, videotype = '.mp4', shuffle = shuffle)
+
 
 def batch_get_tracklets(videos):
     objs = ['teabag', 'cup', 'pitcher', 'tap']
