@@ -71,7 +71,7 @@ class Cell(nn.Module):
             offset += len(states)
             states.append(s)
 
-        concat_feature = torch.cat(states[-self.block_multiplier:], dim=1) 
+        concat_feature = torch.cat(states[-self.block_multiplier:], dim=1)
         return prev_input, concat_feature
 
 
@@ -132,10 +132,10 @@ class newFeature(nn.Module):
 
             self.cells += [_cell]
 
-        self.last_3  = ConvBR(initial_fm , initial_fm, 1, 1, 0, bn=False, relu=False) 
-        self.last_6  = ConvBR(initial_fm*2 , initial_fm,    1, 1, 0)  
-        self.last_12 = ConvBR(initial_fm*4 , initial_fm*2,  1, 1, 0)  
-        self.last_24 = ConvBR(initial_fm*8 , initial_fm*4,  1, 1, 0)  
+        self.last_3  = ConvBR(initial_fm , initial_fm, 1, 1, 0, bn=False, relu=False)
+        self.last_6  = ConvBR(initial_fm*2 , initial_fm,    1, 1, 0)
+        self.last_12 = ConvBR(initial_fm*4 , initial_fm*2,  1, 1, 0)
+        self.last_24 = ConvBR(initial_fm*8 , initial_fm*4,  1, 1, 0)
 
     def forward(self, x):
         stem0 = self.stem0(x)
@@ -160,7 +160,7 @@ class newFeature(nn.Module):
         elif last_output.size()[2] == h//4:
             fea = self.last_3(upsample_6(self.last_6(upsample_12(self.last_12(last_output)))))
         elif last_output.size()[2] == h//8:
-            fea = self.last_3(upsample_6(self.last_6(upsample_12(self.last_12(upsample_24(self.last_24(last_output)))))))        
+            fea = self.last_3(upsample_6(self.last_6(upsample_12(self.last_12(upsample_24(self.last_24(last_output)))))))
 
         return fea
 
@@ -173,4 +173,3 @@ class newFeature(nn.Module):
             else:
                 bn_params.append(param)
         return bn_params, non_bn_params
-

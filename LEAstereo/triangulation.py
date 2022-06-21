@@ -61,11 +61,8 @@ def triangulate(videos, h5file, outdir = None, to_csv = True):
     nframes_left = int(vidcap_left.get(cv2.CAP_PROP_FRAME_COUNT))
     nframes_right = int(vidcap_right.get(cv2.CAP_PROP_FRAME_COUNT))
     assert nframes_right == nframes_left, 'Left and right videos have different number of frames.'
+
     print(f'There are {nframes_left} in total.')
-    if outdir == None:
-        outdir = os.path.dirname(os.path.dirname(h5file)) + '/leastereo'
-    else:
-        outdir = os.path.join(outdir, 'leastereo')
     for i in trange(nframes_left):
         success_l, left_image = vidcap_left.read()
         success_r, right_image = vidcap_right.read()
@@ -84,14 +81,12 @@ def triangulate(videos, h5file, outdir = None, to_csv = True):
         df_new.iloc[i][z_inds] = temp_z
     if outdir == None:
         outdir = os.path.dirname(os.path.dirname(h5file)) + '/leastereo'
-    print(outdir)
-    raise
     if not os.path.isdir(outdir):
         os.mkdir(outdir)
-    outname = outdir +  '/makers_trajectory.h5'
+    outname = outdir +  '/markers_trajectory_3d.h5'
     if os.path.isfile(outname):
         os.remove(outname)
-    df_new.to_hdf(outname, key = 'makers_trajectory')
+    df_new.to_hdf(outname, key = 'markers_trajectory_3d')
     if to_csv:
         df_new.to_csv(outname.replace('.h5', '.csv'))
     return outname
@@ -115,11 +110,18 @@ def inverse_triangulate(videos, h5file, to_csv = True):
 
 if __name__ == '__main__':
     basedir = '/home/luke/Desktop/project/Process_data/postprocessed/2022-05-26/'
-    root, dirs, files = next(os.walk(basedir))
-    for d in dirs:
-        demo = os.path.join(root, d)
-        root_d, dirs_d, files_d = next(os.walk(demo))
-        videos = [os.path.join(demo, f) for f in files_d if '.mp4' in f]
-        combined_file =  [os.path.join(demo, f) for f in files_d if 'combined.h5' in f][0]
-        triangulate(videos, combined_file, outdir = demo)
+    videos =  ['/home/luke/Desktop/project/Process_data/convert_reference_frame/Jun13-2022/archive/left/HD1080_SN3404_19-left.mp4', '/home/luke/Desktop/project/Process_data/convert_reference_frame/Jun13-2022/archive/right/HD1080_SN3404_19-right.mp4']
+    combined_file = '/home/luke/Desktop/project/Process_data/convert_reference_frame/Jun13-2022/archive/left/markers_trajectory_2d.h5'
+    triangulate(videos, combined_file, outdir= '/home/luke/Desktop/project/Process_data/convert_reference_frame/Jun13-2022/archive/left')
+    # root, dirs, files = next(os.walk(basedir))
+    # for d in dirs:
+    #     demo = os.path.join(root, d)
+    #     root_d, dirs_d, files_d = next(os.walk(demo))
+    #     if 'markers_trajectory_3d.csv' in files_d:
+    #         continue
+    #     else:
+    #         print(f'Processing demo {demo}')
+    #         videos = [os.path.join(demo, f) for f in files_d if '.mp4' in f]
+    #         combined_file =  [os.path.join(demo, f) for f in files_d if 'markers_trajectory_2d.h5' in f][0]
+    #         triangulate(videos, combined_file, outdir = demo)
 

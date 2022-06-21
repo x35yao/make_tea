@@ -44,7 +44,7 @@ class Disp(nn.Module):
     def forward(self, x):
         x = F.interpolate(x, [self.maxdisp, x.size()[3]*3, x.size()[4]*3], mode='trilinear', align_corners=False)
         x = torch.squeeze(x, 1)
-        x = self.softmax(x)      
+        x = self.softmax(x)
         x = self.disparity(x)
         return x
 
@@ -164,10 +164,10 @@ class AutoFeature(nn.Module):
                 self.cells += [cell3]
                 self.cells += [cell4]
 
-        self.last_3  = ConvBR(self._num_end , self._num_end, 1, 1, 0, bn=False, relu=False) 
-        self.last_6  = ConvBR(self._num_end*2 , self._num_end,    1, 1, 0)  
-        self.last_12 = ConvBR(self._num_end*4 , self._num_end*2,  1, 1, 0)  
-        self.last_24 = ConvBR(self._num_end*8 , self._num_end*4,  1, 1, 0)  
+        self.last_3  = ConvBR(self._num_end , self._num_end, 1, 1, 0, bn=False, relu=False)
+        self.last_6  = ConvBR(self._num_end*2 , self._num_end,    1, 1, 0)
+        self.last_12 = ConvBR(self._num_end*4 , self._num_end*2,  1, 1, 0)
+        self.last_24 = ConvBR(self._num_end*8 , self._num_end*4,  1, 1, 0)
 
     def forward(self, x):
         self.level_3 = []
@@ -188,7 +188,7 @@ class AutoFeature(nn.Module):
             #print('more than 1 gpu used!')
             img_device = torch.device('cuda', x.get_device())
             normalized_alphas = F.softmax(self.alphas.to(device=img_device), dim=-1)
-            
+
             # normalized_betas[layer][ith node][0 : ➚, 1: ➙, 2 : ➘]
             for layer in range(len(self.betas)):
                 if layer == 0:
@@ -406,7 +406,7 @@ class AutoFeature(nn.Module):
         result_3  = self.last_3(self.level_3[-1])
         result_6  = self.last_3(upsample_6(self.last_6(self.level_6[-1])))
         result_12 = self.last_3(upsample_6(self.last_6(upsample_12(self.last_12(self.level_12[-1])))))
-        result_24 = self.last_3(upsample_6(self.last_6(upsample_12(self.last_12(self.last_24(self.level_24[-1]))))))      
+        result_24 = self.last_3(upsample_6(self.last_6(upsample_12(self.last_12(self.last_24(self.level_24[-1]))))))
 
         sum_feature_map =result_3 + result_6 + result_12 + result_24
         return sum_feature_map
@@ -438,4 +438,3 @@ class AutoFeature(nn.Module):
     def genotype(self):
         decoder = Decoder(self.alphas_cell, self._block_multiplier, self._step)
         return decoder.genotype_decode()
-

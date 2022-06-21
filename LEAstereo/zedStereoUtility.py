@@ -100,6 +100,23 @@ def cameraCoord3DToPixel(img, coord3D):
         pixel_coords.append([x, y])
     return pixel_coords
 
+def Coord3DToPixel(coord3D, coord2D, img_dims):
+    """
+    Returns a list of original pixel coordinates provided by coord3D as a list of dict.
+    """
+    # individuals = coord3D.index.get_level_values('individuals').unique()
+    x_inds = coord3D.columns[::6][:-1]
+    y_inds = coord3D.columns[1::6]
+    z_inds = coord3D.columns[2::6]
+
+    Z = coord3D[z_inds]
+    a = (coord3D[x_inds].values * FOCAL_LENGTH/(PIXEL_LENGTH*Z.values))
+    x = coord3D[x_inds].values * FOCAL_LENGTH/(PIXEL_LENGTH*Z.values) + img_dims[1]/2
+    y = coord3D[y_inds].values * FOCAL_LENGTH/(PIXEL_LENGTH*Z.values) + img_dims[0]/2
+    coord2D[x_inds] = x
+    coord2D[y_inds] = y
+    return coord2D
+
 def LEAStereoCoordinate(img_path, disp_path, data, is_left_image=True):
     """
     Returns a dict of all images in img_path containing

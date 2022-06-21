@@ -38,6 +38,7 @@ if cuda and not torch.cuda.is_available():
     raise Exception("No GPU found, please run without --cuda")
 
 print('===> Building LEAStereo model')
+print(opt)
 model = LEAStereo(opt)
 
 print('Total Params = %.2fMB' % count_parameters_in_MB(model))
@@ -119,7 +120,7 @@ def getDisparityMap(left_im, right_im):
         prediction = model(input1, input2)
     end_time = time()
 
-    print("Processing time: {:.4f}".format(end_time - start_time))
+    # print("Processing time: {:.4f}".format(end_time - start_time))
     temp = prediction.cpu()
     temp = temp.detach().numpy()
     if height <= opt.crop_height or width <= opt.crop_width:

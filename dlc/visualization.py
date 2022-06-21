@@ -58,7 +58,8 @@ def create_video_with_h5file(video, h5file, suffix = None):
     file_name = os.path.splitext(h5file)[0]
     outputname = file_name + '.mp4'
     df = pd.read_hdf(h5file)
-    df = df.droplevel(0, axis = 1)
+    if 'scorer' in df.columns.names:
+        df = df.droplevel(0, axis = 1)
     obj_bpts = []
     individuals = df.columns.get_level_values('individuals').unique()
     for individual in individuals:
@@ -93,6 +94,47 @@ def create_video_with_h5file(video, h5file, suffix = None):
     clip.close()
     print(f'Video is saved at {outputname}')
 
+def create_video_with_h5file_for_obj(video, h5file, suffix = None):
+    '''
+    This function create a new video with labels. Labels are from the h5file provided.
+
+    video: The path to original video.
+    h5file: The .h5 file that contains the detections from dlc.
+    suffix: Usually it is the remove method to remove the nans. ('fill', 'interpolation', 'drop', 'ignore')
+
+    '''
+    dotsize = 12
+
+    file_name = os.path.splitext(h5file)[0]
+    outputname = file_name + '.mp4'
+    df = pd.read_hdf(h5file)
+    if 'scorer' in df.columns.names:
+        df = df.droplevel(0, axis = 1)
+    obj_bpts = []
+    individuals = list(df.columns.get_level_values('individuals').unique())
+    n_individuals = len(individuals)
+    colorclass = plt.cm.ScalarMappable(cmap= 'rainbow')
+
+    C = colorclass.to_rgba(np.linspace(0, 1, n_individuals))
+    colors = (C[:, :3] * 255).astype(np.uint8)
+    clip = vp(fname=video, sname=outputname, codec="mp4v")
+    nframes = clip.nframes
+    ny, nx = clip.height(), clip.width()
+    det_indices= df.columns[::2]
+    for i in trange(nframes):
+        frame = clip.load_frame()
+        fdata = df.loc[i]
+        for det_ind in det_indices:
+            individual = det_ind[0]
+            ind = det_ind[:-1]
+            x = fdata[ind]['x']
+            y = fdata[ind]['y']
+            rr, cc = disk((y, x), dotsize, shape=(ny, nx))
+            frame[rr, cc] = colors[individuals.index(individual)]
+        clip.save_frame(frame)
+    clip.close()
+    print(f'Video is saved at {outputname}')
+
 def create_interpolated_video(config_path,
     video,
     videotype="mp4",
@@ -115,13 +157,12 @@ def create_interpolated_video(config_path,
 
 
 if __name__== '__main__':
-    vid_id = '1642994619'
     vid_id = '1645721497'
 
     camera = 'left'
-    obj = 'pitcher'
+    obj = 'tap'
     # video = f'/home/luke/Desktop/project/make_tea/camera-main/videos/{vid_id}/{camera}/{obj}/{vid_id}-{camera}.mp4'
-    video = f'/home/luke/Desktop/project/make_tea/camera-main/videos/{vid_id}/{camera}/combined.mp4'
+    video = f'/home/luke/Desktop/project/make_tea/camera-main/videos/{vid_id}/{camera}/{obj}/1645721497-leftDLC_dlcrnetms5_make_tea_tapJan29shuffle1_200000_el.mp4'
     browse_video_frame(video, 1)
 
 # if __name__== '__main__':

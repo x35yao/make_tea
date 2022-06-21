@@ -63,17 +63,18 @@ def batch_interpolate(vid_id, objs = ['pitcher', 'tap', 'teabag', 'cup'], filter
                     create_video_with_h5file(config_path, video, outputnames[i])
 
 
-def combine_h5files(h5files, to_csv = True):
+def combine_h5files(h5files, to_csv = True, destdir = None):
     df_new = pd.DataFrame()
     for h5file in h5files:
         df = pd.read_hdf(h5file)
         df_new = pd.concat([df_new, df], axis = 1)
-    destdir = os.path.dirname(os.path.dirname(h5file))
-    outputname = destdir + '/' + 'combined.h5'
+    if destdir == None:
+        destdir = os.path.dirname(os.path.dirname(h5file))
+    outputname = destdir + '/' + 'markers_trajectory_2d.h5'
     if os.path.isfile(outputname):
         print('Removing exsited file.')
         os.remove(outputname)
-    df_new.to_hdf(outputname, mode = 'w', key = 'combined_data')
+    df_new.to_hdf(outputname, mode = 'w', key = 'markers_trajectory_2d')
     if to_csv:
         df_new.to_csv(outputname.replace('.h5', '.csv'))
     print(f'The file is saved at {outputname}')
