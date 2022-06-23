@@ -68,11 +68,14 @@ def pixelTo3DCameraCoord(img, disp_map, coords, is_left_image=True):
     result_coords = []
     img_dims, disp_dims = img.shape, disp_map.shape
     fixed_ratios = [img_dims[dim]/disp_dims[dim] for dim in range(2)]
-    for _, pix in enumerate(coords):
+    for pix in coords:
         # Different ordering of dims between coordinate and images fixed here.
-        if len(pix) == 0: continue
+        if len(pix) == 0: 
+            result_coords.append(False)
+            continue
         if np.isnan(pix).any():
-            result_coords.append({'x1':np.nan, 'y':np.nan, 'x2':np.nan, 'X':np.nan, 'Y':np.nan, 'Z':np.nan})
+            result_coords.append({'x1':np.nan, 'y':np.nan, 'x2':np.nan, 
+                                  'X':np.nan, 'Y':np.nan, 'Z':np.nan})
         else:
             x1, y = (int(i) for dim, i in enumerate(pix))
             d_x, d_y = pix[0]/fixed_ratios[1], pix[1]/fixed_ratios[0]
@@ -144,11 +147,14 @@ def LEAStereoCoordinate(img_path, disp_path, data, is_left_image=True):
                 img_disp = Left2RightDisparity(img_disp)
             frame_coord = data[framename]
             best_pixels = []
-            coord, confid = frame_coord['coordinates'][0], frame_coord['confidence']
-            for k, _ in enumerate(coord):
-                confid_k = list(np.reshape(confid[k], (-1)))
-                best_index = confid_k.index(max(confid_k))
-                best_pixels.append(coord[k][best_index])
+            tracked_pixels, confid = frame_coord['coordinates'][0], frame_coord['confidence']
+            for k, pixels in enumerate(tracked_pixels):
+                if len(pixels) < 1:
+                    best_pixels.append([])
+                else:
+                    confid_k = list(np.reshape(confid[k], (-1)))
+                    best_index = confid_k.index(max(confid_k))
+                    best_pixels.append(pixels[best_index])
             coordinate3D[framename] = pixelTo3DCameraCoord(img, img_disp, best_pixels, is_left_image)
     return coordinate3D
 
@@ -166,14 +172,14 @@ def getMeasurements(model_pos):
         model_dist.append(mean(dist_set))
     return model_vect, model_dist
 
-def findLosses(true_values, raw_values, scales):
+def findError(true_values, raw_values, scales):
     losses = []
     for scaling in scales:
         new_raw_values = [scaling*i for i in raw_values]
         losses.append(mean_squared_error(true_values, new_raw_values))
     return losses
 
-def consistencyLoss(vectors):
+def consistency(vectors):
     """
     Compare scaled unit steps to the set of steps actually moved to test consistency.
     Assumes vectors input is consisted of vectors moving in a straight line.
