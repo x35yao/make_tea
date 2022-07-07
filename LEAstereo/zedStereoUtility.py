@@ -9,9 +9,9 @@ from sklearn.metrics import mean_squared_error
 
 
 GRID_LENGTH = 4.95
-BASELINE = 12 # cm
-PIXEL_LENGTH = 0.0002 # cm
-FOCAL_LENGTH = PIXEL_LENGTH*1000 # cm (may need to double check camera model)
+BASELINE = 120 # mm
+PIXEL_LENGTH = 0.002 # mm
+FOCAL_LENGTH = 1400 * PIXEL_LENGTH # mm (may need to double check camera model)
 
 def distanceCal(x,y,z):
     return math.sqrt(x**2 + y**2 + z**2)
