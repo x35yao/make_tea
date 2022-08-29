@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
+
 import pandas as pd
 import numpy as np
 from glob import glob
@@ -12,7 +16,7 @@ from sklearn.linear_model import LinearRegression,RANSACRegressor
 from skimage.measure import LineModelND, ransac
 # import sws
 import scipy.stats as st
-from utils import get_videos, get_h5files
+from dlc.utils import get_videos, get_h5files
 from tqdm import trange
 
 
