@@ -5,6 +5,7 @@ from glob import glob
 import cv2
 import os
 from tqdm import trange
+from matplotlib import pyplot as plt
 
 def get_videos(vid_id, obj = None, filtertypes = None, cameras = ['left', 'right'], base_dir = '/home/luke/Desktop/project/make_tea'):
     '''
@@ -66,12 +67,15 @@ def triangulate(videos, h5file, outdir = None, to_csv = True):
     for i in trange(nframes_left):
         success_l, left_image = vidcap_left.read()
         success_r, right_image = vidcap_right.read()
-
         data = df.iloc[i]
         x = data[x_inds].values
         y = data[y_inds].values
         pixels = np.c_[x,y]
         disp_map = getDisparityMap(left_image, right_image)
+        # plt.figure()
+        # plt.imshow(disp_map)
+        # plt.show()
+
         coordinate3D = zed.pixelTo3DCameraCoord(left_image, disp_map, pixels)
         temp_x = [j['X'] for j in coordinate3D]
         temp_y = [j['Y'] for j in coordinate3D]
@@ -93,6 +97,7 @@ def triangulate(videos, h5file, outdir = None, to_csv = True):
 
 def inverse_triangulate(videos, h5file, to_csv = True):
     vidcap_left = cv2.VideoCapture(videos[0])
+
     success_l, left_image = vidcap_left.read()
     img_dims = left_image.shape
     df_3D = pd.read_hdf(h5file)
@@ -109,19 +114,21 @@ def inverse_triangulate(videos, h5file, to_csv = True):
     return outname
 
 if __name__ == '__main__':
-    basedir = '/home/luke/Desktop/project/Process_data/postprocessed/2022-05-26/'
-    videos =  ['/home/luke/Desktop/project/Process_data/convert_reference_frame/Jun13-2022/archive/left/HD1080_SN3404_19-left.mp4', '/home/luke/Desktop/project/Process_data/convert_reference_frame/Jun13-2022/archive/right/HD1080_SN3404_19-right.mp4']
-    combined_file = '/home/luke/Desktop/project/Process_data/convert_reference_frame/Jun13-2022/archive/left/markers_trajectory_2d.h5'
-    triangulate(videos, combined_file, outdir= '/home/luke/Desktop/project/Process_data/convert_reference_frame/Jun13-2022/archive/left')
-    # root, dirs, files = next(os.walk(basedir))
-    # for d in dirs:
-    #     demo = os.path.join(root, d)
-    #     root_d, dirs_d, files_d = next(os.walk(demo))
-    #     if 'markers_trajectory_3d.csv' in files_d:
-    #         continue
-    #     else:
-    #         print(f'Processing demo {demo}')
-    #         videos = [os.path.join(demo, f) for f in files_d if '.mp4' in f]
-    #         combined_file =  [os.path.join(demo, f) for f in files_d if 'markers_trajectory_2d.h5' in f][0]
-    #         triangulate(videos, combined_file, outdir = demo)
+    basedir = '/home/luke/Desktop/project/make_tea/Process_data/postprocessed/2022-05-26'
+    basedir = '/home/luke/Desktop/project/make_tea/Process_data/postprocessed/2022-08-(17-21)'
+    root, dirs, files = next(os.walk(basedir))
+    for d in dirs:
+        if d == 'transformations':
+            continue
+        demo = os.path.join(root, d)
+        root_left, dirs_left, files_left = next(os.walk(demo + '/left'))
+        root_right, dirs_right, files_right = next(os.walk(demo + '/right'))
+        print(f'Processing demo {demo}')
+        video_left = glob(root_left + '/*mp4')[0]
+        video_right = glob(root_right + '/*mp4')[0]
+        videos = [video_left, video_right]
+        combined_file = os.path.join(os.path.dirname(video_left), 'markers_trajectory_2d.h5')
+        outdir = os.path.join(root, d, 'leastereo')
+        triangulate(videos, combined_file, outdir = outdir)
+
 
