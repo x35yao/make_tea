@@ -7,8 +7,6 @@ https://github.com/DeepLabCut/DeepLabCut/blob/master/AUTHORS
 Licensed under GNU Lesser General Public License v3.0
 """
 import os
-from pathlib import Path
-from scipy.spatial.transform import Rotation as R
 import cv2
 import numpy as np
 import pandas as pd
@@ -16,71 +14,49 @@ from matplotlib.axes._axes import _log as matplotlib_axes_logger
 
 from deeplabcut.utils import auxfun_multianimal, auxiliaryfunctions
 from deeplabcut.utils import auxiliaryfunctions_3d
-# from deeplabcut.pose_estimation_tensorflow.lib.trackingutils import TRACK_METHODS
-from transformation import build_homogeneous_matrix, camera_matrix_to_fundamental_matrix
 matplotlib_axes_logger.setLevel("ERROR")
 
-# Camera intrinsic and extrinsic matrices
-trans = np.array([-120, 0, 0])
-rotvec = np.array([0.0122,-0.0086,-0.0022])
-r = R.from_rotvec(rotvec)
-rotmatrix = r.as_matrix()
-homo1 = np.array([[1,0,0,0], [0,1,0,0], [0,0,1,0]])
-homo2 = build_homogeneous_matrix(rotmatrix, trans)
-camera_matrix_1 = np.array([[1400.59, 0, 1030.9 ], [0, 1400.59, 526.489], [0, 0, 1]])
-camera_matrix_2 = np.array([[1399.43, 0, 1059.85], [0, 1399.43, 545.848], [0, 0, 1]])
-P1 = np.dot(camera_matrix_1, homo1)
-P2 = np.dot(camera_matrix_2, homo2)
-F = camera_matrix_to_fundamental_matrix(camera_matrix_1, camera_matrix_2, rotmatrix, trans)
 
 def triangulate(
-    config,
+    config3d,
     h5_left,
     h5_right,
+    P1,
+    P2,
+    F,
     destfolder=None,
     save_as_csv=True,
 
 ):
-    """
-    This function triangulates the detected DLC-keypoints from the two camera views
-    using the camera matrices (derived from calibration) to calculate 3D predictions.
+    '''
+    This function triangulate the DLC predictions from 2 cameras to obtain the 3d position of the makers on the objects.
+
     Parameters
     ----------
-    config : string
-        Full path of the config.yaml file as a string.
-    video_path : string/list of list
-        Full path of the directory where videos are saved. If the user wants to analyze
-        only a pair of videos, the user needs to pass them as a list of list of videos,
-        i.e. [['video1-camera-1.avi','video1-camera-2.avi']]
-    videotype: string, optional
-        Checks for the extension of the video in case the input to the video is a directory.\n Only videos with this extension are analyzed.
-        If left unspecified, videos with common extensions ('avi', 'mp4', 'mov', 'mpeg', 'mkv') are kept.
-    filterpredictions: Bool, optional
-        Filter the predictions with filter specified by "filtertype". If specified it
-        should be either ``True`` or ``False``.
-    filtertype: string
-        Select which filter, 'arima' or 'median' filter (currently supported).
-    gputouse: int, optional. Natural number indicating the number of your GPU (see number in nvidia-smi).
-        If you do not have a GPU put None.
-        See: https://nvidia.custhelp.com/app/answers/detail/a_id/3751/~/useful-nvidia-smi-queries
-    destfolder: string, optional
-        Specifies the destination folder for analysis data (default is the path of the video)
-    save_as_csv: bool, optional
-        Saves the predictions in a .csv file. The default is ``False``
-    Example
+    config3d: str
+        The path to the config file of the 3D DLC project.
+    h5_left: str
+        The path to the DLC prediction of the left camera.
+    h5_right: str
+        The path to the DLC prediction of the right camera.
+    destfolder: str
+        The path where the 3D prediction will be saved at.
+    save_as_csv: bool
+        Whether or not as the result as a csv file as well.
+    P1: ndarray
+        The projection matrix of the left camera
+    P2: ndarray
+        The projection matrix of the right camera
+    F: ndarray
+        The fundamental matrix.
+
+    Returns
     -------
-    Linux/MacOS
-    To analyze all the videos in the directory:
-    >>> deeplabcut.triangulate(config,'/data/project1/videos/')
-    To analyze only a few pairs of videos:
-    >>> deeplabcut.triangulate(config,[['/data/project1/videos/video1-camera-1.avi','/data/project1/videos/video1-camera-2.avi'],['/data/project1/videos/video2-camera-1.avi','/data/project1/videos/video2-camera-2.avi']])
-    Windows
-    To analyze all the videos in the directory:
-    >>> deeplabcut.triangulate(config,'C:\\yourusername\\rig-95\\Videos')
-    To analyze only a few pair of videos:
-    >>> deeplabcut.triangulate(config,[['C:\\yourusername\\rig-95\\Videos\\video1-camera-1.avi','C:\\yourusername\\rig-95\\Videos\\video1-camera-2.avi'],['C:\\yourusername\\rig-95\\Videos\\video2-camera-1.avi','C:\\yourusername\\rig-95\\Videos\\video2-camera-2.avi']])
-    """
-    cfg_3d = auxiliaryfunctions.read_config(config)
+    df_3d: Dataframe
+        A dataframe that contains the 3d predictions.
+
+    '''
+    cfg_3d = auxiliaryfunctions.read_config(config3d)
 
     cam_names = cfg_3d["camera_names"]
     pcutoff = cfg_3d["pcutoff"]
@@ -100,6 +76,8 @@ def triangulate(
 
     dataFrame_camera1_undistort = pd.read_hdf(h5_left)
     dataFrame_camera2_undistort = pd.read_hdf(h5_right)
+
+
     num_frames = np.min([dataFrame_camera1_undistort.shape[0], dataFrame_camera2_undistort.shape[0]])
 
     ### Deal with the case where h5_left and h5_right has different length. TODO: Might not be the best way to do
@@ -114,15 +92,34 @@ def triangulate(
         "bodyparts"
     ).unique()
 
-    print("Computing the triangulation...")
-
+    # print("Computing the triangulation...")
 
     ### Assign nan to [X,Y] of low likelihood predictions ###
     # Convert the data to a np array to easily mask out the low likelihood predictions
+    if num_frames == 1: # This is for getting the template coords
+        dataFrame_temp1 = dataFrame_camera1_undistort.copy()
+        dataFrame_temp2 = dataFrame_camera2_undistort.copy()
+        columns = []
+        for name in dataFrame_temp1.columns.names:
+            if not name == 'coords':
+                values = dataFrame_temp1.columns.get_level_values(level = name).unique()
+            else:
+                values = pd.Index(['x', 'y', 'likelihood'], name = 'coords')
+            columns.append(values)
+        columns_new = pd.MultiIndex.from_product(columns)
+        idx = pd.IndexSlice
+        dataFrame_camera1_undistort, dataFrame_camera2_undistort = pd.DataFrame(columns= columns_new), pd.DataFrame(columns= columns_new)
+        dataFrame_camera1_undistort.loc[:, idx[:, :, :, ['x']]] = dataFrame_temp1.loc[:, idx[:, :, :, ['x']]].to_numpy()
+        dataFrame_camera1_undistort.loc[:, idx[:, :, :, ['y']]] = dataFrame_temp1.loc[:, idx[:, :, :, ['y']]].to_numpy()
+        dataFrame_camera1_undistort.loc[:, idx[:, :, :, 'likelihood']] = 1
 
+        dataFrame_camera2_undistort.loc[:, idx[:, :, :, ['x']]] = dataFrame_temp2.loc[:, idx[:, :, :, ['x']]].to_numpy()
+        dataFrame_camera2_undistort.loc[:, idx[:, :, :, ['y']]] = dataFrame_temp2.loc[:, idx[:, :, :, ['y']]].to_numpy()
+        dataFrame_camera2_undistort.loc[:, idx[:, :, :, 'likelihood']] = 1
     data_cam1_tmp = dataFrame_camera1_undistort.to_numpy().reshape(
         (num_frames, -1, 3)
     )
+
     data_cam2_tmp = dataFrame_camera2_undistort.to_numpy().reshape(
         (num_frames, -1, 3)
     )
@@ -133,7 +130,6 @@ def triangulate(
     # Reshape data back to original shape
     data_cam1_tmp = data_cam1_tmp.reshape(num_frames, -1)
     data_cam2_tmp = data_cam2_tmp.reshape(num_frames, -1)
-
     # put data back to the dataframes
     dataFrame_camera1_undistort[:] = data_cam1_tmp
     dataFrame_camera2_undistort[:] = data_cam2_tmp
@@ -217,7 +213,11 @@ def triangulate(
 
     # Fill up 3D dataframe
     df_3d = pd.DataFrame(triangulate, columns=columns, index=inds)
+    if num_frames == 1:
+        return df_3d
     vid_id = os.path.basename(h5_left).split('-')[0]
+    if destfolder == None:
+        destfolder = os.path.dirname(h5_left)
     output_filename = os.path.join(destfolder, vid_id + '_' + scorer_3d)
     if not os.path.isdir(destfolder):
         os.makedirs(destfolder)
@@ -239,6 +239,7 @@ def triangulate(
     if save_as_csv:
         df_3d.to_csv(str(output_filename + ".csv"))
     print("Results are saved under: ", destfolder)
+    return df_3d
 
 def _undistort_points(points, mat, coeffs, p, r):
     pts = points.reshape((-1, 3))
