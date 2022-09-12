@@ -3,12 +3,12 @@ import os
 from glob import glob
 import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
-from dlc.evaluate import combine_h5files, analyze_video_for_objects, serch_obj_h5files
 from transformation import  camera_matrix_to_fundamental_matrix, homogenous_transform
 import numpy as np
 from scipy.spatial.transform import Rotation as R
+from dlc.visualization import create_video_with_h5file
+from dlc.evaluate import combine_h5files, analyze_video, serch_obj_h5files
 if __name__ == '__main__':
-
     # Camera intrinsic and extrinsic matrices
     trans = np.array([-120, 0, 0])
     rotvec = np.array([0.0122, -0.0086, -0.0022])
@@ -22,24 +22,26 @@ if __name__ == '__main__':
     P2 = np.dot(camera_matrix_2, homo2[:3,:])
     F = camera_matrix_to_fundamental_matrix(camera_matrix_1, camera_matrix_2, rotmatrix, trans)
 
-    data_dir = '/home/luke/Desktop/project/make_tea/Process_data/postprocessed/2022-08-(17-21)'
+    project_dir = '/home/luke/Desktop/project/make_tea' # Modify this to your need.
+    data_dir = os.path.join(project_dir, 'Process_data/postprocessed/2022-08-(17-21)')
     filterpredictions = True
     filtertype = 'median'
     make_video = True
     objs = ['teabag', 'pitcher', 'cup', 'tap']
 
     data_root, demo_dirs, data_files = next(os.walk(data_dir))
-    DLC3D = '/home/luke/Desktop/project/make_tea/dlc3D'
+    DLC2D = os.path.join(project_dir, 'dlc')
+    DLC3D = os.path.join(project_dir, 'dlc3D')
     dlc_root, dlc_dirs, dlc_files = next(os.walk(DLC3D))
     ### Run Deeplabcut to analyze videos
     for demo in demo_dirs:
         vid_left = glob(os.path.join(data_root, demo, 'left', '*.mp4'))[0]
         vid_right = glob(os.path.join(data_root, demo, 'right', '*.mp4'))[0]
         for vid in [vid_left, vid_right]:
-            analyze_video_for_objects(vid, objs, filterpredictions = filterpredictions, filtertype = filtertype)
-            vid_dir = os.path.dirname(vid)
-            h5files = serch_obj_h5files(vid_dir, objs)
-            combine_h5files(h5files, objs)
+            for obj in objs:
+                config2d = glob(os.path.join(DLC2D, f'*{obj}*', 'config.yaml'))[0]
+                obj_dir = os.path.join(os.path.dirname(vid), obj)
+                analyze_video(config2d, vid, filterpredictions = filterpredictions, filtertype = filtertype, destfolder = obj_dir)
         #### Triangulation
         for obj in objs:
             if filterpredictions:
@@ -56,6 +58,3 @@ if __name__ == '__main__':
         h5files = glob(os.path.join(data_root, demo, 'dlc3d', demo + '*.h5'))
         destfolder_demo = os.path.join(data_root, demo, 'dlc3d')
         combine_h5files(h5files, destdir = destfolder_demo, suffix = '3d')
-
-
-
