@@ -120,9 +120,9 @@ def predict(models, t, demo, Hs, individuals):
 
 if __name__ == '__main__':
     # Load data
-    # base_dir = '/home/luke/Desktop/project/make_tea/Process_data/postprocessed/2022-05-26'
-    base_dir = '/home/luke/Desktop/project/make_tea/Process_data/postprocessed/2022-08-(17-21)'
-    template_dir = '/home/luke/Desktop/project/make_tea/Process_data/postprocessed/2022-08-(17-21)/transformations/dlc3d'
+    project_dir = '/home/luke/Desktop/project/make_tea/' # Modify this to your need
+    base_dir = os.path.join(project_dir, 'Process_data/postprocessed/2022-08-(17-21)')
+    template_dir = os.path.join(project_dir, 'Process_data/postprocessed/2022-08-(17-21)/transformations/dlc3d')
     individuals = ['teabag1', 'teabag2', 'pitcher', 'cup', 'tap']  # The objects that we will place a reference frame on
     objs = ['teabag', 'pitcher', 'cup', 'tap']
     d = Task_data(base_dir, template_dir, individuals, objs)
