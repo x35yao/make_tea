@@ -49,7 +49,7 @@ if __name__ == '__main__':
                 h5_right = glob(os.path.join(os.path.dirname(vid_right), obj, '*filtered.h5'))[0]
             else:
                 h5_left = list(set(glob(os.path.join(os.path.dirname(vid_left), obj, '*.h5'))) - set(glob(os.path.join(os.path.dirname(vid_left), obj, '*filtered.h5'))))
-                h5_right = list(set(glob(os.path.join(os.path.dirname(vid_left), obj, '*.h5'))) - set(glob(os.path.join(os.path.dirname(vid_right), obj, '*filtered.h5'))))
+                h5_right = list(set(glob(os.path.join(os.path.dirname(vid_right), obj, '*.h5'))) - set(glob(os.path.join(os.path.dirname(vid_right), obj, '*filtered.h5'))))
             scorer_dir = os.path.join(dlc_root, obj + '_3d')
             config3d = glob(scorer_dir + '/config.yaml')[0]
             destfolder_obj = os.path.join(data_root, demo, 'dlc3d')
