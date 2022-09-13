@@ -16,7 +16,6 @@ from deeplabcut.utils import auxfun_multianimal, auxiliaryfunctions
 from deeplabcut.utils import auxiliaryfunctions_3d
 matplotlib_axes_logger.setLevel("ERROR")
 
-
 def triangulate(
     config3d,
     h5_left,
@@ -207,13 +206,13 @@ def triangulate(
         )
 
     inds = range(num_frames)
-
     # Swap num_animals with num_frames axes to ensure well-behaving reshape
     triangulate = triangulate.swapaxes(0, 1).reshape((num_frames, -1))
 
     # Fill up 3D dataframe
     df_3d = pd.DataFrame(triangulate, columns=columns, index=inds)
     if num_frames == 1:
+        # This if for building object templates
         return df_3d
     vid_id = os.path.basename(h5_left).split('-')[0]
     if destfolder == None:
@@ -238,7 +237,6 @@ def triangulate(
 
     if save_as_csv:
         df_3d.to_csv(str(output_filename + ".csv"))
-    print("Results are saved under: ", destfolder)
     return df_3d
 
 def _undistort_points(points, mat, coeffs, p, r):
