@@ -17,7 +17,7 @@ skeleton:     # Note that the pairs must be defined, as you want them linked!
 - - top_right
   - top_left
 skeleton_color: black
-pcutoff: 0
+pcutoff: 0.9
 colormap: rainbow
 dotsize: 7
 alphaValue: 0.8

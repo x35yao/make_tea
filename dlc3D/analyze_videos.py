@@ -8,6 +8,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation as R
 from dlc.visualization import create_video_with_h5file
 from dlc.evaluate import combine_h5files, analyze_video, serch_obj_h5files
+import re
 if __name__ == '__main__':
     # Camera intrinsic and extrinsic matrices
     trans = np.array([-120, 0, 0])
@@ -29,19 +30,25 @@ if __name__ == '__main__':
     make_video = True
     objs = ['teabag', 'pitcher', 'cup', 'tap']
 
+    # all_files = os.listdir(data_dir)
+    # r = re.compile("^[0-9]+$")
+    # demo_dirs = list(filter(r.match, all_files))
+
     data_root, demo_dirs, data_files = next(os.walk(data_dir))
     DLC2D = os.path.join(project_dir, 'dlc')
     DLC3D = os.path.join(project_dir, 'dlc3D')
     dlc_root, dlc_dirs, dlc_files = next(os.walk(DLC3D))
     ### Run Deeplabcut to analyze videos
     for demo in demo_dirs:
+        if demo == 'transformations':
+            continue
         vid_left = glob(os.path.join(data_root, demo, 'left', '*.mp4'))[0]
         vid_right = glob(os.path.join(data_root, demo, 'right', '*.mp4'))[0]
-        for vid in [vid_left, vid_right]:
-            for obj in objs:
-                config2d = glob(os.path.join(DLC2D, f'*{obj}*', 'config.yaml'))[0]
-                obj_dir = os.path.join(os.path.dirname(vid), obj)
-                analyze_video(config2d, vid, filterpredictions = filterpredictions, filtertype = filtertype, destfolder = obj_dir)
+        # for vid in [vid_left, vid_right]:
+        #     for obj in objs:
+        #         config2d = glob(os.path.join(DLC2D, f'*{obj}*', 'config.yaml'))[0]
+        #         obj_dir = os.path.join(os.path.dirname(vid), obj)
+        #         analyze_video(config2d, vid, filterpredictions = filterpredictions, filtertype = filtertype, destfolder = obj_dir)
         #### Triangulation
         for obj in objs:
             if filterpredictions:
