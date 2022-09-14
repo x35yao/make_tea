@@ -44,11 +44,11 @@ if __name__ == '__main__':
             continue
         vid_left = glob(os.path.join(data_root, demo, 'left', '*.mp4'))[0]
         vid_right = glob(os.path.join(data_root, demo, 'right', '*.mp4'))[0]
-        # for vid in [vid_left, vid_right]:
-        #     for obj in objs:
-        #         config2d = glob(os.path.join(DLC2D, f'*{obj}*', 'config.yaml'))[0]
-        #         obj_dir = os.path.join(os.path.dirname(vid), obj)
-        #         analyze_video(config2d, vid, filterpredictions = filterpredictions, filtertype = filtertype, destfolder = obj_dir)
+        for vid in [vid_left, vid_right]:
+            for obj in objs:
+                config2d = glob(os.path.join(DLC2D, f'*{obj}*', 'config.yaml'))[0]
+                obj_dir = os.path.join(os.path.dirname(vid), obj)
+                analyze_video(config2d, vid, filterpredictions = filterpredictions, filtertype = filtertype, destfolder = obj_dir)
         #### Triangulation
         for obj in objs:
             if filterpredictions:
