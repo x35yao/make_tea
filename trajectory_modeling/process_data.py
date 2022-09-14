@@ -118,7 +118,7 @@ class Task_data:
             Parameters
             ---------
             dfs_ndi: dict
-                A directory that contains the full gripper trajectories for different demos.
+                A dictionary that contains the full gripper trajectories for different demos.
             base_dir: string
                 The path to the directory that contains the demos
             i: int
@@ -161,7 +161,7 @@ class Task_data:
         Parameters
         ---------
         dfs_camera: dict
-            A directory that contains the full object markers trajectories for different demos.
+            A dictionary that contains the full object markers trajectories for different demos.
         basedir: string
             The path to the directory that contains the demos
         slack: The amount of time to look back at the beginning of an action and to look forward at the end.
