@@ -9,6 +9,9 @@ from process_data import Task_data
 # import os
 from transformations import *
 import numpy as np
+import configparser
+import yaml
+
 
 def prepare_data_for_pmp(gripper_traj_in_obj, individual, demos, dims):
     '''
@@ -120,11 +123,13 @@ def predict(models, t, demo, Hs, individuals):
 
 if __name__ == '__main__':
     # Load data
-    project_dir = '/home/luke/Desktop/project/make_tea/' # Modify this to your need
-    base_dir = os.path.join(project_dir, 'Process_data/postprocessed/2022-08-(17-21)')
-    template_dir = os.path.join(project_dir, 'Process_data/postprocessed/2022-08-(17-21)/transformations/dlc3d')
-    individuals = ['teabag1', 'teabag2', 'pitcher', 'cup', 'tap']  # The objects that we will place a reference frame on
-    objs = ['teabag', 'pitcher', 'cup', 'tap']
+    with open('../task_config.yaml') as file:
+        config = yaml.load(file, Loader=yaml.FullLoader)
+    project_dir = config["project_path"] # Modify this to your need
+    base_dir = os.path.join(project_dir, config["postprocessed_dir"])
+    template_dir = os.path.join(project_dir, config["postprocessed_dir"],'transformations/dlc3d')
+    individuals = config["individuals"] # The objects that we will place a reference frame on
+    objs = config["objects"]
     d = Task_data(base_dir, template_dir, individuals, objs)
     ripper_trajs_full = d.load_gripper_trajectories()
     n_actions = d.get_number_of_actions()

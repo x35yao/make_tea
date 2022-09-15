@@ -1,0 +1,7 @@
+
+project_path: /Users/ychen/Downloads/make_tea
+postprocessed_dir: Process_data/postprocessed/2022-08-(17-21)
+individuals: [teabag1,teabag2,pitcher,cup,tap]
+objects: [teabag,pitcher,cup,tap]
+alignment_method: "typeId"
+

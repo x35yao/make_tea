@@ -6,6 +6,7 @@ from glob import glob
 import re
 import pandas as pd
 from transformations import get_HT_objs_in_ndi, lintrans, inverse_homogenous_transform
+import yaml
 
 class Task_data:
     def __init__(self, base_dir, template_dir, individuals, objs):
@@ -231,7 +232,7 @@ class Task_data:
                 gripper_trajs_in_obj[individual][demo] = df_temp
         return gripper_trajs_in_obj
 
-    def align_trajectoires(self, gripper_trajs):
+    def align_trajectoires(self, gripper_trajs, alignment_func):
         '''
         This function will align gripper trajectories with Dynamic time warping based on speed.
 
@@ -272,7 +273,7 @@ class Task_data:
             test_demo_speed = gripper_trajs[demo]['Speed'].to_numpy()
             test_demo_traj = gripper_trajs[demo].loc[:,
                              gripper_trajs[demo].columns != 'Speed'].copy().to_numpy()
-            match_indices, min_cost = dynamic_time_warp(ref_demo_speed, test_demo_speed)
+            match_indices, min_cost = alignment_func(ref_demo_speed, test_demo_speed)
             match_indices = np.array(match_indices)
             min_cost_demos[demo] = min_cost
             new_demo = np.zeros(ref_demo_traj.shape)
@@ -296,7 +297,7 @@ class Task_data:
             gripper_trajs_filtered[demo] = temp
         return gripper_trajs_filtered
 
-    def process_and_save_data(self):
+    def process_and_save_data(self, alignment_func):
         self.gripper_trajs_truncated = self.get_gripper_trajectories_for_each_action()
         gripper_trajs_in_obj_for_all_actions = []
         gripper_trajs_in_obj_aligned_for_all_actions = []
@@ -305,7 +306,7 @@ class Task_data:
         for i in range(self.n_actions): # Loop through actions
             HT_objs_in_ndi_action = {}
             gripper_action_traj = self.gripper_trajs_truncated[i]
-            gripper_action_traj_aligned = self.align_trajectoires(gripper_action_traj)
+            gripper_action_traj_aligned = self.align_trajectoires(gripper_action_traj, alignment_func=alignment_func)
             gripper_action_traj_aligned_filtered = self.filter_data(gripper_action_traj_aligned)
             for demo in self.demos: # Loop through demos
                 start_time = self.start_times[i][demo]
@@ -339,9 +340,12 @@ class Task_data:
         return gripper_trajs_in_obj_for_all_actions, gripper_trajs_in_obj_aligned_for_all_actions, gripper_trajs_in_obj_aligned_filtered_for_all_actions
 
 if __name__ == '__main__':
-    base_dir = '/home/luke/Desktop/project/make_tea/Process_data/postprocessed/2022-08-(17-21)'
-    template_dir = '/home/luke/Desktop/project/make_tea/Process_data/postprocessed/2022-08-(17-21)/transformations/dlc3d'
-    individuals = ['teabag1', 'teabag2', 'pitcher', 'cup', 'tap'] # The objects that we will place a reference frame on
-    objs = ['teabag', 'pitcher', 'cup', 'tap']
+    with open('../task_config.yaml') as file:
+        config = yaml.load(file, Loader=yaml.FullLoader)
+        
+    base_dir = os.path.join(config["project_path"], config["postprocessed_dir"])
+    template_dir = os.path.join(config["project_path"], config["postprocessed_dir"], 'transformations/dlc3d')
+    individuals = config["individuals"] # The objects that we will place a reference frame on
+    objs = config["objects"]
     d = Task_data(base_dir, template_dir, individuals, objs)
-    d.process_and_save_data()
+    d.process_and_save_data(alignment_func=dtw_funcs[config["alignment_method"]])

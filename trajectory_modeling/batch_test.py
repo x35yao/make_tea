@@ -3,11 +3,16 @@ from TP_PMP import pmp
 from test import *
 import pickle
 import TP_GMM.gmm as gmm
+import yaml
 
 
 if __name__ == '__main__':
+    # read config file
+     with open('../task_config.yaml') as file:
+        config = yaml.load(file, Loader=yaml.FullLoader)
+    
     # Load data
-    base_dir = '/home/luke/Desktop/project/make_tea/Process_data/postprocessed/2022-05-26'
+    base_dir = os.path.join(config["project_path"], config["postprocessed_dir"])
     with open(os.path.join(base_dir, 'processed', 'gripper_trajs_in_obj_aligned_filtered.pickle',), 'rb') as f1:
         gripper_trajs_in_obj = pickle.load(f1)
     with open(os.path.join(base_dir, 'processed', 'HTs_obj_in_ndi.pickle',), 'rb') as f2:
@@ -27,7 +32,7 @@ if __name__ == '__main__':
     n_train = 6
     dims= [ 'x', 'y', 'z', 'qx', 'qy', 'qz', 'qw']
     n_dims = len(dims)
-    individuals = ['cup', 'teabag1', 'tap', 'teabag2', 'pitcher']
+    individuals = config["individuals"]
     bad_demos = ['463678', '636936', '636938', '463675']
     demos = [demo for demo in demos if demo not in bad_demos]
     dists_gmm = []

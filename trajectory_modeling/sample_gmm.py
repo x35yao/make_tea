@@ -5,9 +5,15 @@ from TP_GMM.plot import plot_gmm
 from matplotlib import pyplot as plt
 import random
 import pickle
+import yaml
+
+
 if __name__ == '__main__':
     # Load data
-    base_dir = '/home/luke/Desktop/project/make_tea/Process_data/postprocessed/2022-05-26'
+    with open('../task_config.yaml') as file:
+        config = yaml.load(file, Loader=yaml.FullLoader)
+        
+    base_dir = os.path.join(config["project_path"], config["postprocessed_dir"])
     with open(os.path.join(base_dir, 'processed', 'gripper_trajs_in_obj_aligned_filtered.pickle', ), 'rb') as f1:
         gripper_trajs_in_obj = pickle.load(f1)
     with open(os.path.join(base_dir, 'processed', 'HTs_obj_in_ndi.pickle', ), 'rb') as f2:
