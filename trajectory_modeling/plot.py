@@ -60,15 +60,19 @@ def plot_orientation( prediction, ground_truth , axes):
 
 
 def plot_position_in_objs(gripper_traj_in_obj, obj, ax, title = None, bad_demos = ['740521']):
-    for demo in gripper_traj_in_obj[obj]:
+    for i, demo in enumerate(gripper_traj_in_obj[obj]):
         if demo in bad_demos:
             continue
+        # if i != 1:
+        #     continue
         df = gripper_traj_in_obj[obj][demo]
-        line = ax.plot(df.loc[:, 'z'], df.loc[:, 'y'], -df.loc[:, 'x'], label=f'demo #{demo}');
+        line = ax.plot(df.loc[:, 'z'], df.loc[:, 'y'], -df.loc[:, 'x'], label=f'demo #{demo}')
+        # line = ax.plot(df.loc[:, 'z'], df.loc[:, 'y'], -df.loc[:, 'x'])
         ax.plot(df.loc[:, 'z'].iloc[0], df.loc[:, 'y'].iloc[0], -df.loc[:, 'x'].iloc[0], 'o',
                 color=line[0].get_color())
         ax.plot(df.loc[:, 'z'].iloc[-1], df.loc[:, 'y'].iloc[-1], -df.loc[:, 'x'].iloc[-1], 'x',
                 color=line[0].get_color())
+        # plt.legend()
         ax.set_xlabel('x(mm)')
         ax.set_ylabel('y(mm)')
         ax.set_zlabel('z(mm)')
@@ -87,7 +91,7 @@ def plot_orientation_in_objs(gripper_traj_in_obj, obj, axes, title = None):
             ax.plot(quats[:, i], label = f'{demo}')
         ax.set_title(f'{dims[i]}')
     plt.title = (f'Orientation in {obj} reference frame')
-    # plt.legend()
+    plt.legend()
     plt.tight_layout()
 
 
@@ -95,25 +99,28 @@ if __name__ == '__main__':
     base_dir = '/home/luke/Desktop/project/make_tea/Process_data/postprocessed/2022-08-(17-21)'
     with open(os.path.join(base_dir, 'processed', 'gripper_trajs_in_obj_aligned_filtered.pickle', ), 'rb') as f:
         gripper_trajs_in_obj = pickle.load(f)
-    objs = ['cup', 'tap', 'pitcher', 'tap', 'tap', 'cup']
-    bad_demos = ['740521', '506373', '506365']
-    bad_demos = []
+    objs = ['teabag1', 'teabag1', 'pitcher', 'tap', 'tap', 'cup']
+    bad_demos = ['740521',  '506365']
+    #bad_demos = []
     n_actions = len(gripper_trajs_in_obj)
     plot_pos = True
+    actions = ['Put teabag into cup', 'Put pitcher under tap', 'Push tap switch', 'Wait',
+               'Pull tap switch', 'Pour water to cup']
     for i in range(n_actions):
         gripper_traj_in_obj = gripper_trajs_in_obj[i]
         obj = objs[i]
         if plot_pos:
             fig = plt.figure(figsize=(12, 10))
             ax = fig.add_subplot(1, 1, 1, projection='3d')
-            title = f'Gripper trajectories in {obj} reference frame for {i+1}th. action'
+            title = f'Gripper trajectories in {obj} reference frame for the #{i+1} action: {actions[i]}'
+            # title = f'Gripper trajectory for the action: {actions[i]}'
             plot_position_in_objs(gripper_traj_in_obj, obj, ax, title, bad_demos)
         else:
             fig, axes = plt.subplots(4,1, figsize = (8,8))
             plot_orientation_in_objs(gripper_traj_in_obj,obj,axes)
             handles, labels = axes[-1].get_legend_handles_labels()
             fig.legend(handles, labels, loc='right')
-            fig.suptitle(f'Orientation in {obj} reference frame for {i}th. action')
+            fig.suptitle(f'Orientation in {obj} reference frame for the action: {actions[i]}')
     plt.show()
 
 

@@ -86,7 +86,7 @@ def marginal_t(model, t):
         mu, sigma = model.condition(t[:, None], dim_in=slice(0, 1), dim_out=slice(1, n_dims))
     else:
         mu, sigma = model.marginal_w(t)
-    return mu, sigma
+    return np.array(mu), np.array(sigma)
 
 def predict(models, t, demo, Hs, individuals):
     '''
@@ -117,6 +117,42 @@ def predict(models, t, demo, Hs, individuals):
     mu_mean, sigma_mean = get_mean_cov_hats(mus, sigmas)
     return mu_mean, sigma_mean
 
+def get_position_difference_per_step(d1, d2):
+    return np.linalg.norm(d1 - d2, axis = 1)
+
+def get_bic(LL, k, n):
+    '''
+    This function computes the bic score of a model.
+
+    Parameters
+    ----------
+    LL: int
+        The maximized value of the likelihood function of the model
+    k: int
+        The number of parameters of the model
+    n: int
+        The number of datapoints
+
+    '''
+
+    return k * np.log(n) - 2 * LL * n
+
+def get_aic(LL, k, n):
+    '''
+    This function computes the bic score of a model.
+
+    Parameters
+    ----------
+    LL: int
+        The maximized value of the likelihood function of the model
+    k: int
+        The number of parameters of the model
+    n: int
+        The number of datapoints
+
+    '''
+
+    return 2 * k - 2 * LL * n
 
 if __name__ == '__main__':
     # Load data
@@ -126,7 +162,7 @@ if __name__ == '__main__':
     individuals = ['teabag1', 'teabag2', 'pitcher', 'cup', 'tap']  # The objects that we will place a reference frame on
     objs = ['teabag', 'pitcher', 'cup', 'tap']
     d = Task_data(base_dir, template_dir, individuals, objs)
-    ripper_trajs_full = d.load_gripper_trajectories()
+    gripper_trajs_full = d.load_gripper_trajectories()
     n_actions = d.get_number_of_actions()
     gripper_trajs_truncated = d.get_gripper_trajectories_for_each_action()
 
@@ -158,8 +194,12 @@ if __name__ == '__main__':
     for individual in d.individuals:
         data_pmp, times = prepare_data_for_pmp(gripper_traj_in_obj, individual, train_demos, d.dims)
         data_gmm = prepare_data_for_gmm(gripper_traj_in_obj, individual, train_demos, ['Time'] + d.dims)
-        model_gmm = gmm.GMM(nb_states=15, nb_dim=n_dims + 1)
+        n_states = 15
+        n_data = data_gmm.shape[0]
+        model_gmm = gmm.GMM(nb_states= n_states, nb_dim=n_dims + 1)
         model_gmm.em(data_gmm, reg=1e-3, maxiter=100, verbose = True)
+        LL = np.max(model_gmm.LL)
+        bic = get_bic(LL, n_states * 2, n_data)
         gmms[individual] = model_gmm
 
         model_pmp = pmp.PMP(data_pmp, times, n_dims)
