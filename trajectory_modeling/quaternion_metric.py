@@ -39,4 +39,4 @@ def inner_prod_quat(q1, q2):
     distance: float
         in radian
     """
-    return np.arccos(np.abs(q1.dot(q2)))
+    return np.arccos(np.abs(min([q1.dot(q2), 1])))
