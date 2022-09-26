@@ -1,12 +1,5 @@
 import numpy as np
-
-def L2norm(q):
-    """
-    Calculate the l2 norm of an vector
-    ----------
-    q: list of float
-    """
-    return np.sum(np.power(q, 2))
+from numpy.linalg import norm as l2norm
 
 
 def norm_diff_quat(q1, q2):
@@ -22,9 +15,10 @@ def norm_diff_quat(q1, q2):
     --------
     distance: float
     """
-    return np.min([L2norm(q1 + q2), L2norm(q1 - q2)])
-    
-    
+    q1 = q1 / l2norm(q1)
+    q2 = q2 / l2norm(q2)
+    return np.min([l2norm(q1 + q2), l2norm(q1 - q2)])
+
 def inner_prod_quat(q1, q2):
     """
     return a distance metric measure between q1 and q2 quaternion based on the Inner Product of unit Quaternions metric.
@@ -39,4 +33,6 @@ def inner_prod_quat(q1, q2):
     distance: float
         in radian
     """
-    return np.arccos(np.abs(min([q1.dot(q2), 1])))
+    q1 = q1/l2norm(q1)
+    q2 = q2/l2norm(q2)
+    return np.arccos(np.abs(q1.dot(q2)))
