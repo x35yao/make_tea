@@ -9,7 +9,14 @@ from scipy.spatial.transform import Rotation as R
 from dlc.visualization import create_video_with_h5file
 from dlc.evaluate import combine_h5files, analyze_video, serch_obj_h5files
 import re
+import yaml
+
+
 if __name__ == '__main__':
+    # Load data
+    with open('../task_config.yaml') as file:
+        config = yaml.load(file, Loader=yaml.FullLoader)
+    
     # Camera intrinsic and extrinsic matrices
     trans = np.array([-120, 0, 0])
     rotvec = np.array([0.0122, -0.0086, -0.0022])
@@ -23,12 +30,12 @@ if __name__ == '__main__':
     P2 = np.dot(camera_matrix_2, homo2[:3,:])
     F = camera_matrix_to_fundamental_matrix(camera_matrix_1, camera_matrix_2, rotmatrix, trans)
 
-    project_dir = '/home/luke/Desktop/project/make_tea' # Modify this to your need.
-    data_dir = os.path.join(project_dir, 'Process_data/postprocessed/2022-08-(17-21)')
+    project_dir = config['project_path'] # Modify this to your need.
+    data_dir = os.path.join(project_dir, config['postprocessed_dir'])
     filterpredictions = True
     filtertype = 'median'
     make_video = True
-    objs = ['teabag', 'pitcher', 'cup', 'tap']
+    objs = config['objects']
 
     # all_files = os.listdir(data_dir)
     # r = re.compile("^[0-9]+$")

@@ -3,6 +3,9 @@ from sklearn.preprocessing import normalize
 import numpy as np
 import os
 import pickle
+import yaml
+
+
 def plot_position(ax, prediction, ground_truth, mid = 0.5, title = 'predictions and groundtruth' ):
     '''
     This function 3D plots the prediction, ground truth trajectory including the start, middle, and the end of the trajectory.
@@ -96,7 +99,11 @@ def plot_orientation_in_objs(gripper_traj_in_obj, obj, axes, title = None):
 
 
 if __name__ == '__main__':
-    base_dir = '/home/luke/Desktop/project/make_tea/Process_data/postprocessed/2022-08-(17-21)'
+    # Load data
+    with open('../task_config.yaml') as file:
+        config = yaml.load(file, Loader=yaml.FullLoader)
+ 
+    base_dir = os.path.join(config["project_path"], config["postprocessed_dir"])
     with open(os.path.join(base_dir, 'processed', 'gripper_trajs_in_obj_aligned_filtered.pickle', ), 'rb') as f:
         gripper_trajs_in_obj = pickle.load(f)
     objs = ['teabag1', 'teabag1', 'pitcher', 'tap', 'tap', 'cup']
