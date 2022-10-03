@@ -38,3 +38,26 @@ def get_mean_cov_hats(ref_means, ref_covs, min_len=None):
             mean_w_sum = mean_w_sum + np.matmul(np.linalg.inv(ref_covs[ref][p]), ref_means[ref][p])
         mean_hats.append(np.matmul(sigma_hats[p], mean_w_sum))
     return np.array(mean_hats), np.array(sigma_hats)
+
+
+def sample_trajectory(gmm, basis_mat, size=1, dims=7):
+    """
+    return a sample weight from the sampled gmm model and use basis function to convert to trajectory.
+    Parameters:
+    -----------
+    gmm: object
+        A fitted GMM model that weights of size d*N can be sampled from, 
+        where d is dimension and N is number of basis functions
+    basis_mat: np.array
+        A (d*t)-by-(d*N) basis matrix that convert weight to trajectory and t is time size. 
+    Returns:
+    --------
+    sampled_trajectories: list 
+        A list of trajectories.
+    """
+    sampled_trajectories = []
+    sampled_weights = gmm.sample(size)[0]
+    for w in sampled_weights:
+        traj = (basis_mat @ w).reshape(-1, dims)
+        sampled_trajectories.append(traj)
+    return sampled_trajectories
