@@ -40,7 +40,7 @@ def get_mean_cov_hats(ref_means, ref_covs, min_len=None):
     return np.array(mean_hats), np.array(sigma_hats)
 
 
-def sample_trajectory(gmm, basis_mat, size=1, dims=7):
+def sample_trajectory_gmm(gmm, basis_mat, size=1, dims=7):
     """
     return a sample weight from the sampled gmm model and use basis function to convert to trajectory.
     Parameters:
