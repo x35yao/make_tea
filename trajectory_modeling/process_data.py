@@ -7,6 +7,7 @@ import re
 import pandas as pd
 from transformations import get_HT_objs_in_ndi, lintrans, inverse_homogenous_transform
 import yaml
+import numpy as np
 
 class Task_data:
     def __init__(self, base_dir, template_dir, individuals, objs):
@@ -14,9 +15,10 @@ class Task_data:
         r = re.compile("^[0-9]+$")
         self.base_dir = base_dir
         self.template_dir = template_dir
-        self.individuals = individuals
+        self.individuals = individuals + ['global']
         self.objs = objs
         self.demos = list(filter(r.match, all_files))
+        self.bad_demos = []
         self.servos = glob(os.path.join(base_dir, '*', '*Servo*'))
         self.ndis = glob(os.path.join(base_dir, '*', '*NDI*'))
         self.n_actions = self.get_number_of_actions()
@@ -130,7 +132,8 @@ class Task_data:
             -------
             '''
         gripper_trajs = {}
-        for demo, servo_file in zip(self.demos, self.servos):
+        demos = [demo for demo in self.demos if demo not in self.bad_demos]
+        for demo, servo_file in zip(demos, self.servos):
             gripper_trajs[demo] = []
             df_ndi = self.gripper_trajs_full[demo]
             with open(servo_file, 'r') as f:
@@ -149,7 +152,7 @@ class Task_data:
         action_trajs = []
         for i in range(int(self.n_actions)):
             temp = {}
-            for demo in self.demos:
+            for demo in demos:
                 temp[demo] = gripper_trajs[demo][i]
             action_trajs.append(temp)
         return action_trajs
@@ -297,27 +300,37 @@ class Task_data:
             gripper_trajs_filtered[demo] = temp
         return gripper_trajs_filtered
 
-    def process_and_save_data(self, alignment_func):
+    def process_and_save_data(self, alignment_func, thres = 30):
         self.gripper_trajs_truncated = self.get_gripper_trajectories_for_each_action()
         gripper_trajs_in_obj_for_all_actions = []
         gripper_trajs_in_obj_aligned_for_all_actions = []
         gripper_trajs_in_obj_aligned_filtered_for_all_actions = []
         HT_objs_in_ndi_for_all_actions = []
         for i in range(self.n_actions): # Loop through actions
-            HT_objs_in_ndi_action = {}
+            self.gripper_trajs_truncated = self.get_gripper_trajectories_for_each_action()
             gripper_action_traj = self.gripper_trajs_truncated[i]
             gripper_action_traj_aligned = self.align_trajectoires(gripper_action_traj, alignment_func=alignment_func)
             gripper_action_traj_aligned_filtered = self.filter_data(gripper_action_traj_aligned)
+            bad_demos_action = []
+            HT_objs_in_ndi_action = {}
             for demo in self.demos: # Loop through demos
                 start_time = self.start_times[i][demo]
                 duration = self.durations[i]
                 obj_trajs_demo = self.obj_trajs_full[demo]
                 action_ind = int((float(start_time) / float(duration)) * len(obj_trajs_demo))
                 obj_trajs_demo_action = obj_trajs_demo.iloc[:action_ind]
-                print(i, demo)
+                print(f'Action ind: {i}, Demo #: {demo}')
                 HT_objs_in_ndi_demo, dists = get_HT_objs_in_ndi(obj_trajs_demo_action, self.objs, self.template_dir)
-                HT_objs_in_ndi_action[demo] = HT_objs_in_ndi_demo
+                if np.max(dists) > thres: #Unmatched demo if the dists higher than the threshold
+                     bad_demos_action.append(demo)
+                else:
+                    HT_objs_in_ndi_action[demo] = HT_objs_in_ndi_demo
+            self.bad_demos.append(bad_demos_action)
             HT_objs_in_ndi_for_all_actions.append(HT_objs_in_ndi_action)
+            for demo in bad_demos_action: # Remove the unmatched demo
+                del gripper_action_traj[demo]
+                del gripper_action_traj_aligned[demo]
+                del gripper_action_traj_aligned_filtered[demo]
             gripper_traj_in_obj = self.convert_trajectories_to_objects_reference_frame(gripper_action_traj, HT_objs_in_ndi_action)
             gripper_traj_in_obj_aligned = self.convert_trajectories_to_objects_reference_frame(gripper_action_traj_aligned, HT_objs_in_ndi_action)
             gripper_traj_in_obj_aligned_filtered = self.convert_trajectories_to_objects_reference_frame(gripper_action_traj_aligned_filtered, HT_objs_in_ndi_action)
@@ -340,12 +353,13 @@ class Task_data:
         return gripper_trajs_in_obj_for_all_actions, gripper_trajs_in_obj_aligned_for_all_actions, gripper_trajs_in_obj_aligned_filtered_for_all_actions
 
 if __name__ == '__main__':
-    with open('../task_config.yaml') as file:
+    task_config_dir = '../Process_data/postprocessed/2022-10-06'
+    with open(os.path.join(task_config_dir, 'task_config.yaml')) as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
         
     base_dir = os.path.join(config["project_path"], config["postprocessed_dir"])
     template_dir = os.path.join(config["project_path"], config["postprocessed_dir"], 'transformations/dlc3d')
-    individuals = config["individuals"] # The objects that we will place a reference frame on
+    individuals = config["individuals"]# The objects that we will place a reference frame on
     objs = config["objects"]
     d = Task_data(base_dir, template_dir, individuals, objs)
     d.process_and_save_data(alignment_func=dtw_funcs[config["alignment_method"]])
