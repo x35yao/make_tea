@@ -1,0 +1,6 @@
+
+project_path: /home/luke/Desktop/project/make_tea
+postprocessed_dir: Process_data/postprocessed/2022-10-06
+individuals: [teabag1, cup]
+objects: [teabag,cup]
+alignment_method: "typeId"
