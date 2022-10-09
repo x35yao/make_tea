@@ -1,0 +1,5 @@
+Timestamp,Gripper state
+0.0,start
+5.356608,closed
+7.356608,open
+10.620248,end
