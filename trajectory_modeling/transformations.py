@@ -6,6 +6,69 @@ import os
 import pickle
 
 
+def pairwise_constrained_axis3d(pos1, pos2, up_axis=2):
+    '''
+    Generates local object's 3D axis given pos1 and pos2 with x-axis parallel to the line between pos1 and pos2
+    and z-axis perpendicular such that its unit vector's up-axis value is maximized.
+
+    Parameters:
+    ----------
+    pos1: numpy.array
+        A 3D numpy array representing position of object 1.
+    pos2: numpy.array
+        A 3D numpy array representing position of object 2.
+    up_axis: int
+        dimension of the z-axis' unit vector that should be maximized
+
+    Returns:
+    -------
+        Three 3D unit vectors representing the direction xyz-axis are pointing.
+    '''
+    vec = pos2 - pos1
+    x_axis_norm = vec/np.linalg.norm(vec)
+    up = np.zeros(3)
+    up[up_axis] = 1
+    x_comp_of_up = np.dot(up, x_axis_norm)*x_axis_norm
+    z_axis_norm = (up-x_comp_of_up)/np.linalg.norm(up-x_comp_of_up)
+    y_axis = np.cross(z_axis_norm, x_axis_norm)
+    y_axis_norm = y_axis/np.linalg.norm(y_axis)
+    return (x_axis_norm, y_axis_norm, z_axis_norm)
+
+
+def axis3d_to_quat(axis3d):
+    '''
+    Convert the object xyz-axis vectors into quaternion and return the transformation for converting 
+    the 3 vectors to the standard unit vectors. (Extremely rare fail case happens when axis object and world axis
+    are exactly the same or opposite)
+
+    Parameters:
+    ----------
+    axis3d: numpy.array
+        A set of 3D numpy array representing the direction xyz-axis are pointing.
+    Returns:
+    -------
+        A 4D-quaternion numpy array needed to rotate the xyz-axis vectors into its current position.
+    '''
+    # start by matching x-axis:
+    x_axis = axis3d[0]/np.linalg.norm(axis3d[0])
+    x_world = np.array([1,0,0])
+    rot_axis1 = np.cross(x_axis, x_world)
+    n1 = rot_axis1/np.linalg.norm(rot_axis1)
+    theta1 = np.arccos(np.dot(x_axis, x_world))
+    q1 = R.from_quat((n1*np.sin(theta1/2)).tolist() + [np.cos(theta1/2)])
+    
+    # followed by y-axis
+    y_axis = q1.apply(axis3d[1])/np.linalg.norm(axis3d[1])
+    y_world = np.array([0,1,0])
+    rot_axis2 = np.cross(y_axis, y_world)
+    n2 = rot_axis2/np.linalg.norm(rot_axis2)
+    theta2 = np.arccos(np.dot(y_axis, y_world))
+    q2 = R.from_quat((n2*np.sin(theta2/2)).tolist() + [np.cos(theta2/2)])
+    # combine into single rotation quaternion
+    q3 = q2*q1
+    return q3
+
+
 def homogenous_position(vect):
     '''
     This function will make sure the coordinates in the right shape(4 by N) that could be multiplied by a
