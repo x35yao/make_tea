@@ -4,14 +4,15 @@ import os
 import numpy as np
 from scipy.interpolate import interp1d
 import shutil
+import re
 
 
 class Post_process:
     def __init__(self, pre_dir):
         self.pre_dir = pre_dir
-        root, dirs, files = next(os.walk(self.pre_dir))
-        self.demos = [os.path.join(root, dir) for dir in dirs]
-
+        all_files = os.listdir(pre_dir)
+        r = re.compile("^[0-9]+$")
+        self.demos = [os.path.join(self.pre_dir, demo) for demo in list(filter(r.match, all_files))]
         self.processed = []
 
         self.post_dir = './postprocessed/' + self.pre_dir.split('/')[-1]
@@ -91,7 +92,7 @@ class Post_process:
             self.actions[demo] = {}
             root, dirs, files = next(os.walk(demo))
             for file in files:
-                if 'Servo-displacement' in file:
+                if 'Servo' in file:
                     servo_file = file
             with open(os.path.join(root, servo_file), 'r') as f:
                 lines = f.readlines()
@@ -104,24 +105,26 @@ class Post_process:
                     action_end.append(line.split(',')[0])
             self.actions[demo]['start'] = action_start
             self.actions[demo]['end'] = action_end
+
             src = root + '/' + servo_file
             dst = src.replace('preprocessed', 'postprocessed')
+            dst_dir = os.path.dirname(dst)
+            if not os.path.isdir(dst_dir):
+                os.makedirs(dst_dir)
             shutil.copyfile(src, dst)
 
     def process_video(self):
         '''It is simply copy the preprocessed video file for now, might do something later'''
         for demo in self.demos:
             root, dirs, files = next(os.walk(demo))
-            for d in dirs:
-                if d == 'left' or d == 'right':
-                    dir_full = os.path.join(root, d)
-                    root_d, dirs_d, files_d = next(os.walk(dir_full))
-                    src = os.path.join(root_d, files_d[0])
-                    dst = src.replace('preprocessed', 'postprocessed')
-                    dst_dir = os.path.dirname(dst)
-                    if not os.path.isdir(dst_dir):
-                        os.makedirs(dst_dir)
-                    shutil.copyfile(src, dst)
+            videos = [f for f in files if 'mp4' in f]
+            for vid in videos:
+                src = os.path.join(root, vid)
+                dst = src.replace('preprocessed', 'postprocessed')
+                dst_dir = os.path.dirname(dst)
+                if not os.path.isdir(dst_dir):
+                    os.makedirs(dst_dir)
+                shutil.copyfile(src, dst)
 
 
 
@@ -160,7 +163,7 @@ class Post_process:
             if (
                     np.sum(mask) > 3
             ):  # Make sure there are enough points to fit the cubic spline
-                spl = interp1d(x[mask], temp[mask, i], kind=filtertype, fill_value='extrapolate')
+                spl = interp1d(x[mask], temp[mask, i], kind=kind, fill_value='extrapolate')
                 y = spl(x)
                 if max_gap > 0:
                     inds = np.flatnonzero(np.r_[True, np.diff(mask), True])

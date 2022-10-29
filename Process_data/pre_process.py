@@ -64,6 +64,7 @@ def svo_to_mp4s(video, outdir, output_as_video = True):
     width = image_size.width
     height = image_size.height
 
+
     # Prepare side by side image container equivalent to CV_8UC4
     svo_image_left_rgba = np.zeros((height, width, 4), dtype=np.uint8)
     svo_image_right_rgba = np.zeros((height, width, 4), dtype=np.uint8)
@@ -74,9 +75,9 @@ def svo_to_mp4s(video, outdir, output_as_video = True):
     depth_image = sl.Mat()
 
     video_writer = None
-    vid_id = os.path.basename(video).split('.')[0]
-    outputdir_left = output_path + '/left'
-    outputdir_right = output_path + '/right'
+    vid_id = os.path.basename(video).split('-')[0]
+    outputdir_left = output_path
+    outputdir_right = output_path
     os.makedirs(outputdir_left, exist_ok=True)
     os.makedirs(outputdir_right, exist_ok=True)
     output_path_left = outputdir_left + f'/{vid_id}-left.mp4'
@@ -123,7 +124,10 @@ def svo_to_mp4s(video, outdir, output_as_video = True):
             if output_as_video:
                 # Copy the left image to the left side of SBS image
                 svo_image_left_rgba = left_image.get_data()
-
+                # from matplotlib import pyplot as plt
+                # plt.imshow(svo_image_left_rgba)
+                # plt.show()
+                # raise
                 # Copy the right image to the right side of SBS image
                 svo_image_right_rgba = right_image.get_data()
 
@@ -236,6 +240,8 @@ class Pre_process:
             matched['time_duration'] = delta_t
             # df = pd.DataFrame(columns = ['Timestamp', 'Gripper state'])
             dict = {'Timestamp': [], 'Gripper state': [] }
+            dict['Timestamp'].append(0.)
+            dict['Gripper state'].append('start')
             for line in lines:
                 if 'gripper open' in line or 'gripper closed' in line:
                     time_stamp = line.split(',')[0]
@@ -243,12 +249,16 @@ class Pre_process:
                     dt = self._compute_delta_t(start, time_stamp)
                     dict['Timestamp'].append(dt)
                     dict['Gripper state'].append(gripper_state.split()[1])
+                elif 'Task_time' in line:
+                    time_stamp = float(line.split(':')[1])
+                    dict['Timestamp'].append(time_stamp)
+                    dict['Gripper state'].append('end')
             matched_id = matched['id']
             outdir = self.pre_dir + f'/{matched_id}'
             if not os.path.isdir(outdir):
                 os.mkdir(outdir)
             df = pd.DataFrame.from_dict(dict)
-            fname = outdir + '/' + os.path.basename(servo_file) + self.suffix
+            fname = outdir + '/' + matched['id'] + '_Servo' + self.suffix
             if save_to_csv:
                 df.to_csv(fname, index = False)
         self.matched_list = [self.matched_list[i] for i in good_demo_ind]
@@ -308,7 +318,6 @@ class Pre_process:
                         # raise IOError ("Cannot pre-process NDI Labview file:Tool in line 1 should be 449 or 339")
                         self.error = "Cannot pre-process NDI Labview file:Tool in line 1 should be 449 or 339"
                         return False
-
                     if (float(y[2]) == 0.0) and (float(y[3]) == 0.0) and (
                             float(y[4]) == 0.0):  # just checking if x,y,z are zero which means no values
                         y[1] = y[9]
@@ -326,7 +335,7 @@ class Pre_process:
                     newline = y[0] + ', NaN'
                 processed_lines.append(newline)
             outdir = self.pre_dir + f'/{matched_id}'
-            fname = outdir + '/' + os.path.basename(ndi_file).replace('.txt', f'_NDI{self.suffix}.txt')
+            fname = outdir + '/' + matched['id'] + f'_NDI{self.suffix}.txt'
             with open(fname, 'w') as f:
                 for i in processed_lines:
                     i = i + '\n'
