@@ -56,9 +56,11 @@ def lintrans(a, H):
         a_homo = homogenous_position(a[:,:3])
         pos = (H @ a_homo).T[:,:3]
         rot1 = R.from_matrix(H[:3, :3])
-        rot2 = R.from_quat(a[:, 3:])
-        rot = rot1 * rot2
-        ori = rot.as_quat()
+        # print(H[:3, :3])
+        # rot2 = R.from_quat(a[:, 3:])
+        # rot = rot1 * rot2
+        # ori = rot.as_quat()
+        ori = a[:, 3:]
         a_transformed = np.concatenate((pos, ori), axis = 1)
     return a_transformed
 
@@ -249,18 +251,16 @@ def match_markers_to_template(obj_template, df_individual, camera_in_template, w
     dist = np.inf
     df_individual_backwards = df_individual.iloc[::-1]
     n_consecutive_frames = 0
-    for i in range(len(df_individual_backwards)):
+    bps = list(obj_template.keys())
+    for i in range(len(df_individual)):
         if n_consecutive_frames < window_size:
-            marker_coords = df_individual_backwards.iloc[i]
-            bps = marker_coords.index.get_level_values('bodyparts').unique()
-            combs = combinations(bps, n_markers)
-            if if_visible(marker_coords, combs):
-                combs = combinations(bps, n_markers)
+            marker_coords = df_individual.iloc[i]
+            bps_valid = [bp for bp in bps if not marker_coords[bp].isnull().any()]
+            if len(bps_valid) >= n_markers: ### There are enough markers vidible to match object to template
                 n_consecutive_frames +=1
+                combs = combinations(bps_valid, n_markers)
                 for comb in combs:
                     partial_marker_coords = marker_coords.loc[list(comb)]
-                    if partial_marker_coords.isnull().any():
-                        continue
                     H, dist_average = get_HT_template_in_obj(obj_template, partial_marker_coords, camera_in_template)
                     if dist_average < dist:
                         dist = dist_average
@@ -300,62 +300,81 @@ def get_HT_template_in_camera(obj_template, ndi_in_camera):
     template_in_camera = homogenous_transform(rot_matrix, list(center))
     return template_in_camera
 
-def get_HT_objs_in_ndi(obj_trajs_full_demo, template_objs, template_dir):
+def get_HT_objs_in_ndi(obj_traj, obj_templates, camera_in_ndi, individuals, window_size = 5, markers_average = True):
     '''
     This function will get homogeneous transformation for each object in each demonstration.
 
     Parameters:
     -----------
-    obj_trajs_action: dict
-        A directory that contains the object markers trajectories in camera reference frame for different demonstrations.
+    obj_traj: Dataframe
+        A dataframe that contains the object's trajectories for 1 demonstration.
+    obj_templates: dict
+        The dictionary that contains the objects' templates.
+    camera_in_ndi: array.
+        The homogeneous transformation that covert coordinates in camera frame to ndi frame.
     individuals: list
-        A list that contains the objects relative to the task.
-    template_dir: str
-        The directory that contains the objects' template information.
-    thres: int
-        The threshold that determines whether or not the object is matched with the template
-
+        List of object individuals that considered to be relevant to the task.
+    window_size: int
+        Number of rows that the object needs to be visible so that the HT computed will be seen as valid.
+    markers_average: bool
+        If true, the object position will be computed as the mean of all visible markers. Else, it will be using the objects' templates.
     Returns
     -------
     HTs: dict
         A dictionary that contains the homogeneous transformation for object in each demonstration
-    bad_demos: list
-        The list of demos that the average distance between the matched points are higher than the threshold.
+    dists: list
+        The list distances when matching object with template for each object.
     '''
-    with open(os.path.join(template_dir, 'obj_templates.pickle'), "rb") as f:
-        obj_templates = pickle.load(f)
-    with open(os.path.join(template_dir, 'camera_in_ndi.pickle'), "rb") as f:
-        camera_in_ndi = pickle.load(f)
-    with open(os.path.join(template_dir, 'ndi_in_camera.pickle'), "rb") as f:
-        ndi_in_camera = pickle.load(f)
-    window_size = 5
-    bad_demos = [] # the demos that the objects' markers fail to match with the template
-    individuals = obj_trajs_full_demo.columns.get_level_values('individuals').unique()
-    # demos = obj_trajs_action.keys()
+
+
+    ndi_in_camera = inverse_homogenous_transform(camera_in_ndi)
+    template_objs = obj_templates.keys()
     HTs = {}
     dists = []
     for individual in individuals:
-        print(f'Matching for {individual}')
+        # print(f'Matching for {individual}')
         if individual == 'global':
             # No transformation needed for global reference frame
             A = np.eye(3)
             b = np.zeros(3)
             H = homogenous_transform(A, b)
             HTs[individual]= H
+            dists.append(0)
         else:
-            obj = [obj for obj in template_objs if obj in individual][0]
-        obj_template = obj_templates[obj]
-        template_in_camera = get_HT_template_in_camera(obj_template, ndi_in_camera)
-        camera_in_template = inverse_homogenous_transform(template_in_camera)
-        df_individual = obj_trajs_full_demo.loc[:,individual]
-        template_in_obj, dist = match_markers_to_template(obj_template, df_individual, camera_in_template,
-                                                          window_size)
-        if not dist == np.inf:
-            dists.append(dist)
-            obj_in_template = inverse_homogenous_transform(template_in_obj)
-            obj_in_ndi = camera_in_ndi @ template_in_camera @ obj_in_template
-            HTs[individual] = obj_in_ndi
-        else:
-            print(f'Could not find a match for object {individual}')
-            raise
+            if not markers_average:
+                obj = [obj for obj in template_objs if obj in individual][0]
+                obj_template = obj_templates[obj]
+                template_in_camera = get_HT_template_in_camera(obj_template, ndi_in_camera)
+                camera_in_template = inverse_homogenous_transform(template_in_camera)
+                df_individual = obj_traj.loc[:,individual]
+                template_in_obj, dist = match_markers_to_template(obj_template, df_individual, camera_in_template,
+                                                                  window_size = window_size)
+                if not dist == np.inf:
+                    dists.append(dist)
+                    obj_in_template = inverse_homogenous_transform(template_in_obj)
+                    obj_in_ndi = camera_in_ndi @ template_in_camera @ obj_in_template
+                    HTs[individual] = obj_in_ndi
+                else:
+                    dists.append(dist)
+                    print(f'Could not find a match for object {individual}')
+            else:
+                A = np.eye(3)
+                df_individual = obj_traj[individual]
+                bps = df_individual.columns.get_level_values('bodyparts').unique()
+                coords = df_individual.columns.get_level_values('coords').unique()
+                coords_average = np.zeros(coords.shape)
+                for i in range(len(coords)):
+                    coord_sum = 0
+                    j = 0
+                    for bp in bps:
+                        df_bp = df_individual[bp].iloc[:window_size]
+                        if not df_bp.isnull().values.any(): #body parts don't contain nans
+                            coord_sum += np.mean(df_bp[coords[i]])
+                            j += 1
+                    coord_average = coord_sum / j
+                    coords_average[i] = coord_average
+                H_obj_in_cam = homogenous_transform(A, coords_average)
+                H_obj_in_ndi = camera_in_ndi @ H_obj_in_cam
+                HTs[individual] = H_obj_in_ndi
+                dists.append(0)
     return HTs, dists
