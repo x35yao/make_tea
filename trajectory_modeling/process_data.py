@@ -10,13 +10,16 @@ import yaml
 import numpy as np
 
 class Task_data:
-    def __init__(self, base_dir, template_dir, individuals, objs):
+    def __init__(self, base_dir, triangulation, individuals):
         all_files = os.listdir(base_dir)
         r = re.compile("^[0-9]+$")
         self.base_dir = base_dir
-        self.template_dir = template_dir
+        self.triangulation = triangulation
+        self.template_dir = os.path.join(base_dir, 'transformations', triangulation)
+        self.obj_templates = self.get_obj_templates()
+        self.obj_templates_valid = self.remove_invisible_markers_in_template()
         self.individuals = individuals + ['global']
-        self.objs = objs
+        self.objs = self.obj_templates.keys()
         self.demos = list(filter(r.match, all_files))
         self.bad_demos = []
         self.servos = glob(os.path.join(base_dir, '*', '*Servo*'))
@@ -30,6 +33,11 @@ class Task_data:
         self.obj_trajs_full = self.load_obj_trajectories()
 
 
+
+    def get_obj_templates(self,):
+        with open(os.path.join(self.template_dir, 'obj_templates.pickle'), 'rb') as f:
+            obj_templates = pickle.load(f)
+        return obj_templates
 
     def get_number_of_actions(self):
         n_actions = []
@@ -99,7 +107,7 @@ class Task_data:
             gripper_trajs[demo] = df_temp
         return gripper_trajs
 
-    def load_obj_trajectories(self, triangulation='dlc3d'):
+    def load_obj_trajectories(self):
         '''
         This function look for the demos in base_dir, and load marker_3d file.
 
@@ -107,8 +115,6 @@ class Task_data:
         ----------
         base_dir: string
             The path to the folder where all the demonstrations are saved.
-        triangulation: string
-            'leastereo' or 'dlc3d', which corresponds to which triangulation method is used to get the
 
         Returns
         -------
@@ -120,7 +126,7 @@ class Task_data:
         markers_trajs = {}
         for demo in self.demos:
             demo_dir = os.path.join(self.base_dir, demo)
-            markers_traj_file = os.path.join(demo_dir, triangulation, 'markers_trajectory_3d.h5')
+            markers_traj_file = os.path.join(demo_dir, self.triangulation, 'markers_trajectory_3d.h5')
             df_temp = pd.read_hdf(markers_traj_file)
             markers_trajs[demo] = df_temp.droplevel('scorer', axis=1)
         return markers_trajs
@@ -313,7 +319,18 @@ class Task_data:
             gripper_trajs_filtered[demo] = temp
         return gripper_trajs_filtered
 
-    def process_data(self, alignment_func, thres = 30):
+    def remove_invisible_markers_in_template(self):
+        objs = self.obj_templates.keys()
+        obj_templates_valid = {}
+        for obj in objs:
+            obj_templates_valid[obj] = {}
+            bps = self.obj_templates[obj].keys()
+            for bp in bps:
+                if not np.isnan(self.obj_templates[obj][bp]).any():
+                    obj_templates_valid[obj][bp] = self.obj_templates[obj][bp]
+        return obj_templates_valid
+
+    def process_data(self, alignment_func, thres = 30, marker_average = True):
         self.gripper_trajs_truncated = self.get_gripper_trajectories_for_each_action()
         self.gripper_trajs_in_obj_for_all_actions = []
         self.gripper_trajs_in_obj_aligned_for_all_actions = []
@@ -338,11 +355,12 @@ class Task_data:
                     previous_end_ind = int((float(previous_end_time) / float(duration)) * len(obj_trajs_demo))
                     obj_trajs_demo_action = obj_trajs_demo.iloc[previous_end_ind: start_ind]
                 print(f'Action ind: {i}, Demo #: {demo}')
-                HT_objs_in_ndi_demo, dists = get_HT_objs_in_ndi(obj_trajs_demo_action, self.objs, self.template_dir, self.individuals)
+                HT_objs_in_ndi_demo, dists = get_HT_objs_in_ndi(obj_trajs_demo_action, self.obj_templates_valid, CAMERA_IN_NDI , self.individuals, markers_average = False)
                 if np.max(dists) > thres: #Unmatched demo if the dists higher than the threshold
                      bad_demos_action.append(demo)
                 else:
                     HT_objs_in_ndi_action[demo] = HT_objs_in_ndi_demo
+
             self.bad_demos.append(bad_demos_action)
             self.HT_objs_in_ndi_for_all_actions.append(HT_objs_in_ndi_action)
             for demo in bad_demos_action: # Remove the unmatched demo
@@ -358,8 +376,9 @@ class Task_data:
             self.gripper_trajs_in_obj_aligned_filtered_for_all_actions.append(gripper_traj_in_obj_aligned_filtered)
         return
 
-    def save_data(self):
-        destfolder = os.path.join(self.base_dir, 'processed')
+    def save_data(self, destfolder = None):
+        if destfolder == None:
+            destfolder = os.path.join(self.base_dir, 'processed', self.triangulation)
         if not os.path.isdir(destfolder):
             os.makedirs(destfolder)
         with open(os.path.join(destfolder, 'gripper_trajs_in_obj.pickle'), 'wb') as f1:
@@ -376,11 +395,14 @@ if __name__ == '__main__':
     task_config_dir = '../Process_data/postprocessed/2022-10-06'
     with open(os.path.join(task_config_dir, 'task_config.yaml')) as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
-        
+    camera_in_ndi_path = os.path.join(config["project_path"], config["camera_in_ndi"])
+    with open(os.path.join(camera_in_ndi_path), 'rb') as f:
+        CAMERA_IN_NDI = pickle.load(f)
     base_dir = os.path.join(config["project_path"], config["postprocessed_dir"])
-    template_dir = os.path.join(config["project_path"], config["postprocessed_dir"], 'transformations/dlc3d')
+    triangulation = 'dlc3d'
     individuals = config["individuals"]# The objects that we will place a reference frame on
-    objs = config["objects"]
-    d = Task_data(base_dir, template_dir, individuals, objs)
+    d = Task_data(base_dir, triangulation, individuals)
     d.process_data(alignment_func=dtw_funcs[config["alignment_method"]])
     d.save_data()
+
+
