@@ -35,6 +35,23 @@ def pairwise_constrained_axis3d(pos1, pos2, up_axis=2):
     return (x_axis_norm, y_axis_norm, z_axis_norm)
 
 
+def axis3d_to_rotmatrix(axis3d):
+    '''
+    Convert the object xyz-axis vectors into rotation matrix
+
+    Parameters:
+    ----------
+    axis3d: numpy.array
+        A set of 3D numpy array representing the direction xyz-axis are pointing.
+    Returns:
+    -------
+        A 3 by 3 rotation matrix.
+    '''
+    rot = np.eye(3)
+    for i, axis_i in enumerate(axis3d):
+        rot[:, i] = axis_i
+    return rot
+
 def axis3d_to_quat(axis3d):
     '''
     Convert the object xyz-axis vectors into quaternion and return the transformation for converting 

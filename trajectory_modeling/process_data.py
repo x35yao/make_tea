@@ -5,9 +5,10 @@ import os
 from glob import glob
 import re
 import pandas as pd
-from transformations import get_HT_objs_in_ndi, lintrans, inverse_homogenous_transform
+from transformations import get_HT_objs_in_ndi, lintrans, inverse_homogenous_transform, pairwise_constrained_axis3d, axis3d_to_rotmatrix, homogenous_transform
 import yaml
 import numpy as np
+from itertools import permutations
 
 class Task_data:
     def __init__(self, base_dir, triangulation, individuals):
@@ -330,7 +331,7 @@ class Task_data:
                     obj_templates_valid[obj][bp] = self.obj_templates[obj][bp]
         return obj_templates_valid
 
-    def process_data(self, alignment_func, thres = 30, marker_average = True):
+    def process_data(self, alignment_func, group_objects = True,thres = 80,markers_average = False):
         self.gripper_trajs_truncated = self.get_gripper_trajectories_for_each_action()
         self.gripper_trajs_in_obj_for_all_actions = []
         self.gripper_trajs_in_obj_aligned_for_all_actions = []
@@ -355,14 +356,14 @@ class Task_data:
                     previous_end_ind = int((float(previous_end_time) / float(duration)) * len(obj_trajs_demo))
                     obj_trajs_demo_action = obj_trajs_demo.iloc[previous_end_ind: start_ind]
                 print(f'Action ind: {i}, Demo #: {demo}')
-                HT_objs_in_ndi_demo, dists = get_HT_objs_in_ndi(obj_trajs_demo_action, self.obj_templates_valid, CAMERA_IN_NDI , self.individuals, markers_average = False)
+                HT_objs_in_ndi_demo, dists = get_HT_objs_in_ndi(obj_trajs_demo_action, self.obj_templates_valid, CAMERA_IN_NDI , self.individuals, markers_average = markers_average)
                 if np.max(dists) > thres: #Unmatched demo if the dists higher than the threshold
                      bad_demos_action.append(demo)
                 else:
                     HT_objs_in_ndi_action[demo] = HT_objs_in_ndi_demo
-
-            self.bad_demos.append(bad_demos_action)
+            print(f'The bad demos for action {i} are: {bad_demos_action}')
             self.HT_objs_in_ndi_for_all_actions.append(HT_objs_in_ndi_action)
+            self.bad_demos.append(bad_demos_action)
             for demo in bad_demos_action: # Remove the unmatched demo
                 del gripper_action_traj[demo]
                 del gripper_action_traj_aligned[demo]
@@ -370,10 +371,25 @@ class Task_data:
             gripper_traj_in_obj = self.convert_trajectories_to_objects_reference_frame(gripper_action_traj, HT_objs_in_ndi_action, self.individuals)
             gripper_traj_in_obj_aligned = self.convert_trajectories_to_objects_reference_frame(gripper_action_traj_aligned, HT_objs_in_ndi_action, self. individuals)
             gripper_traj_in_obj_aligned_filtered = self.convert_trajectories_to_objects_reference_frame(gripper_action_traj_aligned_filtered, HT_objs_in_ndi_action, self.individuals)
-
             self.gripper_trajs_in_obj_for_all_actions.append(gripper_traj_in_obj)
             self.gripper_trajs_in_obj_aligned_for_all_actions.append(gripper_traj_in_obj_aligned)
             self.gripper_trajs_in_obj_aligned_filtered_for_all_actions.append(gripper_traj_in_obj_aligned_filtered)
+
+        if group_objects:
+            self.grouped_objects = self.get_grouped_objects()
+            self.HT_grouped_objects_in_ndi_for_all_actions = []
+            self.gripper_traj_in_grouped_objs_aligned_filtered_for_all_actions = []
+
+            for i in range(self.n_actions):
+                HT_objs_in_ndi_action = self.HT_objs_in_ndi_for_all_actions[i]
+                HT_grouped_objects_in_ndi_action = self.get_HTs_for_grouped_objects_per_action(HT_objs_in_ndi_action)
+                gripper_action_traj = self.gripper_trajs_truncated[i]
+                gripper_action_traj_aligned = self.align_trajectoires(gripper_action_traj,
+                                                                      alignment_func=alignment_func)
+                gripper_action_traj_aligned_filtered = self.filter_data(gripper_action_traj_aligned)
+                gripper_traj_in_grouped_objs_aligned_filtered = self.convert_trajectories_to_objects_reference_frame(gripper_action_traj_aligned_filtered, HT_grouped_objects_in_ndi_action, self.grouped_objects, ignore_orientation = False)
+                self.HT_grouped_objects_in_ndi_for_all_actions.append(HT_grouped_objects_in_ndi_action)
+                self.gripper_traj_in_grouped_objs_aligned_filtered_for_all_actions.append(gripper_traj_in_grouped_objs_aligned_filtered)
         return
 
     def save_data(self, destfolder = None):
@@ -389,8 +405,39 @@ class Task_data:
             pickle.dump(self.gripper_trajs_in_obj_aligned_filtered_for_all_actions, f3)
         with open(os.path.join(destfolder, 'HTs_obj_in_ndi.pickle'), 'wb') as f4:
             pickle.dump(self.HT_objs_in_ndi_for_all_actions, f4)
+        with open(os.path.join(destfolder, 'HTs_grouped_objs_in_ndi.pickle'), 'wb') as f5:
+            pickle.dump(self.HT_grouped_objects_in_ndi_for_all_actions, f5)
+        with open(os.path.join(destfolder, 'gripper_traj_in_grouped_objs_aligned_filtered.pickle'), 'wb') as f6:
+            pickle.dump(self.gripper_traj_in_grouped_objs_aligned_filtered_for_all_actions, f6)
         return
 
+    def get_HTs_for_grouped_objects_per_action(self, HT_objs_in_ndi_action):
+        HTs_grouped_objects_in_ndi_for_all_demos = {}
+        for demo in self.demos:
+            HTs_grouped_objects_in_ndi_demo = {}
+            for grouped_obj in self.grouped_objects:
+                obj0 = grouped_obj.split('-')[0]
+                obj1 = grouped_obj.split('-')[1]
+                pos0 = HT_objs_in_ndi_action[demo][obj0][:-1, 3]
+                pos1 = HT_objs_in_ndi_action[demo][obj1][:-1, 3]
+                axis_obj = pairwise_constrained_axis3d(pos0, pos1, up_axis=2)
+                rot_matrix = axis3d_to_rotmatrix(axis_obj)
+                HT = homogenous_transform(rot_matrix, pos0)
+                HTs_grouped_objects_in_ndi_demo[grouped_obj] = HT
+            HTs_grouped_objects_in_ndi_for_all_demos[demo] = HTs_grouped_objects_in_ndi_demo
+        return HTs_grouped_objects_in_ndi_for_all_demos
+
+    def get_grouped_objects(self):
+        grouped_objects = []
+        individuals = [ind for ind in self.individuals if ind != 'global']
+        perms = permutations(individuals, 2)
+        for perm in perms:
+            obj0 = list(perm)[0]
+            obj1 = list(perm)[1]
+            grouped_obj = obj0 + '-' + obj1
+            if grouped_obj not in grouped_objects:
+                grouped_objects.append(grouped_obj)
+        return grouped_objects
 if __name__ == '__main__':
     task_config_dir = '../Process_data/postprocessed/2022-10-06'
     with open(os.path.join(task_config_dir, 'task_config.yaml')) as file:
