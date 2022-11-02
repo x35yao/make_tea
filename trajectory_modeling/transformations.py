@@ -37,17 +37,17 @@ def pairwise_constrained_axis3d(pos1, pos2, up_axis=2):
 
 def axis3d_to_quat(axis3d):
     '''
-    Convert the object xyz-axis vectors into quaternion and return the transformation for converting 
-    the 3 vectors to the standard unit vectors. (Extremely rare fail case happens when axis object and world axis
-    are exactly the same or opposite)
+    Convert the object xyz-axis vectors to a rotation using quaternion and return the transformation 
+    representing the rotation to standard unit vector (Extremely rare fail case happens when axis object 
+    and world axis are exactly the same or opposite)
 
     Parameters:
     ----------
     axis3d: numpy.array
-        A set of 3D numpy array representing the direction xyz-axis are pointing.
+        A set of 3D numpy array representing the directions xyz-axis are pointing.
     Returns:
     -------
-        A 4D-quaternion numpy array needed to rotate the xyz-axis vectors into its current position.
+        A scipy.spatial.transform.Rotation object that rotates the xyz-axis vectors into standard unit vector.
     '''
     # start by matching x-axis:
     x_axis = axis3d[0]/np.linalg.norm(axis3d[0])
