@@ -53,7 +53,84 @@ def detect_outlier(trajs, n, dims=['x', 'y', 'z']):
 
     return outliers
     
+def detect_lowest_var_outlier(trajs, n, steps=0, dims=['x', 'y', 'z']):
+    """
+    takes in a set of realigned trajectory demos with same number of time steps
+    and returns a list of the outlier by iteratively searching points at the time step 
+    with the lowest maximum dimension variance.
     
+    Parameters:
+    -----------
+    trajs: list
+        A list of trajectories containing the positional features
+    n: float 
+        nth std threshold
+    steps: int
+        Time steps to be considered for selecting outliers. 
+        By default selects only the starting time and ending time.
+    dims: list 
+        a list of name of the features to be considered
+    Returns:
+    --------
+    outliers: list
+        A list of index of the trajectory that are outliers
+    """
+    outliers = []
+    keys = sorted(list(trajs.keys()))
+     
+    # confirm trajectories are all of the same length
+    traj_lens = set([len(trajs[d]) for d in trajs.keys()])
+    max_steps = max(traj_lens)
+    if len(traj_lens) > 1: 
+        raise Exception("The trajectories does not all have the same length")
+    
+    # select timesteps to be examined
+    search_timesteps = [0]
+    if steps > 0: search_timesteps = list(range(0, max_steps-1, steps))
+    search_timesteps.append(max_steps-1)
+    while True:
+        cur_outliers = []
+        # select the timestep with the most consistent points(lowest variance across all dimension)
+        max_var_timesteps = []
+        for t in search_timesteps:
+            timestep_pts = []
+            for i_key in keys:
+                timestep_pts.append(trajs[i_key][dims].iloc[t])
+            timestep_pts = np.array(timestep_pts)
+            # select max variance across all dims
+            max_dim_var = np.max(np.std(timestep_pts, axis=0))
+            max_var_timesteps.append(max_dim_var)
+        # fetch index of the minimum overall variance 
+        best_t = search_timesteps[max_var_timesteps.index(min(max_var_timesteps))]
+#         print(f"This iteration's best timestamp: {best_t}")
+        
+        selected_pts = []
+        # gather start and end points
+        for i_key in keys:
+            selected_pts.append(trajs[i_key][dims].iloc[best_t])
+        selected_pts_df = pd.DataFrame(selected_pts)
+
+        # generate the means and std
+        means_pts = {col: selected_pts_df[col].mean() for col in dims}
+        stds_pts = {col: selected_pts_df[col].std() for col in dims}
+        # collect the outlier demos.
+        for i_key in keys:
+            test_pt = trajs[i_key].iloc[best_t]
+            for dim in dims:
+                z1 = np.abs(test_pt[dim] - means_pts[dim])/stds_pts[dim]
+                if z1 > n:
+                    cur_outliers.append(i_key)
+                    break
+        if len(cur_outliers) < 1:
+            break
+        else:
+            outliers = outliers + cur_outliers
+#             print(f"This iteration's outliers: {cur_outliers}")
+            keys = [k for k in keys if k not in outliers]
+            
+    return outliers
+    
+
 # def traj_summarization(traj_df):
 #     """
 #     generate the aggragate features from the given trajectory.
