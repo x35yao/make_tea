@@ -5,8 +5,44 @@ from itertools import combinations
 import os
 import pickle
 
+def quat_conjugate(quat):
+    qx = quat[0]
+    qy = quat[1]
+    qz = quat[2]
+    qw = quat[3]
+    return [-qx, -qy, -qz, qw]
 
-def pairwise_constrained_axis3d(pos1, pos2, up_axis=2):
+def get_quat_matrix(quat):
+    qx = quat[0]
+    qy = quat[1]
+    qz = quat[2]
+    qw = quat[3]
+    result = np.zeros((4, 4))
+    result[0,:] = [qw, -qz, qy, qx]
+    result[1, :] = [qz, qw, -qx, qy]
+    result[2, :] = [-qy, qx, qw, qz]
+    result[3, :] = [-qx, -qy, -qz, qw]
+    return result
+
+def get_rot_quat_matrix(r):
+    rotmatrix = r.as_matrix()
+    quat = r.as_quat()
+    result = np.zeros((7, 7))
+    result[:3, :3] = rotmatrix
+    result[3:, 3:] = get_quat_matrix(quat)
+    return result
+
+def get_HT_for_grouped_object(grouped_obj, HT_objs_in_ndi_demo):
+    obj1 = grouped_obj.split('-')[0]
+    obj2 = grouped_obj.split('-')[1]
+    pos1 = HT_objs_in_ndi_demo[obj1][:-1, 3]
+    pos2 = HT_objs_in_ndi_demo[obj2][:-1, 3]
+    axis_obj = pairwise_constrained_axis3d(pos1, pos2, up_axis=0)
+    rot_matrix = axis3d_to_rotmatrix(axis_obj)
+    HT = homogenous_transform(rot_matrix, pos1)
+    return HT
+
+def pairwise_constrained_axis3d(pos1, pos2, up_axis=0):
     '''
     Generates local object's 3D axis given pos1 and pos2 with x-axis parallel to the line between pos1 and pos2
     and z-axis perpendicular such that its unit vector's up-axis value is maximized.
@@ -29,11 +65,11 @@ def pairwise_constrained_axis3d(pos1, pos2, up_axis=2):
     up = np.zeros(3)
     up[up_axis] = 1
     x_comp_of_up = np.dot(up, x_axis_norm)*x_axis_norm
+
     z_axis_norm = (up-x_comp_of_up)/np.linalg.norm(up-x_comp_of_up)
     y_axis = np.cross(z_axis_norm, x_axis_norm)
     y_axis_norm = y_axis/np.linalg.norm(y_axis)
     return (x_axis_norm, y_axis_norm, z_axis_norm)
-
 
 def axis3d_to_rotmatrix(axis3d):
     '''
@@ -132,17 +168,63 @@ def lintrans(a, H):
     if D == 3: # position only
         a_homo = homogenous_position(a)
         a_transformed = (H @ a_homo).T[:,:3]
+    elif D == 4: # orientation only
+        r_quat = R.from_matrix(H[:3, :3]).as_quat()
+        quat_matrix = get_quat_matrix(r_quat)
+        ori = (quat_matrix @ a.T).T
+        ori_new = R.from_matrix(R.from_quat(ori).as_matrix()).as_quat()
+        a_transformed = ori_new
     elif D == 7: # position + orientation(quaternion)
         a_homo = homogenous_position(a[:,:3])
         pos = (H @ a_homo).T[:,:3]
         rot1 = R.from_matrix(H[:3, :3])
-        # print(H[:3, :3])
-        # rot2 = R.from_quat(a[:, 3:])
-        # rot = rot1 * rot2
-        # ori = rot.as_quat()
-        ori = a[:, 3:]
-        a_transformed = np.concatenate((pos, ori), axis = 1)
+        rot2 = R.from_quat(a[:, 3:])
+        # print('Original', a[:, 3:][0])
+        rot = rot1 * rot2
+        ori = rot.as_quat()
+        # print('orientation 1', ori[0])
+        r = R.from_matrix(H[:3, :3])
+        quat_matrix = get_quat_matrix(r.as_quat())
+        ori = (quat_matrix @ a[:, 3:].T).T
+        ori_new = R.from_matrix(R.from_quat(ori).as_matrix()).as_quat()
+        # print('orientation 2',ori[0])
+        a_transformed = np.concatenate((pos, ori_new), axis = 1)
     return a_transformed
+
+def lintrans_cov(sigmas, H):
+    '''
+    This function applies the linear transformation on a covirance matrix expressed with the homogeneous transformation H.
+
+    Parameters:
+    -----------
+    sigmas: np.array
+        The covariance matrices with shape (N by D by D) where N is the number of datapoints and D is the dimension.
+    H: np.array
+        A 4 by 4 homogeneous transformation matrix.
+
+    Returns:
+    --------
+    a_transformed: np.array
+        A N by D array that contains the transformed trajectory
+    '''
+    rotmatrix = H[:3, :3]
+    D = sigmas.shape[1]
+    if D == 3: # position only
+        sigmas_transformed = [rotmatrix @ cov @ rotmatrix.T for cov in sigmas]
+    elif D == 4: # orientation only
+        r_quat = R.from_matrix(rotmatrix).as_quat()
+        r_quat_inv = quat_conjugate(r_quat)
+        quat_matrix = get_quat_matrix(r_quat)
+        quat_matrix_inv = get_quat_matrix(r_quat_inv)
+        sigmas_transformed = [quat_matrix @ cov @ quat_matrix_inv for cov in sigmas]
+        # sigmas_transformed = [-cov for cov in sigmas_transformed]
+    elif D == 7: # position + orientation(quaternion)
+        r = R.from_matrix(rotmatrix)
+        r_inv = r.inv()
+        rot_quat_matrix = get_rot_quat_matrix(r)
+        rot_quat_matrix_inv = get_rot_quat_matrix(r_inv)
+        sigmas_transformed = [rot_quat_matrix @ cov @ rot_quat_matrix_inv for cov in sigmas]
+    return sigmas_transformed
 
 def rigid_transform_3D(A, B):
     '''
@@ -405,7 +487,6 @@ def get_HT_objs_in_ndi(obj_traj, obj_templates, camera_in_ndi, individuals, wind
     dists: list
         The list distances when matching object with template for each object.
     '''
-
 
     ndi_in_camera = inverse_homogenous_transform(camera_in_ndi)
     template_objs = obj_templates.keys()
