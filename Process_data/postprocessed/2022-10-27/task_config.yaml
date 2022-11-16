@@ -1,0 +1,9 @@
+
+project_path: /home/luke/Desktop/project/make_tea
+postprocessed_dir: Process_data/postprocessed/2022-10-27
+camera_in_ndi: calibrate_camera/transformations/camera_in_ndi.pickle
+individuals: [pitcher, cup]
+objects: [pitcher,cup]
+template_video_id: '586012'
+cameras: [left, right]
+alignment_method: "typeId"
