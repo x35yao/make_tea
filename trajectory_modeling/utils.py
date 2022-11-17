@@ -1,6 +1,13 @@
 from transformations import *
 
-def get_mean_cov_hats(ref_means, ref_covs, min_len=None):
+def compute_diag_norm(cov):
+    n_dim = cov.shape[0]
+    sum = 0
+    for i in range(n_dim):
+        sum += cov[i][i]**2
+    return np.sqrt(sum)
+
+def get_mean_cov_hats(ref_means, ref_covs, min_len=None, modify_cov = False):
     '''
     This function computes the average mean and covariance across different object model.
 
@@ -20,23 +27,29 @@ def get_mean_cov_hats(ref_means, ref_covs, min_len=None):
     sigma_hats: array
         N * D * D array,where N is the number of data points and D is the dimension of the data. Average covariance at each data point.
     '''
+
     sigma_hats, ref_pts = [], len(ref_means)
+
     if not min_len:
         min_len = min([len(r) for r in ref_means])
+
     # solve for global covariance
     for p in range(min_len):
         covs = [cov[p] for cov in ref_covs]
-        inv_sum = np.linalg.inv(covs[0])
-        for ref in range(1, ref_pts):
-            inv_sum = inv_sum + np.linalg.inv(covs[ref])
+        inv_sum = np.zeros(ref_covs[0][0].shape)
+        for ref in range(ref_pts):
+            inv_sum += np.linalg.inv(covs[ref])
         sigma_hat = np.linalg.inv(inv_sum)
         sigma_hats.append(sigma_hat)
+
+    # solve for global mean
     mean_hats = []
     for p in range(min_len):
-        mean_w_sum = np.matmul(np.linalg.inv(ref_covs[0][p]), ref_means[0][p])
-        for ref in range(1, ref_pts):
-            mean_w_sum = mean_w_sum + np.matmul(np.linalg.inv(ref_covs[ref][p]), ref_means[ref][p])
-        mean_hats.append(np.matmul(sigma_hats[p], mean_w_sum))
+        mean_w_sum = np.zeros(ref_means[0][0].shape)
+        for ref in range(ref_pts):
+            mean_w_sum += np.matmul(np.linalg.inv(ref_covs[ref][p]), ref_means[ref][p])
+        mu = np.matmul(sigma_hats[p], mean_w_sum)
+        mean_hats.append(mu)
     return np.array(mean_hats), np.array(sigma_hats)
 
 
@@ -57,6 +70,7 @@ def sample_trajectory_gmm(gmm, basis_mat, size=1, dims=7):
     """
     sampled_trajectories = []
     sampled_weights = gmm.sample(size)[0]
+
     for w in sampled_weights:
         traj = (basis_mat @ w).reshape(-1, dims)
         sampled_trajectories.append(traj)
