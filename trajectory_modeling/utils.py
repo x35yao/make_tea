@@ -75,3 +75,73 @@ def sample_trajectory_gmm(gmm, basis_mat, size=1, dims=7):
         traj = (basis_mat @ w).reshape(-1, dims)
         sampled_trajectories.append(traj)
     return sampled_trajectories
+
+
+def min_max_var(covs):
+    """
+    returns the index and minimum overall dimension variance across all timestep
+    Parameters:
+    -----------
+    covs: list
+        A list of covariances index by time
+    Returns:
+    --------
+    best_index: int 
+        index of the minimum.
+    best_min_var: float 
+        the optimal variance founded
+    """
+    best_index, best_min_var = 0, float('inf')
+    for i, cov in enumerate(covs):
+        t_max_var = np.diag(cov).max()
+        if t_max_var < best_min_var:
+            best_index = i
+            best_min_var = t_max_var
+    return best_index, best_min_var
+
+def obj_ref_traj(ref_covs):
+    """
+    return the name of the reference frame with the best minimum overall dimension variance
+    across all timestep.
+    Parameters:
+    -----------
+    ref_covs: dict
+        a dictionary containing the name of the reference frames as keys and the covariance 
+        across timesteps as values.
+    Returns:
+    --------
+    best_ref: str
+        name of the best reference frame
+    """
+    best_ref, best_min_var_all = None, float('inf')
+    for ref, covs in ref_covs.items():
+        _, min_ref_var = min_max_var(covs)
+        if min_ref_var < best_min_var_all:
+            best_min_var_all = min_ref_var
+            best_ref = ref
+    return best_ref
+
+
+def combinations_from_list(lens_set):
+    """
+    create a list of all combination of length of lens_set and value of each dimension up to 
+    the corresponding value in lens_set.
+    Parameters:
+    -----------
+    lens_set: list
+        a list of positive ints.
+    Returns:
+    --------
+    combinations: list
+        a 2D list of combinations
+    """
+    combinations = [[]]
+    curdim = 0
+    while curdim < len(lens_set):
+        new_combinations = []
+        for i in range(lens_set[curdim]):
+            for j in combinations:
+                new_combinations.append(j + [i])
+        combinations = new_combinations
+        curdim += 1
+    return combinations
