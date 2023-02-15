@@ -1,32 +1,70 @@
 from TP_PMP import utils
-from TP_PMP import full_promp as promp
+from TP_PMP import promp_gmm as promp
 import numpy as np
+import random
+
 
 class PMP():
-    def __init__(self, Q, times, dof, dim_basis_fun = 30, sigma = 0.035, full_basis = None):
+    def __init__(self, data_in_all_rfs, times, dof, dim_basis_fun = 25, sigma = 0.035, full_basis = None, n_components = 1, covariance_type = 'block_diag', max_iter = 100, n_init = 1):
         self.sigma = sigma
         self.dof = dof
         if full_basis == None:
             self.full_basis = {
             'conf': [
                 {"type": "sqexp", "nparams": 22, "conf": {"dim": 21}},
-                {"type": "poly", "nparams": 0, "conf": {"order": 1}},
-                {"type": "poly", "nparams": 0, "conf": {"order": 2}},
                 {"type": "poly", "nparams": 0, "conf": {"order": 3}}
             ],
             'params': [np.log(self.sigma), 0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65
                 , 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1]
         }
         self.dim_basis_fun = dim_basis_fun
-        self.Q = Q
+        self.data_in_all_rfs = data_in_all_rfs
+        self.rfs = sorted(data_in_all_rfs.keys())
         self.times = times
-        self.promp = promp.FullProMP(basis= self.full_basis)
-        self.inv_whis_mean = lambda v, Sigma: 9e-1 * utils.make_block_diag(Sigma, self.dof) + 1e-1 * np.eye(self.dof * self.dim_basis_fun)
-        self. prior_Sigma_w = {'v': self.dim_basis_fun * self.dof, 'mean_cov_mle': self.inv_whis_mean}
-    def train(self):
-        train_summary = self.promp.train(self.times, q=self.Q, max_iter=30, prior_Sigma_w= self.prior_Sigma_w,
-                                                 print_inner_lb=False)
+        self.n_components = n_components
+        self.covariance_type = covariance_type
+        self.inv_whis_mean = lambda Sigma: utils.make_block_diag(Sigma, self.dof * len(self.rfs))
+        self.prior_Sigma_w = {'v': self.dim_basis_fun * self.dof, 'mean_cov_mle': self.inv_whis_mean}
+        self.prior_mu_w = {'k0':2, 'm0':0}
+        self.prior_mu_w = None
+        self.max_iter = max_iter
+        self.n_init = n_init
+        self.n_demos = len(self.times)
+        self.model = promp.FullProMP(basis=self.full_basis, n_dims= len(self.rfs) * self.dof, n_rfs = len(self.rfs), n_components=self.n_components,
+                                    covariance_type=self.covariance_type)
+
+    def train(self, print_lowerbound = True, no_Sw = False):
+        data_concat = self._concat_data_across_rfs()
+        train_summary = self.model.train(self.times, data=data_concat, print_lowerbound=print_lowerbound, no_Sw=no_Sw,
+                                        max_iter=self.max_iter, prior_Sigma_w=self.prior_Sigma_w, prior_mu_w = self.prior_mu_w,
+                                        n_init=self.n_init)
+    def refine(self):
+        self.model.refine(self.max_iter)
+
+    def bic(self):
+        return self.model.bic()
+    def _concat_data_across_rfs(self):
+        '''
+        For each demonstration, this function concatenate data for all reference frames
+        '''
+        data_concat = []
+        rfs = sorted(self.data_in_all_rfs.keys())
+        for i in range(self.n_demos):
+            temp = np.hstack([self.data_in_all_rfs[rf][i] for rf in rfs])
+            data_concat.append(temp)
+        return data_concat
+
+    def select_mode(self):
+        modes = np.arange(self.n_components)
+        selected_mode_ind = random.choices(modes, weights = self.promp.alpha, k = 1)[0]
+        return selected_mode_ind
 
     def marginal_w(self, t):
-        mu, sigma = self.promp.marginal_w(t)
+        selected_mode_ind = self.select_mode()
+        model = self.promp
+        mu,sigma = model.marginal_w(t, selected_mode_ind)
+
         return mu, sigma
+
+    def condition(self, t, T, q, Sigma_q=None, ignore_Sy = True):
+        self.promp.condition(t, T, q, Sigma_q, ignore_Sy)
