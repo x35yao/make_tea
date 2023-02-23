@@ -1,11 +1,12 @@
 from TP_PMP import utils
 from TP_PMP import promp_gmm as promp
+from TP_PMP import promp_gaussian as promp_gaussian
 import numpy as np
 import random
 
 
 class PMP():
-    def __init__(self, data_in_all_rfs, times, dof, dim_basis_fun = 25, sigma = 0.035, full_basis = None, n_components = 1, covariance_type = 'block_diag', max_iter = 100, n_init = 1):
+    def __init__(self, data_in_all_rfs, times, dof, dim_basis_fun = 25, sigma = 0.035, full_basis = None, n_components = 1, covariance_type = 'block_diag', max_iter = 100, n_init = 1, gmm = True):
         self.sigma = sigma
         self.dof = dof
         if full_basis == None:
@@ -30,19 +31,25 @@ class PMP():
         self.max_iter = max_iter
         self.n_init = n_init
         self.n_demos = len(self.times)
-        self.model = promp.FullProMP(basis=self.full_basis, n_dims= len(self.rfs) * self.dof, n_rfs = len(self.rfs), n_components=self.n_components,
-                                    covariance_type=self.covariance_type)
+        self.gmm = gmm
+        if self.gmm:
+            self.pmp = promp.FullProMP(basis=self.full_basis, n_dims= len(self.rfs) * self.dof, n_rfs = len(self.rfs), n_components=self.n_components,
+                                        covariance_type=self.covariance_type)
+        else:
+            self.pmp = promp_gaussian.FullProMP(basis=self.full_basis, n_dims=len(self.rfs) * self.dof, n_rfs=len(self.rfs))
 
     def train(self, print_lowerbound = True, no_Sw = False):
         data_concat = self._concat_data_across_rfs()
-        train_summary = self.model.train(self.times, data=data_concat, print_lowerbound=print_lowerbound, no_Sw=no_Sw,
+        train_summary = self.pmp.train(self.times, data=data_concat, print_lowerbound=print_lowerbound, no_Sw=no_Sw,
                                         max_iter=self.max_iter, prior_Sigma_w=self.prior_Sigma_w, prior_mu_w = self.prior_mu_w,
                                         n_init=self.n_init)
-    def refine(self):
-        self.model.refine(self.max_iter)
+    def refine(self, max_iter = None):
+        if max_iter is None:
+            max_iter = self.max_iter
+        self.pmp.refine(max_iter)
 
     def bic(self):
-        return self.model.bic()
+        return self.pmp.bic()
     def _concat_data_across_rfs(self):
         '''
         For each demonstration, this function concatenate data for all reference frames
@@ -61,10 +68,10 @@ class PMP():
 
     def marginal_w(self, t):
         selected_mode_ind = self.select_mode()
-        model = self.promp
+        model = self.pmp
         mu,sigma = model.marginal_w(t, selected_mode_ind)
 
         return mu, sigma
 
     def condition(self, t, T, q, Sigma_q=None, ignore_Sy = True):
-        self.promp.condition(t, T, q, Sigma_q, ignore_Sy)
+        self.pmp.condition(t, T, q, Sigma_q, ignore_Sy)
