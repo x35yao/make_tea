@@ -51,10 +51,11 @@ def quad(a,X):
     """
     return np.dot(a, np.dot(X, a))
 
-class FullProMP_gaussian():
-    def __init__(self, basis, n_dims = 7, tol = 1e-3, reg_covar = 1e-3, random_state = 1, q = True, qd = False, init_mu_w = None, init_Sigma_w = None, init_Sigma_y = None ):
+class FullProMP():
+    def __init__(self, basis, n_dims = 7, n_rfs = 1, tol = 1e-3, reg_covar = 1e-3, random_state = 1, q = True, qd = False, init_mu_w = None, init_Sigma_w = None, init_Sigma_y = None ):
         self.basis = basis
         self.n_dims = n_dims
+        self.n_rfs = n_rfs
         self.tol = tol
         self.reg_covar = reg_covar
         self.random_state = random_state
@@ -201,7 +202,7 @@ class FullProMP_gaussian():
             ans = ans + lpw + lhood
         return -0.5*ans
 
-    def __EM_lowerbound(self, expectations):
+    def __EM_lowerbound(self, expectations, with_prior = True):
         """ Computes the EM lowerbound
         Receives a list of time vectors from the training set, the expectations computed in the
         E-step of the algorithm, and a list of optional arguments. As an optional argument eigther
@@ -213,29 +214,34 @@ class FullProMP_gaussian():
         inv_sig_w = self.Sigma_w_val['inv']
         log_det_sig_w = self.Sigma_w_val['log_det']
         lhood_lb = self.__em_lb_likelihood(expectations)
-        #3) Compute prior log likely-hood
-        lprior = 0.0
-        if self.prior_mu_w is not None:
-            m0 = self.prior_mu_w['m0']
-            inv_V0 = self.prior_mu_w['k0']*inv_sig_w #Normal-Inverse-Wishart prior
-            lprior = lprior + quad(self.mu_w-m0, inv_V0)
-        if self.prior_Sigma_w is not None:
-            v0 = self.prior_Sigma_w['v']
-            D = np.shape(self.Sigma_w)[0]
-            if 'mean_cov_mle' in self.prior_Sigma_w:
-                S0 = self.prior_Sigma_w['mean_cov_mle'](self.__Sigma_w_mle) * (v0 + D + 1)
-            else:
-                S0 = self.prior_Sigma_w['invS0']
-            lprior = lprior + (v0 + D + 1)*log_det_sig_w + np.trace(np.dot(S0, inv_sig_w))
-        #4) Compute full lower bound
-        return -0.5*lprior + lhood_lb
+        if not with_prior:
+            return lhood_lb
+        else:
+            #3) Compute prior log likely-hood
+            lprior = 0.0
+            if self.prior_mu_w is not None:
+                m0 = self.prior_mu_w['m0']
+                inv_V0 = self.prior_mu_w['k0']*inv_sig_w #Normal-Inverse-Wishart prior
+                lprior = lprior + quad(self.mu_w-m0, inv_V0)
+            if self.prior_Sigma_w is not None:
+                v0 = self.prior_Sigma_w['v']
+                D = np.shape(self.Sigma_w)[0]
+                if 'mean_cov_mle' in self.prior_Sigma_w:
+                    S0 = self.prior_Sigma_w['mean_cov_mle'](self.__Sigma_w_mle) * (v0 + D + 1)
+                else:
+                    S0 = self.prior_Sigma_w['invS0']
+                lprior = lprior + (v0 + D + 1)*log_det_sig_w + np.trace(np.dot(S0, inv_sig_w))
+            #4) Compute full lower bound
+            return -0.5*lprior + lhood_lb
 
     def initialize(self):
         self.mu_w = np.zeros(self.w_dim)
         self.Sigma_w = np.eye(self.w_dim, self.w_dim)
         self.Sigma_y = np.eye(self.y_dim, self.y_dim)
 
-    def _e_step(self):
+    def _e_step(self, Y = None, with_prior = True):
+        if Y is None:
+            Y = self.Y
         # 1) Computer matrix inverse
         self.Sigma_w_val = cov_mat_precomp(self.Sigma_w)
         self.Sigma_y_val = cov_mat_precomp(self.Sigma_y)
@@ -245,7 +251,7 @@ class FullProMP_gaussian():
         w_means = []
         w_covs = []
         for n, time in enumerate(self.times):
-            Tn = len(self.Y[n])
+            Tn = len(Y[n])
             sum_mean = np.dot(inv_sig_w, self.mu_w)
             sum_cov = inv_sig_w
             for t in range(Tn):
@@ -258,7 +264,7 @@ class FullProMP_gaussian():
             w_means.append(wn)
             w_covs.append(Swn)
         expectations = {'w_means': w_means, 'w_covs': w_covs}
-        lowerbound = self.__EM_lowerbound(expectations)
+        lowerbound = self.__EM_lowerbound(expectations, with_prior)
         return lowerbound, {'w_means': w_means, 'w_covs': w_covs}
 
     def _m_step(self, expectations):
@@ -329,12 +335,11 @@ class FullProMP_gaussian():
             self.Sigma_y
         ) = params
 
-    def train(self, times, data, n_rfs = 1, qd = None, max_iter = 30, diag_sy = True, no_Sw = False, prior_Sigma_w = None, prior_mu_w = None, print_lowerbound = False, n_init = 1):
+    def train(self, times, data, qd = None, max_iter = 30, diag_sy = True, no_Sw = False, prior_Sigma_w = None, prior_mu_w = None, print_lowerbound = False, n_init = 1):
         self.diag_sy = diag_sy
         self.no_Sw = no_Sw
         self.prior_Sigma_w = prior_Sigma_w
         self.prior_mu_w = prior_mu_w
-        self.n_rfs = n_rfs
         self.converged = False
         max_lower_bound = -np.inf
         self.Y = self.get_Y(times, data, qd)
@@ -376,11 +381,65 @@ class FullProMP_gaussian():
 
 
     def marginal_w(self, time):
-        selected_mode_ind = 1
-        print(f'Selected ind is : {selected_mode_ind}')
         phi_n = self.get_Phi([time])[0]
         means, covs= [], []
         for phi_t in phi_n:
-            means.append(np.dot(phi_t, self.mu_w[selected_mode_ind]))
-            covs.append(np.dot(np.dot(phi_t,self.Sigma_w[selected_mode_ind]),phi_t.T))
+            means.append(np.dot(phi_t, self.mu_w))
+            covs.append(np.dot(np.dot(phi_t,self.Sigma_w),phi_t.T))
         return means, covs
+
+    def condition(self, t, T, q, Sigma_q=None, ignore_Sy=True):
+        """ Conditions the ProMP
+
+        Condition the ProMP to pass be at time t with some desired position and velocity. If there is
+        uncertainty on the conditioned point pass it as the optional matrices Sigma_q,
+        Sigma_qd.
+        """
+        times = [[0, t, T]]
+        _Phi = self.get_Phi(times)
+        phi_t = _Phi[0][1]
+        d, lw = phi_t.shape
+        inst = {'q': q}
+        mu_q = self._get_y_t(inst)
+        if ignore_Sy:
+            tmp1 = np.dot(self.Sigma_w, phi_t.T)
+            tmp2 = np.dot(phi_t, np.dot(self.Sigma_w, phi_t.T))
+            tmp2 = np.linalg.inv(tmp2)
+            tmp3 = np.dot(tmp1, tmp2)
+            mu_w = self.mu_w + np.dot(tmp3, (mu_q - np.dot(phi_t, self.mu_w)))
+            tmp4 = np.eye(d)
+            if Sigma_q is not None:
+                tmp4 -= np.dot(Sigma_q, tmp2)
+            Sigma_w = self.Sigma_w - np.dot(tmp3, np.dot(tmp4, tmp1.T))
+        else:
+            inv_Sig_w = np.linalg.inv(self.Sigma_w)
+            inv_Sig_y = np.linalg.inv(self.Sigma_y)
+            Sw = np.linalg.inv(inv_Sig_w + np.dot(phi_t.T, np.dot(inv_Sig_y, phi_t)))
+            A = np.dot(np.dot(Sw, phi_t.T), inv_Sig_y)
+            b = np.dot(Sw, np.dot(inv_Sig_w, self.mu_w))
+            mu_w = np.dot(A, mu_q) + b
+            if Sigma_q is not None:
+                Sigma_w = Sw + np.dot(A, np.dot(Sigma_q, A.T))
+            else:
+                Sigma_w = Sw
+
+        self.mu_w = mu_w
+        self.Sigma_w = Sigma_w
+
+    def score(self, Y = None, with_prior = False):
+        log_prob_norm, expectations = self._e_step(Y, with_prior)
+        score = log_prob_norm.mean()
+        return score
+
+    def _n_parameters(self):
+        '''Return the number of free parameters in the model'''
+        mean_params = self.w_dim
+        cov_params = self.w_dim * (self.w_dim + 1) / 2
+        return int(cov_params + mean_params)
+
+    def bic(self, with_prior = False):
+        '''
+        Compute bic value for the model
+        '''
+        score = self.score()
+        return -2 * score * np.array(self.Y).shape[0] +  np.log(np.array(self.Y).shape[0])
