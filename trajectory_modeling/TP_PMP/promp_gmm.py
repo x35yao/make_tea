@@ -229,6 +229,7 @@ class FullProMP():
         log_det_sig_w = np.array([temp['log_det'] for temp in self.Sigma_w_val])
         # 2) Compute prior log likely-hood
         lhood_lb = self._estimate_log_gaussian_likelihood(expectations)
+        # print(lhood_lb, 'likelihood')
         if not with_prior:
             # likelihood without prior
             return lhood_lb
@@ -251,7 +252,10 @@ class FullProMP():
                         S0 = prior_Sigma_w['invS0']
                     lprior = lprior + (v0 + D + 1) * log_det_sig_w[i] + np.trace(np.dot(S0, inv_sig_w[i]))
                     lpriors.append(-0.5 * lprior)
+            # print(lpriors, 'prior')
             full_lhood = lhood_lb + np.array(lpriors)
+            # print(full_lhood, 'full_lhood')
+
             return full_lhood
 
     def _estimate_weighted_log_prob(self, expectations, with_prior = False):
@@ -386,6 +390,8 @@ class FullProMP():
             uncert_w_y = []
             for n in range(N):
                 for t in range(len(self.times[n])):
+                    # diff_y.append((self.Y[n][t] - np.dot(self.Phi[n][t], w_means[n])) * resp[n][i])
+                    # uncert_w_y.append(np.dot(np.dot(self.Phi[n][t], w_covs[n]), self.Phi[n][t].T) * resp[n][i])
                     diff_y.append(self.Y[n][t] - np.dot(self.Phi[n][t], w_means[n]))
                     uncert_w_y.append(np.dot(np.dot(self.Phi[n][t], w_covs[n]), self.Phi[n][t].T))
             if self.no_Sw:
@@ -406,7 +412,7 @@ class FullProMP():
             self.Sigma_w = np.array([np.diag(np.diag(Sigma_w_i)) for Sigma_w_i in self.Sigma_w])
         elif self.covariance_type == 'block_diag':
             self.Sigma_w = np.array(
-                [make_block_diag(s, 350) for s in self.Sigma_w])
+                [make_block_diag(s, self.n_rfs) for s in self.Sigma_w])
         elif self.covariance_type == 'close_diag':
             self.Sigma_w = np.array(
                 [make_close_diag(s, 1) for s in self.Sigma_w])
@@ -460,6 +466,8 @@ class FullProMP():
                 change = lower_bound - prev_lower_bound
                 if abs(change) < self.tol:
                     self.converged = True
+                # print(it, lower_bound)
+                # print(self._get_parameters()[1][0][:5])
                 if lower_bound > max_lower_bound or max_lower_bound == -np.inf:
                     max_lower_bound = lower_bound
                     best_params = self._get_parameters()
@@ -473,23 +481,28 @@ class FullProMP():
             # )
             pass
         self._set_parameters(best_params)
+        # print(best_params[1][0][:5],'bbbbbbbbbb')
         self.n_iter = best_n_iter
         print(f'The best iteration is {self.n_iter}')
         self.lower_bound = max_lower_bound
         _, expectations = self._e_step()
         log_resp = expectations['log_resp']
-        print(log_resp.argmax(axis = 1))
+        self.rho = log_resp.argmax(axis = 1)
+        print(self.rho)
 
     def refine(self, max_iter):
+        self.covariance_type = 'block_diag'
         _, expectations = self._e_step()
         log_resp = expectations['log_resp']
         for i in range(self.n_components):
+            if i not in self.rho:
+                continue
             index_component = np.where(log_resp.argmax(axis = 1) == i)[0]
             data_component = np.array(self.data)[index_component]
             times_component = np.array(self.times)[index_component]
-            model_component = promp_gaussian.FullProMP_gaussian(self.basis, self.n_dims,
+            model_component = promp_gaussian.FullProMP(self.basis, self.n_dims, n_rfs = self.n_rfs,
                             init_mu_w = self.mu_w[i], init_Sigma_w = self.Sigma_w[i], init_Sigma_y = self.Sigma_y[i])
-            model_component.train(times_component, data_component, n_rfs = self.n_rfs, prior_Sigma_w = self.prior_Sigma_w, prior_mu_w = self.prior_mu_w, print_lowerbound = self.print_lowerbound, max_iter = max_iter)
+            model_component.train(times_component, data_component, prior_Sigma_w = self.prior_Sigma_w, prior_mu_w = self.prior_mu_w, print_lowerbound = self.print_lowerbound, max_iter = max_iter)
             self.mu_w[i], self.Sigma_w[i], self.Sigma_y[i] = model_component.mu_w, model_component.Sigma_w, model_component.Sigma_y
 
     def score(self, Y = None, with_prior = False):
@@ -500,7 +513,10 @@ class FullProMP():
     def _n_parameters(self):
         '''Return the number of free parameters in the model'''
         mean_params = self.n_components * self.w_dim
-        cov_params = self.n_components * self.block_dim * (self.block_dim + 1) / 2
+        if self.covariance_type == 'block_diag':
+            cov_params = self.n_components * self.block_dim * (self.block_dim + 1) / 2
+        elif self.covariance_type == 'diag':
+            cov_params = self.n_components * self.w_dim
         return int(cov_params + mean_params + self.n_components - 1)
 
     def bic(self, Y = None, with_prior = False):
@@ -509,14 +525,16 @@ class FullProMP():
         '''
         if Y is None:
             Y = self.Y
+        n_data = Y.shape[0] * Y.shape[1]
         score = self.score(Y = Y, with_prior = with_prior)
-        return -2 * score * Y.shape[0] + self._n_parameters() * np.log(Y.shape[0])
+        return -2 * score *n_data + self._n_parameters() * np.log(n_data)
 
     def aic(self, Y = None, with_prior = False):
         if Y is None:
             Y = self.Y
+        n_data = Y.shape[0] * Y.shape[1]
         score = self.score(Y = Y, with_prior=with_prior)
-        return -2 * score * Y.shape[0] + 2 * self._n_parameters()
+        return -2 * score * n_data + 2 * self._n_parameters()
 
     def marginal_w(self, time, mode_selected):
         phi_n = self.get_Phi([time])[0]

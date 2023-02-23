@@ -13,8 +13,7 @@ from tqdm import trange
 
 if __name__ == '__main__':
 
-    PLOT = True
-    n_tests = 10
+    n_tests = 1
 
     font = {'size': 14}
     matplotlib.rc('font', **font)
@@ -55,81 +54,63 @@ if __name__ == '__main__':
 
     outliers = []
     std_thres = 2.9
-    individuals = [ind for ind in list(HTs_generalized_obj_in_ndi.keys()) if ind != 'global']
-    individuals = ['cup', 'pitcher', 'cup-pitcher', 'pitcher-cup']
+    # individuals = [ind for ind in list(HTs_generalized_obj_in_ndi.keys()) if ind != 'global']
+    # individuals = ['cup', 'pitcher', 'cup-pitcher', 'pitcher-cup']
     # individuals = ['cup']
     individuals = ['cup', 'pitcher']
     for individual in individuals:
         n_std = std_thres
         outlier_individual = detect_outlier(gripper_traj_in_generalized_obj[individual], n=n_std)
         print(f'The outliers for individual {individual} are {outlier_individual}')
-        # print(f'The outliers for individual {individual} are {outlier_individual}')
         outliers += outlier_individual
     outliers = list(set(outliers))
     bad_demos = outliers + ['331732']
 
     demos = sorted(list(HTs_obj_in_ndi['global'].keys()))
     train_demos_pool = [demo for demo in demos if demo not in bad_demos]
-    test_demos_pool = [demo for demo in demos[0:10] if demo not in bad_demos]
     # Train model
     print(f'The number of training pool is: {len(train_demos_pool)}')
     print(f'The number of outliers is: {len(outliers)}')
     n_dims = len(data.dims)
-    n_train = 12
+    n_train = 10
 
-    d1_pos, d2_pos, d3_pos, d4_pos = [], [], [], []
     max_n_components = 4
-    max_iter = 50
-    result1 = []
+    max_iter = 30
     result2 = []
-    # result3 = []
-    # result4 = []
+
     for i in trange(n_tests):
-        # train_demos = train_demos_pool[:int(n_train/2)] + train_demos_pool[10:10+int(n_train/2)]
-        train1 = train_demos_pool[:int(n_train / 2)]
-        train2 = train_demos_pool[10:10 + int(n_train / 2)]
-        train_demos = train1
+        train_demos = train_demos_pool[:int(n_train/2)] + train_demos_pool[10:10+int(n_train/2)]
+        train1 = random.sample(train_demos_pool[:10], k=int(n_train / 2))
+        train2 = random.sample(train_demos_pool[10:20],k=int(n_train / 2))
+        train_demos = train1 + train2
 
-        test_demos_pool_updated = [demo for demo in test_demos_pool if demo not in train_demos]
-        test_demos = random.sample(test_demos_pool_updated, k=1)
-
-        test_demo = test_demos[0]
-        ground_truth = gripper_traj_in_obj['global'][test_demo][data.dims].to_numpy()
-        tp_pmps = {}
-
-        data_temp = []
-        times_temp = []
         data_all_frames = {}
         for individual in sorted(individuals):
             data_frame, times = prepare_data_for_pmp(gripper_traj_in_generalized_obj, individual, train_demos, data.dims)
             data_all_frames[individual] = data_frame
         temp1 = []
         temp2 = []
-        # temp3 = []
-        # temp4 = []
+        temp3 = []
+        temp4 = []
 
         for n in range(max_n_components):
             n_components = n + 1
             model_pmp = pmp.PMP(data_all_frames, times, n_dims, sigma=0.035, n_components=n_components, covariance_type = 'diag',  max_iter = max_iter)
             model_pmp.train(print_lowerbound=False)
-            # model_pmp.refine()
-            tp_pmps = model_pmp.model
-            temp1.append(tp_pmps.bic(with_prior = False))
-            temp2.append(tp_pmps.bic(with_prior=True))
-            # temp3.append(tp_pmps.aic(with_prior=False))
-            # temp4.append(tp_pmps.aic(with_prior=True))
-        result1.append(temp1)
+            # if len(list(set(model_pmp.pmp)))
+            model_pmp.refine(30)
+            tp_pmps = model_pmp.pmp
+            bic_value= tp_pmps.bic(with_prior=False)
+            temp2.append(bic_value)
         result2.append(temp2)
-        # result3.append(temp3)
-        # result4.append(temp4)
-    result_mean1 = np.mean(result1, axis = 0)
     result_mean2 = np.mean(result2, axis=0)
+
+    n_components = [i + 1 for i in range(max_n_components)]
     plt.figure()
-    plt.plot(result_mean1, label = 'bic, no prior')
-    plt.plot(result_mean2, label = 'bic, with prior')
+    plt.plot(n_components, result_mean2, label = 'bic, no prior')
     plt.legend()
     plt.show()
-    print(result_mean1)
     print(result_mean2)
+
 
 
