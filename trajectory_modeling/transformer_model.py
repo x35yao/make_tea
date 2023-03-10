@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.nn import TransformerEncoderLayer
+from torch.nn import TransformerEncoderLayer, Transformer
     
 class PositionalEncoding(nn.Module):
 
@@ -23,15 +23,15 @@ class PositionalEncoding(nn.Module):
         Args:
             x: Tensor, shape [seq_len, batch_size, embedding_dim]
         """
-#         print(self.pe[:,:x.size(0)].shape)
+#         print("=", torch.round(self.pe[:,:x.size(1)], decimals=3))
         x = x + self.pe[:,:x.size(1)]
         return self.dropout(x)
 
 
-class TrajectoryModel(nn.Module):
+class EncoderModel(nn.Module):
     def __init__(self,  traj_dim: int, embed_dim: int, nhead: int, d_hid: int,
                  dropout: float = 0.1):
-        super(TrajectoryModel, self).__init__()
+        super(EncoderModel, self).__init__()
         self.d_model = embed_dim
         self.pos_embed = PositionalEncoding(embed_dim, dropout)
         self.sab1 = TransformerEncoderLayer(embed_dim, nhead, d_hid, dropout)
@@ -50,5 +50,21 @@ class TrajectoryModel(nn.Module):
         x = self.lin4(x)
         return x
 
+class TFModel(nn.Module):
+    def __init__(self,  traj_dim: int, embed_dim: int, nhead: int, d_hid: int,
+                 dropout: float = 0.1):
+        super(TFModel, self).__init__()
+        self.d_model = embed_dim
+        self.pos_embed = PositionalEncoding(embed_dim, dropout)
+        self.tf = Transformer(embed_dim, nhead, batch_first=True)
+        self.lin0 = nn.Linear(traj_dim, embed_dim)
+        self.lin4 = nn.Linear(embed_dim, traj_dim)
+        
+    def forward(self, x, mask=None):
+        x = self.lin0(x) * math.sqrt(self.d_model)
+        x = self.pos_embed(x)
+        x = self.tf(x[:,:2],x[:,2:])
+        x = self.lin4(x)
+        return x
 
 
