@@ -178,7 +178,7 @@ def predict1(models, t, demo, Hs, individuals, modify_cov = False):
     mu_mean, sigma_mean = get_mean_cov_hats(mus, sigmas, modify_cov = modify_cov)
     return mu_mean, sigma_mean
 
-def predict2(model, t, demo, Hs, individuals, mode_selected = 0, n_dim = 7, modify_cov = False):
+def predict2(model, t,  Hs, individuals, mode_selected = 0, n_dim = 7, modify_cov = False):
 
     '''
     Predict the trajectory for a test demo.
@@ -200,7 +200,7 @@ def predict2(model, t, demo, Hs, individuals, mode_selected = 0, n_dim = 7, modi
     sigmas = []
 
     for i, individual in enumerate(sorted(individuals)):
-        H = Hs[individual][demo]
+        H = Hs[individual]
         mu, sigma = marginal_w(model, t, mode_selected)
         mu = mu[:, i*n_dim: (i+1)*n_dim]
         sigma = sigma[:, i*n_dim: (i+1)*n_dim, i*n_dim: (i+1)*n_dim]

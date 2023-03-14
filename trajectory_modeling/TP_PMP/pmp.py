@@ -6,7 +6,7 @@ import random
 
 
 class PMP():
-    def __init__(self, data_in_all_rfs, times, dof, dim_basis_fun = 25, sigma = 0.035, full_basis = None, n_components = 1, covariance_type = 'block_diag', max_iter = 100, n_init = 1, gmm = True):
+    def __init__(self, data_in_all_rfs, times, dof, n_rfs, dim_basis_fun = 25, sigma = 0.035, full_basis = None, n_components = 1, covariance_type = 'block_diag', max_iter = 100, n_init = 1, gmm = True):
         self.sigma = sigma
         self.dof = dof
         if full_basis == None:
@@ -20,11 +20,11 @@ class PMP():
         }
         self.dim_basis_fun = dim_basis_fun
         self.data_in_all_rfs = data_in_all_rfs
-        self.rfs = sorted(data_in_all_rfs.keys())
+        self.n_rfs = n_rfs
         self.times = times
         self.n_components = n_components
         self.covariance_type = covariance_type
-        self.inv_whis_mean = lambda Sigma: utils.make_block_diag(Sigma, self.dof * len(self.rfs))
+        self.inv_whis_mean = lambda Sigma: utils.make_block_diag(Sigma, self.dof * self.n_rfs)
         self.prior_Sigma_w = {'v': self.dim_basis_fun * self.dof, 'mean_cov_mle': self.inv_whis_mean}
         self.prior_mu_w = {'k0':2, 'm0':0}
         self.prior_mu_w = None
@@ -33,14 +33,14 @@ class PMP():
         self.n_demos = len(self.times)
         self.gmm = gmm
         if self.gmm:
-            self.pmp = promp.FullProMP(basis=self.full_basis, n_dims= len(self.rfs) * self.dof, n_rfs = len(self.rfs), n_components=self.n_components,
+            self.pmp = promp.FullProMP(basis=self.full_basis, n_dims= self.n_rfs * self.dof, n_rfs = self.n_rfs, n_components=self.n_components,
                                         covariance_type=self.covariance_type)
         else:
-            self.pmp = promp_gaussian.FullProMP(basis=self.full_basis, n_dims=len(self.rfs) * self.dof, n_rfs=len(self.rfs))
+            self.pmp = promp_gaussian.FullProMP(basis=self.full_basis, n_dims=self.n_rfs * self.dof, n_rfs=self.n_rfs)
 
     def train(self, print_lowerbound = True, no_Sw = False):
-        data_concat = self._concat_data_across_rfs()
-        train_summary = self.pmp.train(self.times, data=data_concat, print_lowerbound=print_lowerbound, no_Sw=no_Sw,
+        # data_concat = self._concat_data_across_rfs()
+        train_summary = self.pmp.train(self.times, data=self.data_in_all_rfs, print_lowerbound=print_lowerbound, no_Sw=no_Sw,
                                         max_iter=self.max_iter, prior_Sigma_w=self.prior_Sigma_w, prior_mu_w = self.prior_mu_w,
                                         n_init=self.n_init)
     def refine(self, max_iter = None):
