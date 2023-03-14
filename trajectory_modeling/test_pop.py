@@ -113,20 +113,24 @@ if __name__ == '__main__':
         train_inds = random.sample(list(np.arange(0,n_rotations)), k = n_train)
         test_demos_pool = [ind for ind in list(np.arange(0, n_rotations)) if ind not in train_inds]
         test_inds = random.sample(test_demos_pool, k = 1)
+        test_ind = test_inds[0]
         data_all_frames = []
         data_all_frames_pop = []
         for ind in train_inds:
-
+            data_all_frames.append(np.concatenate([trajs_in_cup[ind], trajs_in_pitcher[ind]]))
+            data_all_frames_pop.append(np.concatenate([trajs_in_cup_pitcher[ind], trajs_in_pitcher_cup[ind]]))
+        times = times * 6
         Tn = len(times[0])
-        test_data_all_frames = np.array(test_data_all_frames).reshape(Tn, -1)
-        n_components = 2
-        model_pmp = pmp.PMP(data_all_frames, times, n_dims, sigma=0.035, n_components=n_components, covariance_type = 'diag',  max_iter = max_iter)
+        model_pmp = pmp.PMP(data_all_frames, times, n_dims, sigma=0.035, n_components=1, covariance_type = 'diag',  max_iter = max_iter)
         model_pmp.train(print_lowerbound=False)
         model_pmp.refine()
         ### Test on test traj
+        ground_truth = trajs_in_global[test_inds[0]]
         t_pmp = np.linspace(0, 1, ground_truth.shape[0])
-        ind = model_pmp.pmp.select_mode(t_pmp, test_data_all_frames[0])
-        mu_mean_tp_pmp1, sigma_mean_tp_pmp1 = predict2(model_pmp, t_pmp, test_demo, HTs_generalized_obj_in_ndi, data_all_frames.keys(), mode_selected=ind)
+        HTs_test = []
+        for individual in ['cup', 'pitcher']:
+            HTs_test.append(HTs_generalized_obj_in_ndi)
+        mu_mean_tp_pmp1, sigma_mean_tp_pmp1 = predict2(model_pmp, t_pmp, HTs_generalized_obj_in_ndi, ['cup', 'pitcher'], mode_selected=ind)
         mu_pos_tp_pmp1 = np.array(mu_mean_tp_pmp1)[:, :3]
         mu_ori_tp_pmp1 = np.array(mu_mean_tp_pmp1)[:, 3:]
 
