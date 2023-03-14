@@ -97,9 +97,11 @@ if __name__ == '__main__':
         trajs_in_pitcher = []
         trajs_in_cup_pitcher = []
         trajs_in_pitcher_cup = []
+        HTs = []
         for rotation_radian in rotation_radians:
             rotation_matrix = R.from_euler('x', -rotation_radian).as_matrix()
             HT = homogeneous_transform(rotation_matrix, [0, 0, 0])
+            HTs.append(HT)
             traj_in_cup_rotated = lintrans(traj_in_cup[0], HT)
             traj_in_global_rotated = lintrans(traj_in_cup_rotated, HTs_generalized_obj_in_ndi['cup'][selected_demo[0]])
             traj_in_pitcher_rotated = lintrans(traj_in_global_rotated, inverse_homogeneous_transform(HTs_generalized_obj_in_ndi['pitcher'][selected_demo[0]]))
@@ -127,10 +129,12 @@ if __name__ == '__main__':
         ### Test on test traj
         ground_truth = trajs_in_global[test_inds[0]]
         t_pmp = np.linspace(0, 1, ground_truth.shape[0])
-        HTs_test = []
+        HTs_test = {}
         for individual in ['cup', 'pitcher']:
-            HTs_test.append(HTs_generalized_obj_in_ndi)
-        mu_mean_tp_pmp1, sigma_mean_tp_pmp1 = predict2(model_pmp, t_pmp, HTs_generalized_obj_in_ndi, ['cup', 'pitcher'], mode_selected=ind)
+            HT = HTs[test_ind]
+            obj_in_ndi = HTs_generalized_obj_in_ndi[individual][test_ind] @ HT
+            HTs_test[individual] = obj_in_ndi
+        mu_mean_tp_pmp1, sigma_mean_tp_pmp1 = predict2(model_pmp, t_pmp, HTs_test, ['cup', 'pitcher'], mode_selected=ind)
         mu_pos_tp_pmp1 = np.array(mu_mean_tp_pmp1)[:, :3]
         mu_ori_tp_pmp1 = np.array(mu_mean_tp_pmp1)[:, 3:]
 
@@ -140,13 +144,16 @@ if __name__ == '__main__':
         model_pmp_2.refine()
         ### Test on test traj
         t_pmp = np.linspace(0, 1, ground_truth.shape[0])
-
-        mu_mean_tp_pmp2, sigma_mean_tp_pmp2 = predict2(model_pmp_2, t_pmp, test_demo, HTs_generalized_obj_in_ndi,
-                                                       data_all_frames_pop.keys(), mode_selected=0)
+        HTs_test_pop = {}
+        for individual in ['cup-pitcher', 'pitcher-cup']:
+            HT = HTs[test_ind]
+            obj_in_ndi = HTs_generalized_obj_in_ndi[individual][test_ind] @ HT
+            HTs_test_pop[individual] = obj_in_ndi
+        mu_mean_tp_pmp2, sigma_mean_tp_pmp2 = predict2(model_pmp_2, t_pmp, HTs_test_pop,
+                                                       ['cup-pitcher', 'pitcher-cup'], mode_selected=0)
         mu_pos_tp_pmp2 = np.array(mu_mean_tp_pmp2)[:, :3]
         mu_ori_tp_pmp2 = np.array(mu_mean_tp_pmp2)[:, 3:]
 
-        print(f'Test demo is {test_demo}')
         mid = 0.7
         mid_ind = int(mid * len(ground_truth))
 
@@ -170,16 +177,16 @@ if __name__ == '__main__':
             fig = plt.figure(figsize = (12, 6))
             ax = fig.add_subplot(1, 1, 1, projection='3d')
 
-            for demo in train_demos + test_demos:
-                df = gripper_trajs_in_ndi[demo]
-                middle = int(mid * len(df))
-                if demo in train_demos and demo not in test_demos:
-                    line = ax.plot(df.loc[:, 'z'], df.loc[:, 'y'], -df.loc[:, 'x'], '--', color = 'grey', label = 'Training demos')
-                    ax.plot(df.loc[:, 'z'].iloc[0], df.loc[:, 'y'].iloc[0], -df.loc[:, 'x'].iloc[0], 'o',
+            for ind in train_inds + test_inds:
+                traj = trajs_in_global[ind]
+                middle = int(mid * len(traj))
+                if ind in train_inds and ind not in test_inds:
+                    line = ax.plot(traj[:, 2], traj[:, 1], -traj[:, 0], '--', color = 'grey', label = 'Training demos')
+                    ax.plot(traj[0, 2], traj[0, 2], -traj[0, 2], 'o',
                             color='black', label='start')
-                    ax.plot(df.loc[:, 'z'].iloc[middle], df.loc[:, 'y'].iloc[middle], -df.loc[:, 'x'].iloc[middle], 's',
+                    ax.plot(traj[middle, 2], traj[middle, 2], -traj[middle, 2], 's',
                             color='black', label='middle')
-                    ax.plot(df.loc[:, 'z'].iloc[-1], df.loc[:, 'y'].iloc[-1], -df.loc[:, 'x'].iloc[-1], 'x',
+                    ax.plot(traj[-1, 2], traj[-1, 2], -traj[-1, 2], 'x',
                             color='black', label='end')
                 else:
                     line = ax.plot(df.loc[:, 'z'], df.loc[:, 'y'], -df.loc[:, 'x'], '-', color='red', label='Test demo')
