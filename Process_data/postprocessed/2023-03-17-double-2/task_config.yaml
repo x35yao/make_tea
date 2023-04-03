@@ -1,0 +1,9 @@
+
+project_path: /home/luke/Desktop/project/make_tea
+postprocessed_dir: Process_data/postprocessed/2023-03-17-double-2
+camera_in_ndi: calibrate_camera/transformations/2023-03-28/camera_in_ndi.pickle
+individuals: [dust_pan, teabag1, teabag2]
+objects: [dust_pan, teabag]
+template_video_id: '606047'
+cameras: [left, right]
+alignment_method: "shaped"
